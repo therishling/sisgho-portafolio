@@ -1,0 +1,103 @@
+[{
+    "model": "core.tipousuario",
+    "pk": 1,
+    "fields": {
+        "descripcion": "Administrador"
+    }
+}, {
+    "model": "core.tipousuario",
+    "pk": 2,
+    "fields": {
+        "descripcion": "Empleado"
+    }
+}, {
+    "model": "core.tipousuario",
+    "pk": 3,
+    "fields": {
+        "descripcion": "Cliente"
+    }
+}, {
+    "model": "core.tipousuario",
+    "pk": 4,
+    "fields": {
+        "descripcion": "Proveedor"
+    }
+}, {
+    "model": "core.estadofactura",
+    "pk": 1,
+    "fields": {
+        "descripcion": "No pagada"
+    }
+}, {
+    "model": "core.estadofactura",
+    "pk": 2,
+    "fields": {
+        "descripcion": "Pagada"
+    }
+}, {
+    "model": "core.estadohabitacion",
+    "pk": 1,
+    "fields": {
+        "descripcion": "Disponible"
+    }
+}, {
+    "model": "core.estadohabitacion",
+    "pk": 2,
+    "fields": {
+        "descripcion": "No Disponible: Asignada Empresa"
+    }
+}, {
+    "model": "core.estadohabitacion",
+    "pk": 3,
+    "fields": {
+        "descripcion": "No Disponible: Mantenimiento"
+    }
+}, {
+    "model": "core.estadopedido",
+    "pk": 1,
+    "fields": {
+        "descripcion": "Solicitado"
+    }
+}, {
+    "model": "core.estadopedido",
+    "pk": 2,
+    "fields": {
+        "descripcion": "En Transito"
+    }
+}, {
+    "model": "core.estadopedido",
+    "pk": 3,
+    "fields": {
+        "descripcion": "Recibido"
+    }
+}, {
+    "model": "core.estadopedido",
+    "pk": 4,
+    "fields": {
+        "descripcion": "Rechazado"
+    }
+}, {
+    "model": "core.tipoproducto",
+    "pk": 1,
+    "fields": {
+        "descripcion": "Sin clasificar"
+    }
+}, {
+    "model": "core.tiposervicio",
+    "pk": 1,
+    "fields": {
+        "descripcion": "Ejecutivo"
+    }
+}, {
+    "model": "core.tiposervicio",
+    "pk": 2,
+    "fields": {
+        "descripcion": "Especial"
+    }
+}, {
+    "model": "core.tiposervicio",
+    "pk": 3,
+    "fields": {
+        "descripcion": "General"
+    }
+}]

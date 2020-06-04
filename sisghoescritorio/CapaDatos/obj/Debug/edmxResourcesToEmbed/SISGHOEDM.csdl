@@ -1,0 +1,931 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="ADMINISTRADOR">
+    <Key>
+      <PropertyRef Name="IDADMINISTRADOR" />
+    </Key>
+    <Property Name="IDADMINISTRADOR" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="USUARIO" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="USUARIO1" Relationship="Self.ADMINISTR_USUARIO_C44AF74E_F" FromRole="ADMINISTRADOR" ToRole="USUARIO" />
+    <NavigationProperty Name="HABITACION" Relationship="Self.HABITACIO_ADMINISTR_00974E7C_F" FromRole="ADMINISTRADOR" ToRole="HABITACION" />
+    <NavigationProperty Name="PRODUCTO" Relationship="Self.PRODUCTO_ADMINISTR_3A195E25_F" FromRole="ADMINISTRADOR" ToRole="PRODUCTO" />
+    <NavigationProperty Name="SERVICIOCOMEDOR" Relationship="Self.SERVICIOC_ADMINISTR_DD5C602B_F" FromRole="ADMINISTRADOR" ToRole="SERVICIOCOMEDOR" />
+  </EntityType>
+  <EntityType Name="AUTH_GROUP">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="NAME" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="AUTH_GROUP_PERMISSIONS" Relationship="Self.AUTH_GROU_GROUP_ID_B120CBF9_F" FromRole="AUTH_GROUP" ToRole="AUTH_GROUP_PERMISSIONS" />
+    <NavigationProperty Name="AUTH_USER_GROUPS" Relationship="Self.AUTH_USER_GROUP_ID_97559544_F" FromRole="AUTH_GROUP" ToRole="AUTH_USER_GROUPS" />
+  </EntityType>
+  <EntityType Name="AUTH_GROUP_PERMISSIONS">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="GROUP_ID" Type="Int64" Nullable="false" />
+    <Property Name="PERMISSION_ID" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="AUTH_GROUP" Relationship="Self.AUTH_GROU_GROUP_ID_B120CBF9_F" FromRole="AUTH_GROUP_PERMISSIONS" ToRole="AUTH_GROUP" />
+    <NavigationProperty Name="AUTH_PERMISSION" Relationship="Self.AUTH_GROU_PERMISSIO_84C5C92E_F" FromRole="AUTH_GROUP_PERMISSIONS" ToRole="AUTH_PERMISSION" />
+  </EntityType>
+  <EntityType Name="AUTH_PERMISSION">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="NAME" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="CONTENT_TYPE_ID" Type="Int64" Nullable="false" />
+    <Property Name="CODENAME" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="AUTH_GROUP_PERMISSIONS" Relationship="Self.AUTH_GROU_PERMISSIO_84C5C92E_F" FromRole="AUTH_PERMISSION" ToRole="AUTH_GROUP_PERMISSIONS" />
+    <NavigationProperty Name="DJANGO_CONTENT_TYPE" Relationship="Self.AUTH_PERM_CONTENT_T_2F476E4B_F" FromRole="AUTH_PERMISSION" ToRole="DJANGO_CONTENT_TYPE" />
+    <NavigationProperty Name="AUTH_USER_USER_PERMISSIONS" Relationship="Self.AUTH_USER_PERMISSIO_1FBB5F2C_F" FromRole="AUTH_PERMISSION" ToRole="AUTH_USER_USER_PERMISSIONS" />
+  </EntityType>
+  <EntityType Name="AUTH_USER">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="PASSWORD" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="LAST_LOGIN" Type="DateTime" Precision="6" />
+    <Property Name="IS_SUPERUSER" Type="Int16" Nullable="false" />
+    <Property Name="USERNAME" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+    <Property Name="FIRST_NAME" Type="String" MaxLength="30" FixedLength="false" Unicode="true" />
+    <Property Name="LAST_NAME" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+    <Property Name="EMAIL" Type="String" MaxLength="254" FixedLength="false" Unicode="true" />
+    <Property Name="IS_STAFF" Type="Int16" Nullable="false" />
+    <Property Name="IS_ACTIVE" Type="Int16" Nullable="false" />
+    <Property Name="DATE_JOINED" Type="DateTime" Precision="6" Nullable="false" />
+    <NavigationProperty Name="AUTH_USER_GROUPS" Relationship="Self.AUTH_USER_USER_ID_6A12ED8B_F" FromRole="AUTH_USER" ToRole="AUTH_USER_GROUPS" />
+    <NavigationProperty Name="AUTH_USER_USER_PERMISSIONS" Relationship="Self.AUTH_USER_USER_ID_A95EAD1B_F" FromRole="AUTH_USER" ToRole="AUTH_USER_USER_PERMISSIONS" />
+    <NavigationProperty Name="DJANGO_ADMIN_LOG" Relationship="Self.DJANGO_AD_USER_ID_C564EBA6_F" FromRole="AUTH_USER" ToRole="DJANGO_ADMIN_LOG" />
+  </EntityType>
+  <EntityType Name="AUTH_USER_GROUPS">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="USER_ID" Type="Int64" Nullable="false" />
+    <Property Name="GROUP_ID" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="AUTH_GROUP" Relationship="Self.AUTH_USER_GROUP_ID_97559544_F" FromRole="AUTH_USER_GROUPS" ToRole="AUTH_GROUP" />
+    <NavigationProperty Name="AUTH_USER" Relationship="Self.AUTH_USER_USER_ID_6A12ED8B_F" FromRole="AUTH_USER_GROUPS" ToRole="AUTH_USER" />
+  </EntityType>
+  <EntityType Name="AUTH_USER_USER_PERMISSIONS">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="USER_ID" Type="Int64" Nullable="false" />
+    <Property Name="PERMISSION_ID" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="AUTH_PERMISSION" Relationship="Self.AUTH_USER_PERMISSIO_1FBB5F2C_F" FromRole="AUTH_USER_USER_PERMISSIONS" ToRole="AUTH_PERMISSION" />
+    <NavigationProperty Name="AUTH_USER" Relationship="Self.AUTH_USER_USER_ID_A95EAD1B_F" FromRole="AUTH_USER_USER_PERMISSIONS" ToRole="AUTH_USER" />
+  </EntityType>
+  <EntityType Name="CLIENTE">
+    <Key>
+      <PropertyRef Name="IDCLIENTE" />
+    </Key>
+    <Property Name="IDCLIENTE" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="RUT" Type="String" MaxLength="12" FixedLength="false" Unicode="true" />
+    <Property Name="NOMBRE" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <Property Name="RUBRO" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="DIRECCION" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="TELEFONO" Type="Int64" Nullable="false" />
+    <Property Name="USUARIO" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="USUARIO1" Relationship="Self.CLIENTE_USUARIO_2A0AFF91_F" FromRole="CLIENTE" ToRole="USUARIO" />
+    <NavigationProperty Name="FACTURA" Relationship="Self.FACTURA_CLIENTE_1F922B53_F" FromRole="CLIENTE" ToRole="FACTURA" />
+    <NavigationProperty Name="HUESPED" Relationship="Self.HUESPED_CLIENTE_3B269659_F" FromRole="CLIENTE" ToRole="HUESPED" />
+  </EntityType>
+  <EntityType Name="DETALLEFACTURA">
+    <Key>
+      <PropertyRef Name="IDDETALLE" />
+    </Key>
+    <Property Name="IDDETALLE" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TOTAL" Type="Int64" Nullable="false" />
+    <Property Name="FACTURA" Type="Int64" Nullable="false" />
+    <Property Name="HUESPED" Type="Int64" />
+    <Property Name="SERVICIOCOMEDOR" Type="Int64" />
+    <NavigationProperty Name="FACTURA1" Relationship="Self.DETALLEFA_FACTURA_6C00E66A_F" FromRole="DETALLEFACTURA" ToRole="FACTURA" />
+    <NavigationProperty Name="HUESPED1" Relationship="Self.DETALLEFA_HUESPED_0AA7CAD7_F" FromRole="DETALLEFACTURA" ToRole="HUESPED" />
+    <NavigationProperty Name="SERVICIOCOMEDOR1" Relationship="Self.DETALLEFA_SERVICIOC_7578D43B_F" FromRole="DETALLEFACTURA" ToRole="SERVICIOCOMEDOR" />
+  </EntityType>
+  <EntityType Name="DETALLEPEDIDO">
+    <Key>
+      <PropertyRef Name="IDEDETALLE" />
+    </Key>
+    <Property Name="IDEDETALLE" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CANTIDAD" Type="Int64" Nullable="false" />
+    <Property Name="TOTAL" Type="Int64" Nullable="false" />
+    <Property Name="PEDIDO" Type="Int64" Nullable="false" />
+    <Property Name="PRODUCTO" Type="Int64" Nullable="false" />
+    <Property Name="PROVEEDOR" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="PEDIDO1" Relationship="Self.DETALLEPE_PEDIDO_423F3663_F" FromRole="DETALLEPEDIDO" ToRole="PEDIDO" />
+    <NavigationProperty Name="PRODUCTO1" Relationship="Self.DETALLEPE_PRODUCTO_7CA5AE6C_F" FromRole="DETALLEPEDIDO" ToRole="PRODUCTO" />
+    <NavigationProperty Name="PROVEEDOR1" Relationship="Self.DETALLEPE_PROVEEDOR_F21117C8_F" FromRole="DETALLEPEDIDO" ToRole="PROVEEDOR" />
+    <NavigationProperty Name="RECEPCIONPRODUCTO" Relationship="Self.RECEPCION_DETALLEPE_90BD07EF_F" FromRole="DETALLEPEDIDO" ToRole="RECEPCIONPRODUCTO" />
+  </EntityType>
+  <EntityType Name="DJANGO_ADMIN_LOG">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="ACTION_TIME" Type="DateTime" Precision="6" Nullable="false" />
+    <Property Name="OBJECT_ID" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="OBJECT_REPR" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="ACTION_FLAG" Type="Int64" Nullable="false" />
+    <Property Name="CHANGE_MESSAGE" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="CONTENT_TYPE_ID" Type="Int64" />
+    <Property Name="USER_ID" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="AUTH_USER" Relationship="Self.DJANGO_AD_USER_ID_C564EBA6_F" FromRole="DJANGO_ADMIN_LOG" ToRole="AUTH_USER" />
+    <NavigationProperty Name="DJANGO_CONTENT_TYPE" Relationship="Self.DJANGO_AD_CONTENT_T_C4BCE8EB_F" FromRole="DJANGO_ADMIN_LOG" ToRole="DJANGO_CONTENT_TYPE" />
+  </EntityType>
+  <EntityType Name="DJANGO_CONTENT_TYPE">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="APP_LABEL" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="MODEL" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="AUTH_PERMISSION" Relationship="Self.AUTH_PERM_CONTENT_T_2F476E4B_F" FromRole="DJANGO_CONTENT_TYPE" ToRole="AUTH_PERMISSION" />
+    <NavigationProperty Name="DJANGO_ADMIN_LOG" Relationship="Self.DJANGO_AD_CONTENT_T_C4BCE8EB_F" FromRole="DJANGO_CONTENT_TYPE" ToRole="DJANGO_ADMIN_LOG" />
+  </EntityType>
+  <EntityType Name="DJANGO_MIGRATIONS">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="APP" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="NAME" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="APPLIED" Type="DateTime" Precision="6" Nullable="false" />
+  </EntityType>
+  <EntityType Name="DJANGO_SESSION">
+    <Key>
+      <PropertyRef Name="SESSION_KEY" />
+    </Key>
+    <Property Name="SESSION_KEY" Type="String" MaxLength="40" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="SESSION_DATA" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="EXPIRE_DATE" Type="DateTime" Precision="6" Nullable="false" />
+  </EntityType>
+  <EntityType Name="EMPLEADO">
+    <Key>
+      <PropertyRef Name="IDEMPLEADO" />
+    </Key>
+    <Property Name="IDEMPLEADO" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="USUARIO" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="USUARIO1" Relationship="Self.EMPLEADO_USUARIO_32C0FEA5_F" FromRole="EMPLEADO" ToRole="USUARIO" />
+    <NavigationProperty Name="PEDIDO" Relationship="Self.PEDIDO_EMPLEADO_85C2FEE2_F" FromRole="EMPLEADO" ToRole="PEDIDO" />
+    <NavigationProperty Name="RECEPCIONPRODUCTO" Relationship="Self.RECEPCION_EMPLEADO_5785D66A_F" FromRole="EMPLEADO" ToRole="RECEPCIONPRODUCTO" />
+  </EntityType>
+  <EntityType Name="ESTADOFACTURA">
+    <Key>
+      <PropertyRef Name="IDESTADO" />
+    </Key>
+    <Property Name="IDESTADO" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DESCRIPCION" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="FACTURA" Relationship="Self.FACTURA_ESTADOFAC_E403AD61_F" FromRole="ESTADOFACTURA" ToRole="FACTURA" />
+  </EntityType>
+  <EntityType Name="ESTADOHABITACION">
+    <Key>
+      <PropertyRef Name="IDESTADO" />
+    </Key>
+    <Property Name="IDESTADO" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DESCRIPCION" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="HABITACION" Relationship="Self.HABITACIO_ESTADOHAB_DA8D1F4D_F" FromRole="ESTADOHABITACION" ToRole="HABITACION" />
+  </EntityType>
+  <EntityType Name="ESTADOPEDIDO">
+    <Key>
+      <PropertyRef Name="IDESTADO" />
+    </Key>
+    <Property Name="IDESTADO" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DESCRIPCION" Type="String" MaxLength="90" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="PEDIDO" Relationship="Self.PEDIDO_ESTADOPED_C7F4A57A_F" FromRole="ESTADOPEDIDO" ToRole="PEDIDO" />
+  </EntityType>
+  <EntityType Name="FACTURA">
+    <Key>
+      <PropertyRef Name="IDFACTURA" />
+    </Key>
+    <Property Name="IDFACTURA" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="GIRO" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="CLIENTE" Type="Int64" Nullable="false" />
+    <Property Name="ESTADOFACTURA" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="CLIENTE1" Relationship="Self.FACTURA_CLIENTE_1F922B53_F" FromRole="FACTURA" ToRole="CLIENTE" />
+    <NavigationProperty Name="DETALLEFACTURA" Relationship="Self.DETALLEFA_FACTURA_6C00E66A_F" FromRole="FACTURA" ToRole="DETALLEFACTURA" />
+    <NavigationProperty Name="ESTADOFACTURA1" Relationship="Self.FACTURA_ESTADOFAC_E403AD61_F" FromRole="FACTURA" ToRole="ESTADOFACTURA" />
+  </EntityType>
+  <EntityType Name="HABITACION">
+    <Key>
+      <PropertyRef Name="IDHABITACION" />
+    </Key>
+    <Property Name="IDHABITACION" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="NUMERO" Type="Int64" Nullable="false" />
+    <Property Name="TIPOCAMA" Type="String" MaxLength="70" FixedLength="false" Unicode="true" />
+    <Property Name="ACCESORIOS" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="PRECIO" Type="Int64" Nullable="false" />
+    <Property Name="ADMINISTRADOR" Type="Int64" Nullable="false" />
+    <Property Name="ESTADOHABITACION" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="ADMINISTRADOR1" Relationship="Self.HABITACIO_ADMINISTR_00974E7C_F" FromRole="HABITACION" ToRole="ADMINISTRADOR" />
+    <NavigationProperty Name="ESTADOHABITACION1" Relationship="Self.HABITACIO_ESTADOHAB_DA8D1F4D_F" FromRole="HABITACION" ToRole="ESTADOHABITACION" />
+    <NavigationProperty Name="HUESPED" Relationship="Self.HUESPED_HABITACIO_99B8D120_F" FromRole="HABITACION" ToRole="HUESPED" />
+  </EntityType>
+  <EntityType Name="HUESPED">
+    <Key>
+      <PropertyRef Name="IDHUESPED" />
+    </Key>
+    <Property Name="IDHUESPED" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="NOMBRE" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="APELLIDOPATERNO" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="APELLIDOMATERNO" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="RUT" Type="String" MaxLength="11" FixedLength="false" Unicode="true" />
+    <Property Name="FECHADESDE" Type="DateTime" Nullable="false" />
+    <Property Name="FECHAHASTA" Type="DateTime" />
+    <Property Name="CLIENTE" Type="Int64" Nullable="false" />
+    <Property Name="HABITACION" Type="Int64" />
+    <NavigationProperty Name="CLIENTE1" Relationship="Self.HUESPED_CLIENTE_3B269659_F" FromRole="HUESPED" ToRole="CLIENTE" />
+    <NavigationProperty Name="DETALLEFACTURA" Relationship="Self.DETALLEFA_HUESPED_0AA7CAD7_F" FromRole="HUESPED" ToRole="DETALLEFACTURA" />
+    <NavigationProperty Name="HABITACION1" Relationship="Self.HUESPED_HABITACIO_99B8D120_F" FromRole="HUESPED" ToRole="HABITACION" />
+  </EntityType>
+  <EntityType Name="PEDIDO">
+    <Key>
+      <PropertyRef Name="IDPEDIDO" />
+    </Key>
+    <Property Name="IDPEDIDO" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="OBSERVACIONES" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="FECHAPEDIDO" Type="DateTime" Nullable="false" />
+    <Property Name="EMPLEADO" Type="Int64" Nullable="false" />
+    <Property Name="ESTADOPEDIDO" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="DETALLEPEDIDO" Relationship="Self.DETALLEPE_PEDIDO_423F3663_F" FromRole="PEDIDO" ToRole="DETALLEPEDIDO" />
+    <NavigationProperty Name="EMPLEADO1" Relationship="Self.PEDIDO_EMPLEADO_85C2FEE2_F" FromRole="PEDIDO" ToRole="EMPLEADO" />
+    <NavigationProperty Name="ESTADOPEDIDO1" Relationship="Self.PEDIDO_ESTADOPED_C7F4A57A_F" FromRole="PEDIDO" ToRole="ESTADOPEDIDO" />
+  </EntityType>
+  <EntityType Name="PRODUCTO">
+    <Key>
+      <PropertyRef Name="IDPRODUCTO" />
+    </Key>
+    <Property Name="IDPRODUCTO" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DESCRIPCION" Type="String" MaxLength="70" FixedLength="false" Unicode="true" />
+    <Property Name="STOCK" Type="Int64" Nullable="false" />
+    <Property Name="PRECIO" Type="Int64" Nullable="false" />
+    <Property Name="ADMINISTRADOR" Type="Int64" Nullable="false" />
+    <Property Name="TIPOPRODUCTO" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="ADMINISTRADOR1" Relationship="Self.PRODUCTO_ADMINISTR_3A195E25_F" FromRole="PRODUCTO" ToRole="ADMINISTRADOR" />
+    <NavigationProperty Name="DETALLEPEDIDO" Relationship="Self.DETALLEPE_PRODUCTO_7CA5AE6C_F" FromRole="PRODUCTO" ToRole="DETALLEPEDIDO" />
+    <NavigationProperty Name="TIPOPRODUCTO1" Relationship="Self.PRODUCTO_TIPOPRODU_DD6D32AA_F" FromRole="PRODUCTO" ToRole="TIPOPRODUCTO" />
+  </EntityType>
+  <EntityType Name="PROVEEDOR">
+    <Key>
+      <PropertyRef Name="IDPROVEEDOR" />
+    </Key>
+    <Property Name="IDPROVEEDOR" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="RUBRO" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="TELEFONO" Type="Int64" Nullable="false" />
+    <Property Name="DESCRIPCION" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Name="SITIOWEB" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+    <Property Name="USUARIO" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="DETALLEPEDIDO" Relationship="Self.DETALLEPE_PROVEEDOR_F21117C8_F" FromRole="PROVEEDOR" ToRole="DETALLEPEDIDO" />
+    <NavigationProperty Name="USUARIO1" Relationship="Self.PROVEEDOR_USUARIO_3F5E0683_F" FromRole="PROVEEDOR" ToRole="USUARIO" />
+  </EntityType>
+  <EntityType Name="RECEPCIONPRODUCTO">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CODIGO" Type="Int64" Nullable="false" />
+    <Property Name="FECHARECEPCION" Type="DateTime" Nullable="false" />
+    <Property Name="DETALLEPEDIDO" Type="Int64" Nullable="false" />
+    <Property Name="EMPLEADO" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="DETALLEPEDIDO1" Relationship="Self.RECEPCION_DETALLEPE_90BD07EF_F" FromRole="RECEPCIONPRODUCTO" ToRole="DETALLEPEDIDO" />
+    <NavigationProperty Name="EMPLEADO1" Relationship="Self.RECEPCION_EMPLEADO_5785D66A_F" FromRole="RECEPCIONPRODUCTO" ToRole="EMPLEADO" />
+  </EntityType>
+  <EntityType Name="SERVICIOCOMEDOR">
+    <Key>
+      <PropertyRef Name="IDSERVICIO" />
+    </Key>
+    <Property Name="IDSERVICIO" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="PLATO" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="PRECIO" Type="Int64" Nullable="false" />
+    <Property Name="ADMINISTRADOR" Type="Int64" Nullable="false" />
+    <Property Name="TIPOSERVICIO" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="ADMINISTRADOR1" Relationship="Self.SERVICIOC_ADMINISTR_DD5C602B_F" FromRole="SERVICIOCOMEDOR" ToRole="ADMINISTRADOR" />
+    <NavigationProperty Name="DETALLEFACTURA" Relationship="Self.DETALLEFA_SERVICIOC_7578D43B_F" FromRole="SERVICIOCOMEDOR" ToRole="DETALLEFACTURA" />
+    <NavigationProperty Name="TIPOSERVICIO1" Relationship="Self.SERVICIOC_TIPOSERVI_63450BEB_F" FromRole="SERVICIOCOMEDOR" ToRole="TIPOSERVICIO" />
+  </EntityType>
+  <EntityType Name="TIPOPRODUCTO">
+    <Key>
+      <PropertyRef Name="IDTIPO" />
+    </Key>
+    <Property Name="IDTIPO" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DESCRIPCION" Type="String" MaxLength="90" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="PRODUCTO" Relationship="Self.PRODUCTO_TIPOPRODU_DD6D32AA_F" FromRole="TIPOPRODUCTO" ToRole="PRODUCTO" />
+  </EntityType>
+  <EntityType Name="TIPOSERVICIO">
+    <Key>
+      <PropertyRef Name="IDTIPO" />
+    </Key>
+    <Property Name="IDTIPO" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DESCRIPCION" Type="String" MaxLength="80" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="SERVICIOCOMEDOR" Relationship="Self.SERVICIOC_TIPOSERVI_63450BEB_F" FromRole="TIPOSERVICIO" ToRole="SERVICIOCOMEDOR" />
+  </EntityType>
+  <EntityType Name="TIPOUSUARIO">
+    <Key>
+      <PropertyRef Name="IDTIPOUSUARIO" />
+    </Key>
+    <Property Name="IDTIPOUSUARIO" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="DESCRIPCION" Type="String" MaxLength="70" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="USUARIO" Relationship="Self.USUARIO_TIPOUSUAR_08AF3864_F" FromRole="TIPOUSUARIO" ToRole="USUARIO" />
+  </EntityType>
+  <EntityType Name="USUARIO">
+    <Key>
+      <PropertyRef Name="IDUSUARIO" />
+    </Key>
+    <Property Name="PASSWORD" Type="String" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="LAST_LOGIN" Type="DateTime" Precision="6" />
+    <Property Name="IDUSUARIO" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="USUARIO1" Type="String" MaxLength="70" FixedLength="false" Unicode="true" />
+    <Property Name="NOMBRE" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="APELLIDO_PATERNO" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="APELLIDO_MATERNO" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="CORREO" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+    <Property Name="TIPOUSUARIO" Type="Int64" Nullable="false" />
+    <NavigationProperty Name="ADMINISTRADOR" Relationship="Self.ADMINISTR_USUARIO_C44AF74E_F" FromRole="USUARIO" ToRole="ADMINISTRADOR" />
+    <NavigationProperty Name="CLIENTE" Relationship="Self.CLIENTE_USUARIO_2A0AFF91_F" FromRole="USUARIO" ToRole="CLIENTE" />
+    <NavigationProperty Name="EMPLEADO" Relationship="Self.EMPLEADO_USUARIO_32C0FEA5_F" FromRole="USUARIO" ToRole="EMPLEADO" />
+    <NavigationProperty Name="PROVEEDOR" Relationship="Self.PROVEEDOR_USUARIO_3F5E0683_F" FromRole="USUARIO" ToRole="PROVEEDOR" />
+    <NavigationProperty Name="TIPOUSUARIO1" Relationship="Self.USUARIO_TIPOUSUAR_08AF3864_F" FromRole="USUARIO" ToRole="TIPOUSUARIO" />
+  </EntityType>
+  <Association Name="ADMINISTR_USUARIO_C44AF74E_F">
+    <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="1" />
+    <End Role="ADMINISTRADOR" Type="Self.ADMINISTRADOR" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="USUARIO">
+        <PropertyRef Name="IDUSUARIO" />
+      </Principal>
+      <Dependent Role="ADMINISTRADOR">
+        <PropertyRef Name="USUARIO" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="HABITACIO_ADMINISTR_00974E7C_F">
+    <End Role="ADMINISTRADOR" Type="Self.ADMINISTRADOR" Multiplicity="1" />
+    <End Role="HABITACION" Type="Self.HABITACION" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ADMINISTRADOR">
+        <PropertyRef Name="IDADMINISTRADOR" />
+      </Principal>
+      <Dependent Role="HABITACION">
+        <PropertyRef Name="ADMINISTRADOR" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="PRODUCTO_ADMINISTR_3A195E25_F">
+    <End Role="ADMINISTRADOR" Type="Self.ADMINISTRADOR" Multiplicity="1" />
+    <End Role="PRODUCTO" Type="Self.PRODUCTO" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ADMINISTRADOR">
+        <PropertyRef Name="IDADMINISTRADOR" />
+      </Principal>
+      <Dependent Role="PRODUCTO">
+        <PropertyRef Name="ADMINISTRADOR" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="SERVICIOC_ADMINISTR_DD5C602B_F">
+    <End Role="ADMINISTRADOR" Type="Self.ADMINISTRADOR" Multiplicity="1" />
+    <End Role="SERVICIOCOMEDOR" Type="Self.SERVICIOCOMEDOR" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ADMINISTRADOR">
+        <PropertyRef Name="IDADMINISTRADOR" />
+      </Principal>
+      <Dependent Role="SERVICIOCOMEDOR">
+        <PropertyRef Name="ADMINISTRADOR" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="AUTH_GROU_GROUP_ID_B120CBF9_F">
+    <End Role="AUTH_GROUP" Type="Self.AUTH_GROUP" Multiplicity="1" />
+    <End Role="AUTH_GROUP_PERMISSIONS" Type="Self.AUTH_GROUP_PERMISSIONS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AUTH_GROUP">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="AUTH_GROUP_PERMISSIONS">
+        <PropertyRef Name="GROUP_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="AUTH_USER_GROUP_ID_97559544_F">
+    <End Role="AUTH_GROUP" Type="Self.AUTH_GROUP" Multiplicity="1" />
+    <End Role="AUTH_USER_GROUPS" Type="Self.AUTH_USER_GROUPS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AUTH_GROUP">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="AUTH_USER_GROUPS">
+        <PropertyRef Name="GROUP_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="AUTH_GROU_PERMISSIO_84C5C92E_F">
+    <End Role="AUTH_PERMISSION" Type="Self.AUTH_PERMISSION" Multiplicity="1" />
+    <End Role="AUTH_GROUP_PERMISSIONS" Type="Self.AUTH_GROUP_PERMISSIONS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AUTH_PERMISSION">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="AUTH_GROUP_PERMISSIONS">
+        <PropertyRef Name="PERMISSION_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="AUTH_PERM_CONTENT_T_2F476E4B_F">
+    <End Role="DJANGO_CONTENT_TYPE" Type="Self.DJANGO_CONTENT_TYPE" Multiplicity="1" />
+    <End Role="AUTH_PERMISSION" Type="Self.AUTH_PERMISSION" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="DJANGO_CONTENT_TYPE">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="AUTH_PERMISSION">
+        <PropertyRef Name="CONTENT_TYPE_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="AUTH_USER_PERMISSIO_1FBB5F2C_F">
+    <End Role="AUTH_PERMISSION" Type="Self.AUTH_PERMISSION" Multiplicity="1" />
+    <End Role="AUTH_USER_USER_PERMISSIONS" Type="Self.AUTH_USER_USER_PERMISSIONS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AUTH_PERMISSION">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="AUTH_USER_USER_PERMISSIONS">
+        <PropertyRef Name="PERMISSION_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="AUTH_USER_USER_ID_6A12ED8B_F">
+    <End Role="AUTH_USER" Type="Self.AUTH_USER" Multiplicity="1" />
+    <End Role="AUTH_USER_GROUPS" Type="Self.AUTH_USER_GROUPS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AUTH_USER">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="AUTH_USER_GROUPS">
+        <PropertyRef Name="USER_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="AUTH_USER_USER_ID_A95EAD1B_F">
+    <End Role="AUTH_USER" Type="Self.AUTH_USER" Multiplicity="1" />
+    <End Role="AUTH_USER_USER_PERMISSIONS" Type="Self.AUTH_USER_USER_PERMISSIONS" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AUTH_USER">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="AUTH_USER_USER_PERMISSIONS">
+        <PropertyRef Name="USER_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="DJANGO_AD_USER_ID_C564EBA6_F">
+    <End Role="AUTH_USER" Type="Self.AUTH_USER" Multiplicity="1" />
+    <End Role="DJANGO_ADMIN_LOG" Type="Self.DJANGO_ADMIN_LOG" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="AUTH_USER">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="DJANGO_ADMIN_LOG">
+        <PropertyRef Name="USER_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="CLIENTE_USUARIO_2A0AFF91_F">
+    <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="1" />
+    <End Role="CLIENTE" Type="Self.CLIENTE" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="USUARIO">
+        <PropertyRef Name="IDUSUARIO" />
+      </Principal>
+      <Dependent Role="CLIENTE">
+        <PropertyRef Name="USUARIO" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FACTURA_CLIENTE_1F922B53_F">
+    <End Role="CLIENTE" Type="Self.CLIENTE" Multiplicity="1" />
+    <End Role="FACTURA" Type="Self.FACTURA" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="CLIENTE">
+        <PropertyRef Name="IDCLIENTE" />
+      </Principal>
+      <Dependent Role="FACTURA">
+        <PropertyRef Name="CLIENTE" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="HUESPED_CLIENTE_3B269659_F">
+    <End Role="CLIENTE" Type="Self.CLIENTE" Multiplicity="1" />
+    <End Role="HUESPED" Type="Self.HUESPED" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="CLIENTE">
+        <PropertyRef Name="IDCLIENTE" />
+      </Principal>
+      <Dependent Role="HUESPED">
+        <PropertyRef Name="CLIENTE" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="DETALLEFA_FACTURA_6C00E66A_F">
+    <End Role="FACTURA" Type="Self.FACTURA" Multiplicity="1" />
+    <End Role="DETALLEFACTURA" Type="Self.DETALLEFACTURA" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="FACTURA">
+        <PropertyRef Name="IDFACTURA" />
+      </Principal>
+      <Dependent Role="DETALLEFACTURA">
+        <PropertyRef Name="FACTURA" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="DETALLEFA_HUESPED_0AA7CAD7_F">
+    <End Role="HUESPED" Type="Self.HUESPED" Multiplicity="0..1" />
+    <End Role="DETALLEFACTURA" Type="Self.DETALLEFACTURA" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="HUESPED">
+        <PropertyRef Name="IDHUESPED" />
+      </Principal>
+      <Dependent Role="DETALLEFACTURA">
+        <PropertyRef Name="HUESPED" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="DETALLEFA_SERVICIOC_7578D43B_F">
+    <End Role="SERVICIOCOMEDOR" Type="Self.SERVICIOCOMEDOR" Multiplicity="0..1" />
+    <End Role="DETALLEFACTURA" Type="Self.DETALLEFACTURA" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="SERVICIOCOMEDOR">
+        <PropertyRef Name="IDSERVICIO" />
+      </Principal>
+      <Dependent Role="DETALLEFACTURA">
+        <PropertyRef Name="SERVICIOCOMEDOR" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="DETALLEPE_PEDIDO_423F3663_F">
+    <End Role="PEDIDO" Type="Self.PEDIDO" Multiplicity="1" />
+    <End Role="DETALLEPEDIDO" Type="Self.DETALLEPEDIDO" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="PEDIDO">
+        <PropertyRef Name="IDPEDIDO" />
+      </Principal>
+      <Dependent Role="DETALLEPEDIDO">
+        <PropertyRef Name="PEDIDO" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="DETALLEPE_PRODUCTO_7CA5AE6C_F">
+    <End Role="PRODUCTO" Type="Self.PRODUCTO" Multiplicity="1" />
+    <End Role="DETALLEPEDIDO" Type="Self.DETALLEPEDIDO" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="PRODUCTO">
+        <PropertyRef Name="IDPRODUCTO" />
+      </Principal>
+      <Dependent Role="DETALLEPEDIDO">
+        <PropertyRef Name="PRODUCTO" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="DETALLEPE_PROVEEDOR_F21117C8_F">
+    <End Role="PROVEEDOR" Type="Self.PROVEEDOR" Multiplicity="1" />
+    <End Role="DETALLEPEDIDO" Type="Self.DETALLEPEDIDO" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="PROVEEDOR">
+        <PropertyRef Name="IDPROVEEDOR" />
+      </Principal>
+      <Dependent Role="DETALLEPEDIDO">
+        <PropertyRef Name="PROVEEDOR" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="RECEPCION_DETALLEPE_90BD07EF_F">
+    <End Role="DETALLEPEDIDO" Type="Self.DETALLEPEDIDO" Multiplicity="1" />
+    <End Role="RECEPCIONPRODUCTO" Type="Self.RECEPCIONPRODUCTO" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="DETALLEPEDIDO">
+        <PropertyRef Name="IDEDETALLE" />
+      </Principal>
+      <Dependent Role="RECEPCIONPRODUCTO">
+        <PropertyRef Name="DETALLEPEDIDO" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="DJANGO_AD_CONTENT_T_C4BCE8EB_F">
+    <End Role="DJANGO_CONTENT_TYPE" Type="Self.DJANGO_CONTENT_TYPE" Multiplicity="0..1" />
+    <End Role="DJANGO_ADMIN_LOG" Type="Self.DJANGO_ADMIN_LOG" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="DJANGO_CONTENT_TYPE">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="DJANGO_ADMIN_LOG">
+        <PropertyRef Name="CONTENT_TYPE_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="EMPLEADO_USUARIO_32C0FEA5_F">
+    <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="1" />
+    <End Role="EMPLEADO" Type="Self.EMPLEADO" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="USUARIO">
+        <PropertyRef Name="IDUSUARIO" />
+      </Principal>
+      <Dependent Role="EMPLEADO">
+        <PropertyRef Name="USUARIO" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="PEDIDO_EMPLEADO_85C2FEE2_F">
+    <End Role="EMPLEADO" Type="Self.EMPLEADO" Multiplicity="1" />
+    <End Role="PEDIDO" Type="Self.PEDIDO" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="EMPLEADO">
+        <PropertyRef Name="IDEMPLEADO" />
+      </Principal>
+      <Dependent Role="PEDIDO">
+        <PropertyRef Name="EMPLEADO" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="RECEPCION_EMPLEADO_5785D66A_F">
+    <End Role="EMPLEADO" Type="Self.EMPLEADO" Multiplicity="1" />
+    <End Role="RECEPCIONPRODUCTO" Type="Self.RECEPCIONPRODUCTO" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="EMPLEADO">
+        <PropertyRef Name="IDEMPLEADO" />
+      </Principal>
+      <Dependent Role="RECEPCIONPRODUCTO">
+        <PropertyRef Name="EMPLEADO" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FACTURA_ESTADOFAC_E403AD61_F">
+    <End Role="ESTADOFACTURA" Type="Self.ESTADOFACTURA" Multiplicity="1" />
+    <End Role="FACTURA" Type="Self.FACTURA" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ESTADOFACTURA">
+        <PropertyRef Name="IDESTADO" />
+      </Principal>
+      <Dependent Role="FACTURA">
+        <PropertyRef Name="ESTADOFACTURA" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="HABITACIO_ESTADOHAB_DA8D1F4D_F">
+    <End Role="ESTADOHABITACION" Type="Self.ESTADOHABITACION" Multiplicity="1" />
+    <End Role="HABITACION" Type="Self.HABITACION" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ESTADOHABITACION">
+        <PropertyRef Name="IDESTADO" />
+      </Principal>
+      <Dependent Role="HABITACION">
+        <PropertyRef Name="ESTADOHABITACION" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="PEDIDO_ESTADOPED_C7F4A57A_F">
+    <End Role="ESTADOPEDIDO" Type="Self.ESTADOPEDIDO" Multiplicity="1" />
+    <End Role="PEDIDO" Type="Self.PEDIDO" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="ESTADOPEDIDO">
+        <PropertyRef Name="IDESTADO" />
+      </Principal>
+      <Dependent Role="PEDIDO">
+        <PropertyRef Name="ESTADOPEDIDO" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="HUESPED_HABITACIO_99B8D120_F">
+    <End Role="HABITACION" Type="Self.HABITACION" Multiplicity="0..1" />
+    <End Role="HUESPED" Type="Self.HUESPED" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="HABITACION">
+        <PropertyRef Name="IDHABITACION" />
+      </Principal>
+      <Dependent Role="HUESPED">
+        <PropertyRef Name="HABITACION" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="PRODUCTO_TIPOPRODU_DD6D32AA_F">
+    <End Role="TIPOPRODUCTO" Type="Self.TIPOPRODUCTO" Multiplicity="1" />
+    <End Role="PRODUCTO" Type="Self.PRODUCTO" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TIPOPRODUCTO">
+        <PropertyRef Name="IDTIPO" />
+      </Principal>
+      <Dependent Role="PRODUCTO">
+        <PropertyRef Name="TIPOPRODUCTO" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="PROVEEDOR_USUARIO_3F5E0683_F">
+    <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="1" />
+    <End Role="PROVEEDOR" Type="Self.PROVEEDOR" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="USUARIO">
+        <PropertyRef Name="IDUSUARIO" />
+      </Principal>
+      <Dependent Role="PROVEEDOR">
+        <PropertyRef Name="USUARIO" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="SERVICIOC_TIPOSERVI_63450BEB_F">
+    <End Role="TIPOSERVICIO" Type="Self.TIPOSERVICIO" Multiplicity="1" />
+    <End Role="SERVICIOCOMEDOR" Type="Self.SERVICIOCOMEDOR" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TIPOSERVICIO">
+        <PropertyRef Name="IDTIPO" />
+      </Principal>
+      <Dependent Role="SERVICIOCOMEDOR">
+        <PropertyRef Name="TIPOSERVICIO" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="USUARIO_TIPOUSUAR_08AF3864_F">
+    <End Role="TIPOUSUARIO" Type="Self.TIPOUSUARIO" Multiplicity="1" />
+    <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TIPOUSUARIO">
+        <PropertyRef Name="IDTIPOUSUARIO" />
+      </Principal>
+      <Dependent Role="USUARIO">
+        <PropertyRef Name="TIPOUSUARIO" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="ADMINISTRADOR" EntityType="Self.ADMINISTRADOR" />
+    <EntitySet Name="AUTH_GROUP" EntityType="Self.AUTH_GROUP" />
+    <EntitySet Name="AUTH_GROUP_PERMISSIONS" EntityType="Self.AUTH_GROUP_PERMISSIONS" />
+    <EntitySet Name="AUTH_PERMISSION" EntityType="Self.AUTH_PERMISSION" />
+    <EntitySet Name="AUTH_USER" EntityType="Self.AUTH_USER" />
+    <EntitySet Name="AUTH_USER_GROUPS" EntityType="Self.AUTH_USER_GROUPS" />
+    <EntitySet Name="AUTH_USER_USER_PERMISSIONS" EntityType="Self.AUTH_USER_USER_PERMISSIONS" />
+    <EntitySet Name="CLIENTE" EntityType="Self.CLIENTE" />
+    <EntitySet Name="DETALLEFACTURA" EntityType="Self.DETALLEFACTURA" />
+    <EntitySet Name="DETALLEPEDIDO" EntityType="Self.DETALLEPEDIDO" />
+    <EntitySet Name="DJANGO_ADMIN_LOG" EntityType="Self.DJANGO_ADMIN_LOG" />
+    <EntitySet Name="DJANGO_CONTENT_TYPE" EntityType="Self.DJANGO_CONTENT_TYPE" />
+    <EntitySet Name="DJANGO_MIGRATIONS" EntityType="Self.DJANGO_MIGRATIONS" />
+    <EntitySet Name="DJANGO_SESSION" EntityType="Self.DJANGO_SESSION" />
+    <EntitySet Name="EMPLEADO" EntityType="Self.EMPLEADO" />
+    <EntitySet Name="ESTADOFACTURA" EntityType="Self.ESTADOFACTURA" />
+    <EntitySet Name="ESTADOHABITACION" EntityType="Self.ESTADOHABITACION" />
+    <EntitySet Name="ESTADOPEDIDO" EntityType="Self.ESTADOPEDIDO" />
+    <EntitySet Name="FACTURA" EntityType="Self.FACTURA" />
+    <EntitySet Name="HABITACION" EntityType="Self.HABITACION" />
+    <EntitySet Name="HUESPED" EntityType="Self.HUESPED" />
+    <EntitySet Name="PEDIDO" EntityType="Self.PEDIDO" />
+    <EntitySet Name="PRODUCTO" EntityType="Self.PRODUCTO" />
+    <EntitySet Name="PROVEEDOR" EntityType="Self.PROVEEDOR" />
+    <EntitySet Name="RECEPCIONPRODUCTO" EntityType="Self.RECEPCIONPRODUCTO" />
+    <EntitySet Name="SERVICIOCOMEDOR" EntityType="Self.SERVICIOCOMEDOR" />
+    <EntitySet Name="TIPOPRODUCTO" EntityType="Self.TIPOPRODUCTO" />
+    <EntitySet Name="TIPOSERVICIO" EntityType="Self.TIPOSERVICIO" />
+    <EntitySet Name="TIPOUSUARIO" EntityType="Self.TIPOUSUARIO" />
+    <EntitySet Name="USUARIO" EntityType="Self.USUARIO" />
+    <AssociationSet Name="ADMINISTR_USUARIO_C44AF74E_F" Association="Self.ADMINISTR_USUARIO_C44AF74E_F">
+      <End Role="USUARIO" EntitySet="USUARIO" />
+      <End Role="ADMINISTRADOR" EntitySet="ADMINISTRADOR" />
+    </AssociationSet>
+    <AssociationSet Name="HABITACIO_ADMINISTR_00974E7C_F" Association="Self.HABITACIO_ADMINISTR_00974E7C_F">
+      <End Role="ADMINISTRADOR" EntitySet="ADMINISTRADOR" />
+      <End Role="HABITACION" EntitySet="HABITACION" />
+    </AssociationSet>
+    <AssociationSet Name="PRODUCTO_ADMINISTR_3A195E25_F" Association="Self.PRODUCTO_ADMINISTR_3A195E25_F">
+      <End Role="ADMINISTRADOR" EntitySet="ADMINISTRADOR" />
+      <End Role="PRODUCTO" EntitySet="PRODUCTO" />
+    </AssociationSet>
+    <AssociationSet Name="SERVICIOC_ADMINISTR_DD5C602B_F" Association="Self.SERVICIOC_ADMINISTR_DD5C602B_F">
+      <End Role="ADMINISTRADOR" EntitySet="ADMINISTRADOR" />
+      <End Role="SERVICIOCOMEDOR" EntitySet="SERVICIOCOMEDOR" />
+    </AssociationSet>
+    <AssociationSet Name="AUTH_GROU_GROUP_ID_B120CBF9_F" Association="Self.AUTH_GROU_GROUP_ID_B120CBF9_F">
+      <End Role="AUTH_GROUP" EntitySet="AUTH_GROUP" />
+      <End Role="AUTH_GROUP_PERMISSIONS" EntitySet="AUTH_GROUP_PERMISSIONS" />
+    </AssociationSet>
+    <AssociationSet Name="AUTH_USER_GROUP_ID_97559544_F" Association="Self.AUTH_USER_GROUP_ID_97559544_F">
+      <End Role="AUTH_GROUP" EntitySet="AUTH_GROUP" />
+      <End Role="AUTH_USER_GROUPS" EntitySet="AUTH_USER_GROUPS" />
+    </AssociationSet>
+    <AssociationSet Name="AUTH_GROU_PERMISSIO_84C5C92E_F" Association="Self.AUTH_GROU_PERMISSIO_84C5C92E_F">
+      <End Role="AUTH_PERMISSION" EntitySet="AUTH_PERMISSION" />
+      <End Role="AUTH_GROUP_PERMISSIONS" EntitySet="AUTH_GROUP_PERMISSIONS" />
+    </AssociationSet>
+    <AssociationSet Name="AUTH_PERM_CONTENT_T_2F476E4B_F" Association="Self.AUTH_PERM_CONTENT_T_2F476E4B_F">
+      <End Role="DJANGO_CONTENT_TYPE" EntitySet="DJANGO_CONTENT_TYPE" />
+      <End Role="AUTH_PERMISSION" EntitySet="AUTH_PERMISSION" />
+    </AssociationSet>
+    <AssociationSet Name="AUTH_USER_PERMISSIO_1FBB5F2C_F" Association="Self.AUTH_USER_PERMISSIO_1FBB5F2C_F">
+      <End Role="AUTH_PERMISSION" EntitySet="AUTH_PERMISSION" />
+      <End Role="AUTH_USER_USER_PERMISSIONS" EntitySet="AUTH_USER_USER_PERMISSIONS" />
+    </AssociationSet>
+    <AssociationSet Name="AUTH_USER_USER_ID_6A12ED8B_F" Association="Self.AUTH_USER_USER_ID_6A12ED8B_F">
+      <End Role="AUTH_USER" EntitySet="AUTH_USER" />
+      <End Role="AUTH_USER_GROUPS" EntitySet="AUTH_USER_GROUPS" />
+    </AssociationSet>
+    <AssociationSet Name="AUTH_USER_USER_ID_A95EAD1B_F" Association="Self.AUTH_USER_USER_ID_A95EAD1B_F">
+      <End Role="AUTH_USER" EntitySet="AUTH_USER" />
+      <End Role="AUTH_USER_USER_PERMISSIONS" EntitySet="AUTH_USER_USER_PERMISSIONS" />
+    </AssociationSet>
+    <AssociationSet Name="DJANGO_AD_USER_ID_C564EBA6_F" Association="Self.DJANGO_AD_USER_ID_C564EBA6_F">
+      <End Role="AUTH_USER" EntitySet="AUTH_USER" />
+      <End Role="DJANGO_ADMIN_LOG" EntitySet="DJANGO_ADMIN_LOG" />
+    </AssociationSet>
+    <AssociationSet Name="CLIENTE_USUARIO_2A0AFF91_F" Association="Self.CLIENTE_USUARIO_2A0AFF91_F">
+      <End Role="USUARIO" EntitySet="USUARIO" />
+      <End Role="CLIENTE" EntitySet="CLIENTE" />
+    </AssociationSet>
+    <AssociationSet Name="FACTURA_CLIENTE_1F922B53_F" Association="Self.FACTURA_CLIENTE_1F922B53_F">
+      <End Role="CLIENTE" EntitySet="CLIENTE" />
+      <End Role="FACTURA" EntitySet="FACTURA" />
+    </AssociationSet>
+    <AssociationSet Name="HUESPED_CLIENTE_3B269659_F" Association="Self.HUESPED_CLIENTE_3B269659_F">
+      <End Role="CLIENTE" EntitySet="CLIENTE" />
+      <End Role="HUESPED" EntitySet="HUESPED" />
+    </AssociationSet>
+    <AssociationSet Name="DETALLEFA_FACTURA_6C00E66A_F" Association="Self.DETALLEFA_FACTURA_6C00E66A_F">
+      <End Role="FACTURA" EntitySet="FACTURA" />
+      <End Role="DETALLEFACTURA" EntitySet="DETALLEFACTURA" />
+    </AssociationSet>
+    <AssociationSet Name="DETALLEFA_HUESPED_0AA7CAD7_F" Association="Self.DETALLEFA_HUESPED_0AA7CAD7_F">
+      <End Role="HUESPED" EntitySet="HUESPED" />
+      <End Role="DETALLEFACTURA" EntitySet="DETALLEFACTURA" />
+    </AssociationSet>
+    <AssociationSet Name="DETALLEFA_SERVICIOC_7578D43B_F" Association="Self.DETALLEFA_SERVICIOC_7578D43B_F">
+      <End Role="SERVICIOCOMEDOR" EntitySet="SERVICIOCOMEDOR" />
+      <End Role="DETALLEFACTURA" EntitySet="DETALLEFACTURA" />
+    </AssociationSet>
+    <AssociationSet Name="DETALLEPE_PEDIDO_423F3663_F" Association="Self.DETALLEPE_PEDIDO_423F3663_F">
+      <End Role="PEDIDO" EntitySet="PEDIDO" />
+      <End Role="DETALLEPEDIDO" EntitySet="DETALLEPEDIDO" />
+    </AssociationSet>
+    <AssociationSet Name="DETALLEPE_PRODUCTO_7CA5AE6C_F" Association="Self.DETALLEPE_PRODUCTO_7CA5AE6C_F">
+      <End Role="PRODUCTO" EntitySet="PRODUCTO" />
+      <End Role="DETALLEPEDIDO" EntitySet="DETALLEPEDIDO" />
+    </AssociationSet>
+    <AssociationSet Name="DETALLEPE_PROVEEDOR_F21117C8_F" Association="Self.DETALLEPE_PROVEEDOR_F21117C8_F">
+      <End Role="PROVEEDOR" EntitySet="PROVEEDOR" />
+      <End Role="DETALLEPEDIDO" EntitySet="DETALLEPEDIDO" />
+    </AssociationSet>
+    <AssociationSet Name="RECEPCION_DETALLEPE_90BD07EF_F" Association="Self.RECEPCION_DETALLEPE_90BD07EF_F">
+      <End Role="DETALLEPEDIDO" EntitySet="DETALLEPEDIDO" />
+      <End Role="RECEPCIONPRODUCTO" EntitySet="RECEPCIONPRODUCTO" />
+    </AssociationSet>
+    <AssociationSet Name="DJANGO_AD_CONTENT_T_C4BCE8EB_F" Association="Self.DJANGO_AD_CONTENT_T_C4BCE8EB_F">
+      <End Role="DJANGO_CONTENT_TYPE" EntitySet="DJANGO_CONTENT_TYPE" />
+      <End Role="DJANGO_ADMIN_LOG" EntitySet="DJANGO_ADMIN_LOG" />
+    </AssociationSet>
+    <AssociationSet Name="EMPLEADO_USUARIO_32C0FEA5_F" Association="Self.EMPLEADO_USUARIO_32C0FEA5_F">
+      <End Role="USUARIO" EntitySet="USUARIO" />
+      <End Role="EMPLEADO" EntitySet="EMPLEADO" />
+    </AssociationSet>
+    <AssociationSet Name="PEDIDO_EMPLEADO_85C2FEE2_F" Association="Self.PEDIDO_EMPLEADO_85C2FEE2_F">
+      <End Role="EMPLEADO" EntitySet="EMPLEADO" />
+      <End Role="PEDIDO" EntitySet="PEDIDO" />
+    </AssociationSet>
+    <AssociationSet Name="RECEPCION_EMPLEADO_5785D66A_F" Association="Self.RECEPCION_EMPLEADO_5785D66A_F">
+      <End Role="EMPLEADO" EntitySet="EMPLEADO" />
+      <End Role="RECEPCIONPRODUCTO" EntitySet="RECEPCIONPRODUCTO" />
+    </AssociationSet>
+    <AssociationSet Name="FACTURA_ESTADOFAC_E403AD61_F" Association="Self.FACTURA_ESTADOFAC_E403AD61_F">
+      <End Role="ESTADOFACTURA" EntitySet="ESTADOFACTURA" />
+      <End Role="FACTURA" EntitySet="FACTURA" />
+    </AssociationSet>
+    <AssociationSet Name="HABITACIO_ESTADOHAB_DA8D1F4D_F" Association="Self.HABITACIO_ESTADOHAB_DA8D1F4D_F">
+      <End Role="ESTADOHABITACION" EntitySet="ESTADOHABITACION" />
+      <End Role="HABITACION" EntitySet="HABITACION" />
+    </AssociationSet>
+    <AssociationSet Name="PEDIDO_ESTADOPED_C7F4A57A_F" Association="Self.PEDIDO_ESTADOPED_C7F4A57A_F">
+      <End Role="ESTADOPEDIDO" EntitySet="ESTADOPEDIDO" />
+      <End Role="PEDIDO" EntitySet="PEDIDO" />
+    </AssociationSet>
+    <AssociationSet Name="HUESPED_HABITACIO_99B8D120_F" Association="Self.HUESPED_HABITACIO_99B8D120_F">
+      <End Role="HABITACION" EntitySet="HABITACION" />
+      <End Role="HUESPED" EntitySet="HUESPED" />
+    </AssociationSet>
+    <AssociationSet Name="PRODUCTO_TIPOPRODU_DD6D32AA_F" Association="Self.PRODUCTO_TIPOPRODU_DD6D32AA_F">
+      <End Role="TIPOPRODUCTO" EntitySet="TIPOPRODUCTO" />
+      <End Role="PRODUCTO" EntitySet="PRODUCTO" />
+    </AssociationSet>
+    <AssociationSet Name="PROVEEDOR_USUARIO_3F5E0683_F" Association="Self.PROVEEDOR_USUARIO_3F5E0683_F">
+      <End Role="USUARIO" EntitySet="USUARIO" />
+      <End Role="PROVEEDOR" EntitySet="PROVEEDOR" />
+    </AssociationSet>
+    <AssociationSet Name="SERVICIOC_TIPOSERVI_63450BEB_F" Association="Self.SERVICIOC_TIPOSERVI_63450BEB_F">
+      <End Role="TIPOSERVICIO" EntitySet="TIPOSERVICIO" />
+      <End Role="SERVICIOCOMEDOR" EntitySet="SERVICIOCOMEDOR" />
+    </AssociationSet>
+    <AssociationSet Name="USUARIO_TIPOUSUAR_08AF3864_F" Association="Self.USUARIO_TIPOUSUAR_08AF3864_F">
+      <End Role="TIPOUSUARIO" EntitySet="TIPOUSUARIO" />
+      <End Role="USUARIO" EntitySet="USUARIO" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>

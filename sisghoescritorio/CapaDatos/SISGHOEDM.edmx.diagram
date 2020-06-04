@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="fb85afc0338347158b1e3f04e77ebe56" Name="Diagram1">
+        <EntityTypeShape EntityType="Model.ADMINISTRADOR" Width="1.5" PointX="5.25" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.AUTH_GROUP" Width="1.5" PointX="9.75" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.AUTH_GROUP_PERMISSIONS" Width="1.5" PointX="12" PointY="22.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.AUTH_PERMISSION" Width="1.5" PointX="9.75" PointY="23.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.AUTH_USER" Width="1.5" PointX="9.75" PointY="18.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.AUTH_USER_GROUPS" Width="1.5" PointX="12" PointY="19.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.AUTH_USER_USER_PERMISSIONS" Width="1.5" PointX="12" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.CLIENTE" Width="1.5" PointX="5.25" PointY="10.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.DETALLEFACTURA" Width="1.5" PointX="13" PointY="7.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.DETALLEPEDIDO" Width="1.5" PointX="12.75" PointY="11.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.DJANGO_ADMIN_LOG" Width="1.5" PointX="15" PointY="19.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.DJANGO_CONTENT_TYPE" Width="1.5" PointX="7.5" PointY="23.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.DJANGO_MIGRATIONS" Width="1.5" PointX="0.75" PointY="2" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.DJANGO_SESSION" Width="1.5" PointX="0.75" PointY="5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.EMPLEADO" Width="1.5" PointX="5.25" PointY="14.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.ESTADOFACTURA" Width="1.5" PointX="5.25" PointY="21" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.ESTADOHABITACION" Width="1.5" PointX="5.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.ESTADOPEDIDO" Width="1.5" PointX="5.25" PointY="24.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.FACTURA" Width="1.5" PointX="7.5" PointY="11.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.HABITACION" Width="1.5" PointX="7.5" PointY="7.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.HUESPED" Width="1.5" PointX="9.75" PointY="11.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.PEDIDO" Width="1.5" PointX="7.5" PointY="14.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.PRODUCTO" Width="1.5" PointX="10.5" PointY="7.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.PROVEEDOR" Width="1.5" PointX="5.25" PointY="16.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.RECEPCIONPRODUCTO" Width="1.5" PointX="15" PointY="12.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.SERVICIOCOMEDOR" Width="1.5" PointX="7.5" PointY="3.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TIPOPRODUCTO" Width="1.5" PointX="8.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TIPOSERVICIO" Width="1.5" PointX="5.25" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.TIPOUSUARIO" Width="1.5" PointX="0.75" PointY="12.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="Model.USUARIO" Width="1.5" PointX="3" PointY="11.5" IsExpanded="true" />
+        <AssociationConnector Association="Model.ADMINISTR_USUARIO_C44AF74E_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.HABITACIO_ADMINISTR_00974E7C_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.PRODUCTO_ADMINISTR_3A195E25_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.SERVICIOC_ADMINISTR_DD5C602B_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.AUTH_GROU_GROUP_ID_B120CBF9_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.AUTH_USER_GROUP_ID_97559544_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.AUTH_GROU_PERMISSIO_84C5C92E_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.AUTH_PERM_CONTENT_T_2F476E4B_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.AUTH_USER_PERMISSIO_1FBB5F2C_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.AUTH_USER_USER_ID_6A12ED8B_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.AUTH_USER_USER_ID_A95EAD1B_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.DJANGO_AD_USER_ID_C564EBA6_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.CLIENTE_USUARIO_2A0AFF91_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FACTURA_CLIENTE_1F922B53_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.HUESPED_CLIENTE_3B269659_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.DETALLEFA_FACTURA_6C00E66A_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.DETALLEFA_HUESPED_0AA7CAD7_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.DETALLEFA_SERVICIOC_7578D43B_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.DETALLEPE_PEDIDO_423F3663_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.DETALLEPE_PRODUCTO_7CA5AE6C_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.DETALLEPE_PROVEEDOR_F21117C8_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.RECEPCION_DETALLEPE_90BD07EF_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.DJANGO_AD_CONTENT_T_C4BCE8EB_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.EMPLEADO_USUARIO_32C0FEA5_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.PEDIDO_EMPLEADO_85C2FEE2_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.RECEPCION_EMPLEADO_5785D66A_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.FACTURA_ESTADOFAC_E403AD61_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.HABITACIO_ESTADOHAB_DA8D1F4D_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.PEDIDO_ESTADOPED_C7F4A57A_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.HUESPED_HABITACIO_99B8D120_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.PRODUCTO_TIPOPRODU_DD6D32AA_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.PROVEEDOR_USUARIO_3F5E0683_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.SERVICIOC_TIPOSERVI_63450BEB_F" ManuallyRouted="false" />
+        <AssociationConnector Association="Model.USUARIO_TIPOUSUAR_08AF3864_F" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

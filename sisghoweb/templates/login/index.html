@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+   
+    <title>ENTEL - Login</title>
+</head>
+
+<body>
+
+    <form method="POST" class="form-signin">
+            {% csrf_token %}
+        <h1 class="h3 mb-3 font-weight-normal">Ingresar al Dashboard</h1>
+        <label for="username" class="sr-only">Usuario</label>
+        <input type="text"  class="form-control" placeholder="Correo Electronico" name="username" required autofocus>
+        <label for="password" class="sr-only">Contraseña</label>
+        <input type="password" name="password" class="form-control" placeholder="Contraseña" required>
+     
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Ingresar</button>
+        <p class="mt-5 mb-3 text-muted">&copy;DuocUC 2019</p>
+      </form>
+
+
+</body>
+
+</html>
