@@ -133,8 +133,10 @@
     <Compile Include="ServiceEmpleado.cs" />
     <Compile Include="ServiceHabitacion.cs" />
     <Compile Include="ServiceEstadoHabitacion.cs" />
+    <Compile Include="ServiceProducto.cs" />
     <Compile Include="ServiceProveedor.cs" />
     <Compile Include="ServiceServicioComedor.cs" />
+    <Compile Include="ServiceTipoProducto.cs" />
     <Compile Include="ServiceTipoServicio.cs" />
     <Compile Include="ServiceTipoUsuario.cs" />
     <Compile Include="ServiceUsuario.cs" />

@@ -45,6 +45,7 @@
             this.btnMaxApp = new System.Windows.Forms.PictureBox();
             this.btnSalirApp = new System.Windows.Forms.PictureBox();
             this.panelFormularios = new System.Windows.Forms.Panel();
+            this.btnProducto = new System.Windows.Forms.Button();
             this.panelMenu.SuspendLayout();
             this.panelLogo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoApp)).BeginInit();
@@ -57,6 +58,7 @@
             // panelMenu
             // 
             this.panelMenu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(31)))), ((int)(((byte)(96)))));
+            this.panelMenu.Controls.Add(this.btnProducto);
             this.panelMenu.Controls.Add(this.btnProveedor);
             this.panelMenu.Controls.Add(this.btnComedor);
             this.panelMenu.Controls.Add(this.btnHabitaciones);
@@ -76,7 +78,7 @@
             this.btnProveedor.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnProveedor.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnProveedor.ForeColor = System.Drawing.Color.White;
-            this.btnProveedor.Image = global::CapaPresentacion.Properties.Resources.factura;
+            this.btnProveedor.Image = global::CapaPresentacion.Properties.Resources.users;
             this.btnProveedor.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.btnProveedor.Location = new System.Drawing.Point(0, 330);
             this.btnProveedor.Name = "btnProveedor";
@@ -278,6 +280,23 @@
             this.panelFormularios.Size = new System.Drawing.Size(856, 506);
             this.panelFormularios.TabIndex = 2;
             // 
+            // btnProducto
+            // 
+            this.btnProducto.Dock = System.Windows.Forms.DockStyle.Top;
+            this.btnProducto.FlatAppearance.BorderSize = 0;
+            this.btnProducto.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnProducto.Font = new System.Drawing.Font("Century Gothic", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnProducto.ForeColor = System.Drawing.Color.White;
+            this.btnProducto.Image = global::CapaPresentacion.Properties.Resources.factura;
+            this.btnProducto.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnProducto.Location = new System.Drawing.Point(0, 380);
+            this.btnProducto.Name = "btnProducto";
+            this.btnProducto.Size = new System.Drawing.Size(224, 50);
+            this.btnProducto.TabIndex = 6;
+            this.btnProducto.Text = "Producto";
+            this.btnProducto.UseVisualStyleBackColor = true;
+            this.btnProducto.Click += new System.EventHandler(this.btnProducto_Click);
+            // 
             // App
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -322,5 +341,6 @@
         private System.Windows.Forms.Label label1;
         private Microsoft.VisualBasic.PowerPacks.ShapeContainer shapeContainer1;
         private Microsoft.VisualBasic.PowerPacks.LineShape Separador;
+        private System.Windows.Forms.Button btnProducto;
     }
 }
