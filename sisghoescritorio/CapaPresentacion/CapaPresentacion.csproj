@@ -131,6 +131,30 @@
     <Compile Include="Modulos\Habitacion\ModificarHabitacion.Designer.cs">
       <DependentUpon>ModificarHabitacion.cs</DependentUpon>
     </Compile>
+    <Compile Include="Modulos\Producto\AgregarProducto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modulos\Producto\AgregarProducto.Designer.cs">
+      <DependentUpon>AgregarProducto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modulos\Producto\AgregarTipo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modulos\Producto\AgregarTipo.Designer.cs">
+      <DependentUpon>AgregarTipo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modulos\Producto\FormularioProducto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modulos\Producto\FormularioProducto.Designer.cs">
+      <DependentUpon>FormularioProducto.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Modulos\Producto\ModificarProducto.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Modulos\Producto\ModificarProducto.Designer.cs">
+      <DependentUpon>ModificarProducto.cs</DependentUpon>
+    </Compile>
     <Compile Include="Modulos\Proveedor\AgregarProveedor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -213,6 +237,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Modulos\Habitacion\ModificarHabitacion.resx">
       <DependentUpon>ModificarHabitacion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modulos\Producto\AgregarProducto.resx">
+      <DependentUpon>AgregarProducto.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modulos\Producto\AgregarTipo.resx">
+      <DependentUpon>AgregarTipo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modulos\Producto\FormularioProducto.resx">
+      <DependentUpon>FormularioProducto.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Modulos\Producto\ModificarProducto.resx">
+      <DependentUpon>ModificarProducto.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Modulos\Proveedor\AgregarProveedor.resx">
       <DependentUpon>AgregarProveedor.cs</DependentUpon>
@@ -306,8 +342,6 @@
   <ItemGroup>
     <None Include="Resources\seguridad.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Modulos\Facturas\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

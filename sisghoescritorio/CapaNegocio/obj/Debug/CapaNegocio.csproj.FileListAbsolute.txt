@@ -72,3 +72,19 @@ E:\Portafolio\IT 2\SISGHO\SISGHO\CapaNegocio\bin\Debug\CapaDatos.dll.config
 E:\Portafolio\IT 2\SISGHO\SISGHO\CapaNegocio\bin\Debug\PBKDF2.NET.xml
 E:\Portafolio\IT 2\SISGHO\SISGHO\CapaNegocio\bin\Debug\EntityFramework.xml
 E:\Portafolio\IT 2\SISGHO\SISGHO\CapaNegocio\obj\Debug\CapaNegocio.csproj.CopyComplete
+E:\Portafolio\sisgho-portafolio\sisghoescritorio\CapaNegocio\bin\Debug\CapaNegocio.dll.config
+E:\Portafolio\sisgho-portafolio\sisghoescritorio\CapaNegocio\bin\Debug\CapaNegocio.dll
+E:\Portafolio\sisgho-portafolio\sisghoescritorio\CapaNegocio\bin\Debug\CapaNegocio.pdb
+E:\Portafolio\sisgho-portafolio\sisghoescritorio\CapaNegocio\bin\Debug\CapaDatos.dll
+E:\Portafolio\sisgho-portafolio\sisghoescritorio\CapaNegocio\bin\Debug\Oracle.ManagedDataAccess.dll
+E:\Portafolio\sisgho-portafolio\sisghoescritorio\CapaNegocio\bin\Debug\PBKDF2.NET.dll
+E:\Portafolio\sisgho-portafolio\sisghoescritorio\CapaNegocio\bin\Debug\EntityFramework.dll
+E:\Portafolio\sisgho-portafolio\sisghoescritorio\CapaNegocio\bin\Debug\CapaDatos.pdb
+E:\Portafolio\sisgho-portafolio\sisghoescritorio\CapaNegocio\bin\Debug\CapaDatos.dll.config
+E:\Portafolio\sisgho-portafolio\sisghoescritorio\CapaNegocio\bin\Debug\PBKDF2.NET.xml
+E:\Portafolio\sisgho-portafolio\sisghoescritorio\CapaNegocio\bin\Debug\EntityFramework.xml
+E:\Portafolio\sisgho-portafolio\sisghoescritorio\CapaNegocio\obj\Debug\CapaNegocio.csprojAssemblyReference.cache
+E:\Portafolio\sisgho-portafolio\sisghoescritorio\CapaNegocio\obj\Debug\CapaNegocio.csproj.CoreCompileInputs.cache
+E:\Portafolio\sisgho-portafolio\sisghoescritorio\CapaNegocio\obj\Debug\CapaNegocio.csproj.CopyComplete
+E:\Portafolio\sisgho-portafolio\sisghoescritorio\CapaNegocio\obj\Debug\CapaNegocio.dll
+E:\Portafolio\sisgho-portafolio\sisghoescritorio\CapaNegocio\obj\Debug\CapaNegocio.pdb
