@@ -87,8 +87,12 @@ class Cliente(models.Model):
     telefono = models.IntegerField()
     usuario = models.ForeignKey('Usuario', models.DO_NOTHING, db_column='usuario')
 
+    def __str__(self):
+        return self.nombre
+
     class Meta:
         db_table = 'cliente'
+
 
 
 class Detallefactura(models.Model):
@@ -177,7 +181,7 @@ class Huesped(models.Model):
     rut = models.CharField(max_length=11)
     cliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='cliente')
     habitacion = models.ForeignKey(Habitacion, models.DO_NOTHING, db_column='habitacion', blank=True, null=True)
-    fechadesde = models.DateField()
+    fechadesde = models.DateField(blank=True, null=True)
     fechahasta = models.DateField(blank=True, null=True)
 
     class Meta:

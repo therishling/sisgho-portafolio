@@ -1,5 +1,12 @@
-dashboard
-{%if user.tipousuario.idtipousuario == 1%}
-Chupalo karol dance
-{%endif%}
-{{ user.tipousuario.idtipousuario }}
+
+{% extends 'dashboard/base.html' %}
+<!-- Titulo de la pagina -->
+{%block title%} Dashboard {%endblock%}
+
+
+<!-- Contenido -->
+{%block titulo_seccion%} Dashboard {%endblock%}
+
+{%block contenido%}
+Contenido Pagina Principal
+{%endblock%}

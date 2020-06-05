@@ -1,0 +1,125 @@
+{%load static%}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>Doña Clarita - {%block title%} Document {%endblock%}</title>
+
+  <!-- Estilos-->
+
+  <link rel="stylesheet" href="{% static 'css/bootstrapdash.css' %}">
+  <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css">
+
+
+
+  <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.7.0/css/all.css"
+    integrity="sha384-6jHF7Z3XI3fF4XZixAuSu0gGKrXwoX/w3uFPxC56OtjChio7wtTGJWRW53Nhx6Ev" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+  <div class="d-flex" id="wrapper">
+
+    <!-- Menu Lateral -->
+
+    <div class="bg-sidebard border-right menulateral" id="sidebar-wrapper">
+      <div class="sidebar-heading">Doña Clarita </div>
+      <div class="list-group list-group-flush ">
+        {%if user.tipousuario.idtipousuario == 3 %}
+        {% include 'menu/cliente.html' %}
+        {%endif%}
+        {%if user.tipousuario.idtipousuario == 2 or user.tipousuario.idtipousuario == 1%}
+        {% include 'menu/empleado.html' %}
+        {%endif%}
+
+      </div>
+      <div class="dropdown-divider"></div>
+
+
+    </div>
+    <!--  -->
+
+    <!-- Contenido-->
+    <div id="page-content-wrapper">
+
+      <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+
+        <button class="btn btn-primary menuboton" id="menu-toggle"><i class="fa fa-bars"></i></button>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+              <span class='nav-link'>Bienvenido {{user.nombre}}</span>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                  <a class="dropdown-item" href="#">Perfil</a>
+                  <a class="dropdown-item" href="#">Cambiar Contraseña</a>
+                <a class="dropdown-item" href="{% url 'logout' %}">Salir</a>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="container-fluid">
+        <div class="col-md-12 secciontitulo">
+          <h1 class="">{%block titulo_seccion%} Titulo Seccion {%endblock%}</h1>
+
+        </div>
+        <div class="dropdown-divider"></div>
+        <div class="col-md-12 mx-auto contenido-estilo">
+          {%block contenido%}
+          Contenido
+          {%endblock%}
+        </div>
+      </div>
+    </div>
+    <!-- -->
+
+  </div>
+
+
+  <!-- JS -->
+  <!-- js-->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.js"></script>
+  <script src="{% static 'js/bootstrap.min.js' %}"></script>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
+  </script>
+  <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+
+  <!-- Esconder Menu -->
+  <script>
+    $("#menu-toggle").click(function (e) {
+      e.preventDefault();
+      $("#wrapper").toggleClass("toggled");
+    });
+  </script>
+
+{%block scripts%}
+sadf
+
+{%endblock%}
+</body>
+
+</html>
