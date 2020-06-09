@@ -1,0 +1,195 @@
+{% extends 'dashboard/base.html' %}
+<!-- Titulo de la pagina -->
+{%block title%} Asignar Habitacion {%endblock%}
+
+
+<!-- Contenido -->
+{%block titulo_seccion%} Lista Huespedes {%endblock%}
+
+{%block contenido%}
+{% if messages %}
+
+{% for message in messages %}
+<div class="alert alert-success" role="alert">
+    {{ message }}
+</div>
+
+{% endfor %}
+
+{% endif %}
+{% if form.errors %}
+{% for field in form %}
+{% if field.errors %}
+{% for error in field.errors %}
+<div class="alert alert-danger" role="alert">
+    {{ error|escape }}
+</div>
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+<div class="form-group">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+        </div>
+        <input type="text" class="form-control" placeholder="Buscar" id="buscar" required>
+    </div>
+</div>
+<table class="table">
+    <thead class="thead-entel">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Giro</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Cliente</th>
+            <th scope="col">Estado Factura</th>
+            <th scope="col">Opciones</th>
+        </tr>
+    </thead>
+    <tbody id="tabla">
+        {%if facturas %}
+        {% for factura in facturas %}
+        <tr>
+
+            <th scope="row">{{factura.idfactura}}</th>
+            <td>{{factura.giro}}</td>
+            <td>{{factura.fechafactura|date:'Y-m-d'}}</td>
+            <td>{{factura.cliente}}</td>
+            <td>{{factura.estadofactura.descripcion}}</td>
+            <td>
+                {%if factura.estadofactura.idestado == 1 %}
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#detalleModal{{factura.idfactura}}">
+                    <i class="fas fa-wallet"></i>
+                </button>
+                {% else %}
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#reservaModal{{huesped.idhuesped}}">
+                    <i class="fas fa-edit"></i>
+                </button>
+                {% endif %}
+
+
+
+                <div class="modal fade" id="detalleModal{{factura.idfactura}}">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Detalle de la factura: {{factura.idfactura}} </h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+
+
+
+
+                            <form 
+                                action="{% url 'pago factura' factura.idfactura %}" 
+                                method="GET">
+                                {% csrf_token %}
+                                <!-- Modal body -->
+
+
+                                <div class="modal-body">
+                                    <table class="table" id="table{{factura.idfactura}}">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Huesped</th>
+                                                <th scope="col">Servicio</th>
+                                                <th scope="col">Cantidad</th>
+                                                <th scope="col">Costo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for detalle in detalles %}
+                                            {%if detalle.factura.idfactura == factura.idfactura%}
+                                            <tr>
+                                                <th scope="row">{{detalle.iddetalle}}</th>
+                                                <td>{{detalle.huesped}}</td>
+                                                {%if detalle.detallereserva == null %}
+                                                <td>{{detalle.solicitudcompra}}</td>
+                                                <td>{{detalle.solicitudcompra.cantidad}}</td>
+                                                {%else%}
+                                                <td>{{detalle.detallereserva}}</td>
+                                                <td>{{detalle.detallereserva.dias}} Dias</td>
+                                                {%endif%}
+                                                <td>${{detalle.total}}</td>
+                                            </tr>
+                                            {%endif%}
+                                            {%endfor%}
+                                        </tbody>
+                                    </table>
+                                    <h3 id="totalFactura{{factura.idfactura}}">0 </h3>
+
+
+                                </div>
+                                <!-- Modal footer  -->
+                                <div class="modal-footer">
+                                    <button type="submit" class="btn btn-primary">Pagar</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                </div>
+                            </form>
+
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </td>
+        </tr>
+
+        {% endfor %}
+        {% else %}
+        <h1>No existen registros</h1>
+        {% endif %}
+
+    </tbody>
+
+</table>
+
+{%endblock%}
+
+{%block scripts%}
+
+<script>
+    $(document).ready(function () {
+
+        $("#buscar").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#tabla tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+{%for factura in facturas %}
+
+<script>
+    calculartotal();
+
+    function calculartotal() {
+        var total = 0;
+        var e = "";
+        var res = "";
+        
+        for (let index = 1; index < document.getElementById("table{{factura.idfactura}}").rows.length; index++) {
+            e = document.getElementById("table{{factura.idfactura}}").rows[index].cells.item(4).innerHTML
+            res = e.split("$");
+            total = total + parseInt(res[1]);
+            console.log(total);
+            document.getElementById('totalFactura{{factura.idfactura}}').innerHTML = "Total: $"+ total;
+        }
+        
+    }
+</script>
+
+{%endfor%}
+{%endblock%}

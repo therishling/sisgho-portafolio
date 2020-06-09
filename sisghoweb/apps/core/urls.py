@@ -18,5 +18,8 @@ urlpatterns = [
     path('dashboard/solicitud-compra', login_required(vista.SolicitudCompra.as_view()) ,name='nueva solicitud compra'),
     path('dashboard/emitir-factura', login_required(vista.ListarClientesFactura.as_view()) ,name='emitir factura'),
     re_path(r'^dashboard/emitir-factura/(?P<pk>\d+)/$', login_required(vista.EmitirFactura.as_view()) ,name='emitir factura form'),
+    path('dashboard/listar-facturas-emitidas', login_required(vista.ListarFacturasEmitidas.as_view()) ,name='listar facturas emitidas'),
+    re_path(r'^dashboard/pagar-factura/(?P<pk>\d+)/$', login_required(vista.PagoFactura.as_view()) ,name='pago factura'),
+    re_path(r'^dashboard/detalle-pago/(?P<pk>\d+)/(?P<pk2>\d+)/$', login_required(vista.DetallePago.as_view()) ,name='detalle pago'),
 
 ]

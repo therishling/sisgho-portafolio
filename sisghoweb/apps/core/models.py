@@ -115,6 +115,9 @@ class SolicitudCompra(models.Model):
     class Meta:
         db_table = 'solicitudcompra'
 
+    def __str__(self):
+        return self.serviciocomedor.plato
+
 class DetalleReserva(models.Model):
     idreserva = models.AutoField(primary_key = True)
     huesped = models.ForeignKey('Huesped', models.DO_NOTHING, db_column='huesped')
@@ -123,6 +126,9 @@ class DetalleReserva(models.Model):
     total = models.IntegerField()
     class Meta:
         db_table = 'detallereserva'
+    
+    def __str__(self):
+        return "Reserva habitacion: "+str(self.habitacion.numero)
 
 class Detallepedido(models.Model):
     idedetalle = models.AutoField(primary_key=True)

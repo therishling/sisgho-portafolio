@@ -308,3 +308,83 @@ class EmitirFactura(UserPassesTestMixin, SuccessMessageMixin, CreateView):
 
         print(self.object.idfactura)
         return super(EmitirFactura,self).form_valid(form)
+    
+class ListarFacturasEmitidas(UserPassesTestMixin, TemplateView):
+    template_name = 'dashboard/cliente/listafacturas.html'
+
+    def test_func(self):
+        user = self.request.user
+        if user.tipousuario.idtipousuario == 3:
+            return True
+    
+    def handle_no_permission(self):
+        return redirect('dashboard')
+    
+    def get_context_data(self,**kwargs):
+        cliente = modelos.Cliente.objects.get(usuario = self.request.user.idusuario)
+        facturas = modelos.Factura.objects.all().filter(cliente = cliente.idcliente)
+        facturasid = modelos.Factura.objects.values_list('idfactura', flat = True).filter(cliente = cliente.idcliente)
+        detallefactura = modelos.Detallefactura.objects.all().filter(factura__in = facturasid)
+
+        context = super(ListarFacturasEmitidas,self).get_context_data(**kwargs)
+        context['facturas'] = facturas
+        context['detalles'] = detallefactura
+        return context
+
+class PagoFactura(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
+
+    model = modelos.Factura
+    form_class = formularios.FacturaForm
+    template_name = 'dashboard/cliente/mediodepago.html'
+    success_message = ''
+    context_object_name = 'factura'
+
+
+
+    def test_func(self):
+        user = self.request.user
+        if user.tipousuario.idtipousuario == 3:
+            return True
+    
+    def handle_no_permission(self):
+        return redirect('dashboard')
+
+    def post(self, request, *args, **kwargs):
+        if self.request.method == 'POST':
+            factura = modelos.Factura.objects.get(idfactura=self.kwargs['pk'])
+            options = int(self.request.POST.get('options'))
+            
+            estadofactura = modelos.Estadofactura.objects.get(idestado = options)
+            factura.estadofactura = estadofactura
+            factura.save()
+            
+         
+        return super().post(request, *args, **kwargs)
+
+    def get_success_url(self, **kwargs):
+        idfact = int(self.kwargs['pk'])
+        factura = modelos.Factura.objects.get(idfactura=idfact)
+        return reverse_lazy('detalle pago', kwargs = {'pk': factura.estadofactura.idestado,'pk2':factura.idfactura})
+        
+
+class DetallePago(UserPassesTestMixin, SuccessMessageMixin, TemplateView):
+    template_name = 'dashboard/cliente/detalledelpago.html'
+
+    def test_func(self):
+        user = self.request.user
+        if user.tipousuario.idtipousuario == 3:
+            return True
+    
+    def handle_no_permission(self):
+        return redirect('dashboard')
+
+    def get_context_data(self,**kwargs):
+        factura = modelos.Factura.objects.get(idfactura = int(self.kwargs['pk2']))
+        detallefact = modelos.Detallefactura.objects.all().filter(factura = factura)
+        total = 0
+        for detalle in detallefact:
+            total = total + detalle.total
+        context = super(DetallePago,self).get_context_data(**kwargs)
+        context['option'] = int(self.kwargs['pk'])
+        context['total'] =total
+        return context

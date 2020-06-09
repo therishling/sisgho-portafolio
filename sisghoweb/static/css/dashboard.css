@@ -110,3 +110,60 @@
   .formsentel i{
     color: #005cff; 
   }
+
+  /*
+  ESTILOS MEDIOS DE PAGO
+  */
+  .paymentWrap {
+    padding: 50px;
+  }
+  
+  .paymentWrap .paymentBtnGroup {
+    max-width: 800px;
+    margin: auto;
+  }
+  
+  .paymentWrap .paymentBtnGroup .paymentMethod {
+    padding: 40px;
+    box-shadow: none;
+    position: relative;
+  }
+  
+  .paymentWrap .paymentBtnGroup .paymentMethod.active {
+    outline: none !important;
+  }
+  
+  .paymentWrap .paymentBtnGroup .paymentMethod.active .method {
+    border-color: #4cd264;
+    outline: none !important;
+    box-shadow: 0px 3px 22px 0px #7b7b7b;
+  }
+  
+  .paymentWrap .paymentBtnGroup .paymentMethod .method {
+    position: absolute;
+    right: 3px;
+    top: 3px;
+    bottom: 3px;
+    left: 3px;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 2px solid transparent;
+    transition: all 0.5s;
+  }
+  
+
+  
+  .paymentWrap .paymentBtnGroup .paymentMethod .method.transferenciabancaria {
+    background-image: url("https://psisemadrid.org/wp-content/uploads/2018/08/es-transferencia-bancaria-1170x0-c-center.png");
+  }
+  
+  .paymentWrap .paymentBtnGroup .paymentMethod .method.pagopresencial{
+    background-image: url("https://w7.pngwing.com/pngs/308/872/png-transparent-payment-system-cash-wire-transfer-credit-credit-card-service-payment-internet.png");
+  }
+  
+  
+  .paymentWrap .paymentBtnGroup .paymentMethod .method:hover {
+    border-color: #4cd264;
+    outline: none !important;
+  }
