@@ -12,3 +12,18 @@ class AsHabitacionForm(forms.ModelForm):
     class Meta:
         model = modelo.Huesped
         fields = ('habitacion',)
+
+class DetalleReservaForm(forms.ModelForm):
+    class Meta:
+        model = modelo.DetalleReserva
+        fields = ('habitacion',)
+
+class SolicitudCompraForm(forms.ModelForm):
+    class Meta:
+        model = modelo.SolicitudCompra
+        fields = ('cantidad',)
+
+class FacturaForm(forms.ModelForm):
+    class Meta:
+        model = modelo.Factura
+        fields = ('fechapago',)

@@ -23,7 +23,7 @@ namespace CapaDatos
         public Nullable<long> CONTENT_TYPE_ID { get; set; }
         public long USER_ID { get; set; }
     
-        public virtual AUTH_USER AUTH_USER { get; set; }
         public virtual DJANGO_CONTENT_TYPE DJANGO_CONTENT_TYPE { get; set; }
+        public virtual USUARIO USUARIO { get; set; }
     }
 }

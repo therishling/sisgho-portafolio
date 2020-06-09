@@ -24,7 +24,7 @@ namespace CapaDatos
         public string APELLIDOPATERNO { get; set; }
         public string APELLIDOMATERNO { get; set; }
         public string RUT { get; set; }
-        public System.DateTime FECHADESDE { get; set; }
+        public Nullable<System.DateTime> FECHADESDE { get; set; }
         public Nullable<System.DateTime> FECHAHASTA { get; set; }
         public long CLIENTE { get; set; }
         public Nullable<long> HABITACION { get; set; }

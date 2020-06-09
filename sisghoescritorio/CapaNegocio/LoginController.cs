@@ -29,6 +29,7 @@ namespace CapaNegocio
                     if (user.TIPOUSUARIO == 1)
                     {
                         AbrirPrincipal(p, user);
+                        
                         return true;
                     }
                     else
@@ -53,6 +54,7 @@ namespace CapaNegocio
         }
         public void AbrirPrincipal(Form Formulario, USUARIO user)
         {
+            
             Formulario.Show();
 
 

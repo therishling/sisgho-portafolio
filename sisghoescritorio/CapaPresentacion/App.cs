@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using CapaNegocio;
+using CapaDatos;
+
 namespace CapaPresentacion
 {
     public partial class App : Form
@@ -20,6 +22,7 @@ namespace CapaPresentacion
         public static Modulos.Habitacion.FormularioHabitacion fh = new Modulos.Habitacion.FormularioHabitacion();
         public static Modulos.Servicio.FormularioServicio fs = new Modulos.Servicio.FormularioServicio();
         public static Modulos.Producto.FormularioProducto fpp = new Modulos.Producto.FormularioProducto();
+        public static ADMINISTRADOR user = new ADMINISTRADOR();
         public App()
         {
             InitializeComponent();

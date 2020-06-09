@@ -21,6 +21,8 @@ namespace CapaDatos
     
         public long IDFACTURA { get; set; }
         public string GIRO { get; set; }
+        public System.DateTime FECHAFACTURA { get; set; }
+        public Nullable<System.DateTime> FECHAPAGO { get; set; }
         public long CLIENTE { get; set; }
         public long ESTADOFACTURA { get; set; }
     

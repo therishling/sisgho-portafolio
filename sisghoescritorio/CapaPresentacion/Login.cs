@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using CapaNegocio;
+using CapaDatos;
+
 namespace CapaPresentacion
 {
     public partial class formLogin : Form
@@ -96,9 +98,14 @@ namespace CapaPresentacion
         private void btnAcceder_Click(object sender, EventArgs e)
         {
             App p = new App();
+            ServiceUsuario su = new ServiceUsuario();
+            ServiceAdministrador sa = new ServiceAdministrador();
+           
             if(lc.Logear(textUser.Text, textPass.Text, p))
             {
+                USUARIO user = su.getEntity(textUser.Text);
                 p.lblUser.Text = lc.ObtenerUsuario(textUser.Text);
+                App.user = sa.getEntity(user.IDUSUARIO);
                 this.Hide();
 
             }

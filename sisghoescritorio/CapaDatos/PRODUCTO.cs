@@ -24,10 +24,12 @@ namespace CapaDatos
         public long STOCK { get; set; }
         public long PRECIO { get; set; }
         public long ADMINISTRADOR { get; set; }
+        public long PROVEEDOR { get; set; }
         public long TIPOPRODUCTO { get; set; }
     
         public virtual ADMINISTRADOR ADMINISTRADOR1 { get; set; }
         public virtual ICollection<DETALLEPEDIDO> DETALLEPEDIDO { get; set; }
+        public virtual PROVEEDOR PROVEEDOR1 { get; set; }
         public virtual TIPOPRODUCTO TIPOPRODUCTO1 { get; set; }
     }
 }

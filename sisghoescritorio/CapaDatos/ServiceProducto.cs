@@ -55,6 +55,7 @@ namespace CapaDatos
                 pro.STOCK = entity.STOCK;
                 pro.PRECIO = entity.PRECIO;
                 pro.TIPOPRODUCTO = entity.TIPOPRODUCTO;
+                pro.PROVEEDOR = entity.PROVEEDOR;
                 em.SaveChanges();
             }
         }

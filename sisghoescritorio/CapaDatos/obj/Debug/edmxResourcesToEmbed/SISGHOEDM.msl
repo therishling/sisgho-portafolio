@@ -36,41 +36,6 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="AUTH_USER">
-      <EntityTypeMapping TypeName="Model.AUTH_USER">
-        <MappingFragment StoreEntitySet="AUTH_USER">
-          <ScalarProperty Name="ID" ColumnName="ID" />
-          <ScalarProperty Name="PASSWORD" ColumnName="PASSWORD" />
-          <ScalarProperty Name="LAST_LOGIN" ColumnName="LAST_LOGIN" />
-          <ScalarProperty Name="IS_SUPERUSER" ColumnName="IS_SUPERUSER" />
-          <ScalarProperty Name="USERNAME" ColumnName="USERNAME" />
-          <ScalarProperty Name="FIRST_NAME" ColumnName="FIRST_NAME" />
-          <ScalarProperty Name="LAST_NAME" ColumnName="LAST_NAME" />
-          <ScalarProperty Name="EMAIL" ColumnName="EMAIL" />
-          <ScalarProperty Name="IS_STAFF" ColumnName="IS_STAFF" />
-          <ScalarProperty Name="IS_ACTIVE" ColumnName="IS_ACTIVE" />
-          <ScalarProperty Name="DATE_JOINED" ColumnName="DATE_JOINED" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="AUTH_USER_GROUPS">
-      <EntityTypeMapping TypeName="Model.AUTH_USER_GROUPS">
-        <MappingFragment StoreEntitySet="AUTH_USER_GROUPS">
-          <ScalarProperty Name="ID" ColumnName="ID" />
-          <ScalarProperty Name="USER_ID" ColumnName="USER_ID" />
-          <ScalarProperty Name="GROUP_ID" ColumnName="GROUP_ID" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="AUTH_USER_USER_PERMISSIONS">
-      <EntityTypeMapping TypeName="Model.AUTH_USER_USER_PERMISSIONS">
-        <MappingFragment StoreEntitySet="AUTH_USER_USER_PERMISSIONS">
-          <ScalarProperty Name="ID" ColumnName="ID" />
-          <ScalarProperty Name="USER_ID" ColumnName="USER_ID" />
-          <ScalarProperty Name="PERMISSION_ID" ColumnName="PERMISSION_ID" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
     <EntitySetMapping Name="CLIENTE">
       <EntityTypeMapping TypeName="Model.CLIENTE">
         <MappingFragment StoreEntitySet="CLIENTE">
@@ -186,6 +151,8 @@
         <MappingFragment StoreEntitySet="FACTURA">
           <ScalarProperty Name="IDFACTURA" ColumnName="IDFACTURA" />
           <ScalarProperty Name="GIRO" ColumnName="GIRO" />
+          <ScalarProperty Name="FECHAFACTURA" ColumnName="FECHAFACTURA" />
+          <ScalarProperty Name="FECHAPAGO" ColumnName="FECHAPAGO" />
           <ScalarProperty Name="CLIENTE" ColumnName="CLIENTE" />
           <ScalarProperty Name="ESTADOFACTURA" ColumnName="ESTADOFACTURA" />
         </MappingFragment>
@@ -238,6 +205,7 @@
           <ScalarProperty Name="STOCK" ColumnName="STOCK" />
           <ScalarProperty Name="PRECIO" ColumnName="PRECIO" />
           <ScalarProperty Name="ADMINISTRADOR" ColumnName="ADMINISTRADOR" />
+          <ScalarProperty Name="PROVEEDOR" ColumnName="PROVEEDOR" />
           <ScalarProperty Name="TIPOPRODUCTO" ColumnName="TIPOPRODUCTO" />
         </MappingFragment>
       </EntityTypeMapping>

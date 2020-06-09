@@ -40,6 +40,8 @@
             this.btnAgregar = new System.Windows.Forms.Button();
             this.btnCancelar = new System.Windows.Forms.Button();
             this.btnAgregarTipo = new System.Windows.Forms.Button();
+            this.comboProveedor = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // labelTitulo
@@ -119,7 +121,7 @@
             // 
             // btnAgregar
             // 
-            this.btnAgregar.Location = new System.Drawing.Point(64, 279);
+            this.btnAgregar.Location = new System.Drawing.Point(53, 330);
             this.btnAgregar.Name = "btnAgregar";
             this.btnAgregar.Size = new System.Drawing.Size(111, 23);
             this.btnAgregar.TabIndex = 12;
@@ -129,7 +131,7 @@
             // 
             // btnCancelar
             // 
-            this.btnCancelar.Location = new System.Drawing.Point(181, 279);
+            this.btnCancelar.Location = new System.Drawing.Point(170, 330);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(86, 23);
             this.btnCancelar.TabIndex = 13;
@@ -147,11 +149,30 @@
             this.btnAgregarTipo.UseVisualStyleBackColor = true;
             this.btnAgregarTipo.Click += new System.EventHandler(this.btnAgregarTipo_Click);
             // 
+            // comboProveedor
+            // 
+            this.comboProveedor.FormattingEnabled = true;
+            this.comboProveedor.Location = new System.Drawing.Point(96, 283);
+            this.comboProveedor.Name = "comboProveedor";
+            this.comboProveedor.Size = new System.Drawing.Size(147, 21);
+            this.comboProveedor.TabIndex = 16;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(93, 266);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(56, 13);
+            this.label1.TabIndex = 15;
+            this.label1.Text = "Proveedor";
+            // 
             // AgregarProducto
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(347, 313);
+            this.ClientSize = new System.Drawing.Size(347, 380);
+            this.Controls.Add(this.comboProveedor);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.btnAgregarTipo);
             this.Controls.Add(this.btnCancelar);
             this.Controls.Add(this.btnAgregar);
@@ -186,5 +207,7 @@
         private System.Windows.Forms.Button btnAgregar;
         private System.Windows.Forms.Button btnCancelar;
         private System.Windows.Forms.Button btnAgregarTipo;
+        private System.Windows.Forms.ComboBox comboProveedor;
+        private System.Windows.Forms.Label label1;
     }
 }

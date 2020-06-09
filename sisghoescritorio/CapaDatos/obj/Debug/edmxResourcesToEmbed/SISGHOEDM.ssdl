@@ -31,38 +31,6 @@
     <Property Name="CONTENT_TYPE_ID" Type="number" Precision="11" Scale="0" Nullable="false" />
     <Property Name="CODENAME" Type="nvarchar2" MaxLength="100" />
   </EntityType>
-  <EntityType Name="AUTH_USER">
-    <Key>
-      <PropertyRef Name="ID" />
-    </Key>
-    <Property Name="ID" Type="number" Precision="11" Scale="0" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="PASSWORD" Type="nvarchar2" MaxLength="128" />
-    <Property Name="LAST_LOGIN" Type="timestamp" Precision="6" />
-    <Property Name="IS_SUPERUSER" Type="number" Precision="1" Scale="0" Nullable="false" />
-    <Property Name="USERNAME" Type="nvarchar2" MaxLength="150" />
-    <Property Name="FIRST_NAME" Type="nvarchar2" MaxLength="30" />
-    <Property Name="LAST_NAME" Type="nvarchar2" MaxLength="150" />
-    <Property Name="EMAIL" Type="nvarchar2" MaxLength="254" />
-    <Property Name="IS_STAFF" Type="number" Precision="1" Scale="0" Nullable="false" />
-    <Property Name="IS_ACTIVE" Type="number" Precision="1" Scale="0" Nullable="false" />
-    <Property Name="DATE_JOINED" Type="timestamp" Precision="6" Nullable="false" />
-  </EntityType>
-  <EntityType Name="AUTH_USER_GROUPS">
-    <Key>
-      <PropertyRef Name="ID" />
-    </Key>
-    <Property Name="ID" Type="number" Precision="11" Scale="0" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="USER_ID" Type="number" Precision="11" Scale="0" Nullable="false" />
-    <Property Name="GROUP_ID" Type="number" Precision="11" Scale="0" Nullable="false" />
-  </EntityType>
-  <EntityType Name="AUTH_USER_USER_PERMISSIONS">
-    <Key>
-      <PropertyRef Name="ID" />
-    </Key>
-    <Property Name="ID" Type="number" Precision="11" Scale="0" StoreGeneratedPattern="Identity" Nullable="false" />
-    <Property Name="USER_ID" Type="number" Precision="11" Scale="0" Nullable="false" />
-    <Property Name="PERMISSION_ID" Type="number" Precision="11" Scale="0" Nullable="false" />
-  </EntityType>
   <EntityType Name="CLIENTE">
     <Key>
       <PropertyRef Name="IDCLIENTE" />
@@ -168,6 +136,8 @@
     </Key>
     <Property Name="IDFACTURA" Type="number" Precision="11" Scale="0" StoreGeneratedPattern="Identity" Nullable="false" />
     <Property Name="GIRO" Type="nvarchar2" MaxLength="100" />
+    <Property Name="FECHAFACTURA" Type="date" Nullable="false" />
+    <Property Name="FECHAPAGO" Type="date" />
     <Property Name="CLIENTE" Type="number" Precision="11" Scale="0" Nullable="false" />
     <Property Name="ESTADOFACTURA" Type="number" Precision="11" Scale="0" Nullable="false" />
   </EntityType>
@@ -192,7 +162,7 @@
     <Property Name="APELLIDOPATERNO" Type="nvarchar2" MaxLength="100" />
     <Property Name="APELLIDOMATERNO" Type="nvarchar2" MaxLength="100" />
     <Property Name="RUT" Type="nvarchar2" MaxLength="11" />
-    <Property Name="FECHADESDE" Type="date" Nullable="false" />
+    <Property Name="FECHADESDE" Type="date" />
     <Property Name="FECHAHASTA" Type="date" />
     <Property Name="CLIENTE" Type="number" Precision="11" Scale="0" Nullable="false" />
     <Property Name="HABITACION" Type="number" Precision="11" Scale="0" />
@@ -216,6 +186,7 @@
     <Property Name="STOCK" Type="number" Precision="19" Scale="0" Nullable="false" />
     <Property Name="PRECIO" Type="number" Precision="11" Scale="0" Nullable="false" />
     <Property Name="ADMINISTRADOR" Type="number" Precision="11" Scale="0" Nullable="false" />
+    <Property Name="PROVEEDOR" Type="number" Precision="11" Scale="0" Nullable="false" />
     <Property Name="TIPOPRODUCTO" Type="number" Precision="11" Scale="0" Nullable="false" />
   </EntityType>
   <EntityType Name="PROVEEDOR">
@@ -332,54 +303,6 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
-  <Association Name="AUTH_USER_GROUP_ID_97559544_F">
-    <End Role="AUTH_GROUP" Type="Self.AUTH_GROUP" Multiplicity="1" />
-    <End Role="AUTH_USER_GROUPS" Type="Self.AUTH_USER_GROUPS" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="AUTH_GROUP">
-        <PropertyRef Name="ID" />
-      </Principal>
-      <Dependent Role="AUTH_USER_GROUPS">
-        <PropertyRef Name="GROUP_ID" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="AUTH_USER_PERMISSIO_1FBB5F2C_F">
-    <End Role="AUTH_PERMISSION" Type="Self.AUTH_PERMISSION" Multiplicity="1" />
-    <End Role="AUTH_USER_USER_PERMISSIONS" Type="Self.AUTH_USER_USER_PERMISSIONS" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="AUTH_PERMISSION">
-        <PropertyRef Name="ID" />
-      </Principal>
-      <Dependent Role="AUTH_USER_USER_PERMISSIONS">
-        <PropertyRef Name="PERMISSION_ID" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="AUTH_USER_USER_ID_6A12ED8B_F">
-    <End Role="AUTH_USER" Type="Self.AUTH_USER" Multiplicity="1" />
-    <End Role="AUTH_USER_GROUPS" Type="Self.AUTH_USER_GROUPS" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="AUTH_USER">
-        <PropertyRef Name="ID" />
-      </Principal>
-      <Dependent Role="AUTH_USER_GROUPS">
-        <PropertyRef Name="USER_ID" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
-  <Association Name="AUTH_USER_USER_ID_A95EAD1B_F">
-    <End Role="AUTH_USER" Type="Self.AUTH_USER" Multiplicity="1" />
-    <End Role="AUTH_USER_USER_PERMISSIONS" Type="Self.AUTH_USER_USER_PERMISSIONS" Multiplicity="*" />
-    <ReferentialConstraint>
-      <Principal Role="AUTH_USER">
-        <PropertyRef Name="ID" />
-      </Principal>
-      <Dependent Role="AUTH_USER_USER_PERMISSIONS">
-        <PropertyRef Name="USER_ID" />
-      </Dependent>
-    </ReferentialConstraint>
-  </Association>
   <Association Name="CLIENTE_USUARIO_2A0AFF91_F">
     <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="1" />
     <End Role="CLIENTE" Type="Self.CLIENTE" Multiplicity="*" />
@@ -477,11 +400,11 @@
     </ReferentialConstraint>
   </Association>
   <Association Name="DJANGO_AD_USER_ID_C564EBA6_F">
-    <End Role="AUTH_USER" Type="Self.AUTH_USER" Multiplicity="1" />
+    <End Role="USUARIO" Type="Self.USUARIO" Multiplicity="1" />
     <End Role="DJANGO_ADMIN_LOG" Type="Self.DJANGO_ADMIN_LOG" Multiplicity="*" />
     <ReferentialConstraint>
-      <Principal Role="AUTH_USER">
-        <PropertyRef Name="ID" />
+      <Principal Role="USUARIO">
+        <PropertyRef Name="IDUSUARIO" />
       </Principal>
       <Dependent Role="DJANGO_ADMIN_LOG">
         <PropertyRef Name="USER_ID" />
@@ -608,6 +531,18 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="PRODUCTO_PROVEEDOR_33F09351_F">
+    <End Role="PROVEEDOR" Type="Self.PROVEEDOR" Multiplicity="1" />
+    <End Role="PRODUCTO" Type="Self.PRODUCTO" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="PROVEEDOR">
+        <PropertyRef Name="IDPROVEEDOR" />
+      </Principal>
+      <Dependent Role="PRODUCTO">
+        <PropertyRef Name="PROVEEDOR" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Association Name="PRODUCTO_TIPOPRODU_DD6D32AA_F">
     <End Role="TIPOPRODUCTO" Type="Self.TIPOPRODUCTO" Multiplicity="1" />
     <End Role="PRODUCTO" Type="Self.PRODUCTO" Multiplicity="*" />
@@ -697,9 +632,6 @@
     <EntitySet Name="AUTH_GROUP" EntityType="Self.AUTH_GROUP" Schema="PORTAFOLIO" store:Type="Tables" />
     <EntitySet Name="AUTH_GROUP_PERMISSIONS" EntityType="Self.AUTH_GROUP_PERMISSIONS" Schema="PORTAFOLIO" store:Type="Tables" />
     <EntitySet Name="AUTH_PERMISSION" EntityType="Self.AUTH_PERMISSION" Schema="PORTAFOLIO" store:Type="Tables" />
-    <EntitySet Name="AUTH_USER" EntityType="Self.AUTH_USER" Schema="PORTAFOLIO" store:Type="Tables" />
-    <EntitySet Name="AUTH_USER_GROUPS" EntityType="Self.AUTH_USER_GROUPS" Schema="PORTAFOLIO" store:Type="Tables" />
-    <EntitySet Name="AUTH_USER_USER_PERMISSIONS" EntityType="Self.AUTH_USER_USER_PERMISSIONS" Schema="PORTAFOLIO" store:Type="Tables" />
     <EntitySet Name="CLIENTE" EntityType="Self.CLIENTE" Schema="PORTAFOLIO" store:Type="Tables" />
     <EntitySet Name="DETALLEFACTURA" EntityType="Self.DETALLEFACTURA" Schema="PORTAFOLIO" store:Type="Tables" />
     <EntitySet Name="DETALLEPEDIDO" EntityType="Self.DETALLEPEDIDO" Schema="PORTAFOLIO" store:Type="Tables" />
@@ -739,22 +671,6 @@
       <End Role="DJANGO_CONTENT_TYPE" EntitySet="DJANGO_CONTENT_TYPE" />
       <End Role="AUTH_PERMISSION" EntitySet="AUTH_PERMISSION" />
     </AssociationSet>
-    <AssociationSet Name="AUTH_USER_GROUP_ID_97559544_F" Association="Self.AUTH_USER_GROUP_ID_97559544_F">
-      <End Role="AUTH_GROUP" EntitySet="AUTH_GROUP" />
-      <End Role="AUTH_USER_GROUPS" EntitySet="AUTH_USER_GROUPS" />
-    </AssociationSet>
-    <AssociationSet Name="AUTH_USER_PERMISSIO_1FBB5F2C_F" Association="Self.AUTH_USER_PERMISSIO_1FBB5F2C_F">
-      <End Role="AUTH_PERMISSION" EntitySet="AUTH_PERMISSION" />
-      <End Role="AUTH_USER_USER_PERMISSIONS" EntitySet="AUTH_USER_USER_PERMISSIONS" />
-    </AssociationSet>
-    <AssociationSet Name="AUTH_USER_USER_ID_6A12ED8B_F" Association="Self.AUTH_USER_USER_ID_6A12ED8B_F">
-      <End Role="AUTH_USER" EntitySet="AUTH_USER" />
-      <End Role="AUTH_USER_GROUPS" EntitySet="AUTH_USER_GROUPS" />
-    </AssociationSet>
-    <AssociationSet Name="AUTH_USER_USER_ID_A95EAD1B_F" Association="Self.AUTH_USER_USER_ID_A95EAD1B_F">
-      <End Role="AUTH_USER" EntitySet="AUTH_USER" />
-      <End Role="AUTH_USER_USER_PERMISSIONS" EntitySet="AUTH_USER_USER_PERMISSIONS" />
-    </AssociationSet>
     <AssociationSet Name="CLIENTE_USUARIO_2A0AFF91_F" Association="Self.CLIENTE_USUARIO_2A0AFF91_F">
       <End Role="USUARIO" EntitySet="USUARIO" />
       <End Role="CLIENTE" EntitySet="CLIENTE" />
@@ -788,7 +704,7 @@
       <End Role="DJANGO_ADMIN_LOG" EntitySet="DJANGO_ADMIN_LOG" />
     </AssociationSet>
     <AssociationSet Name="DJANGO_AD_USER_ID_C564EBA6_F" Association="Self.DJANGO_AD_USER_ID_C564EBA6_F">
-      <End Role="AUTH_USER" EntitySet="AUTH_USER" />
+      <End Role="USUARIO" EntitySet="USUARIO" />
       <End Role="DJANGO_ADMIN_LOG" EntitySet="DJANGO_ADMIN_LOG" />
     </AssociationSet>
     <AssociationSet Name="EMPLEADO_USUARIO_32C0FEA5_F" Association="Self.EMPLEADO_USUARIO_32C0FEA5_F">
@@ -829,6 +745,10 @@
     </AssociationSet>
     <AssociationSet Name="PRODUCTO_ADMINISTR_3A195E25_F" Association="Self.PRODUCTO_ADMINISTR_3A195E25_F">
       <End Role="ADMINISTRADOR" EntitySet="ADMINISTRADOR" />
+      <End Role="PRODUCTO" EntitySet="PRODUCTO" />
+    </AssociationSet>
+    <AssociationSet Name="PRODUCTO_PROVEEDOR_33F09351_F" Association="Self.PRODUCTO_PROVEEDOR_33F09351_F">
+      <End Role="PROVEEDOR" EntitySet="PROVEEDOR" />
       <End Role="PRODUCTO" EntitySet="PRODUCTO" />
     </AssociationSet>
     <AssociationSet Name="PRODUCTO_TIPOPRODU_DD6D32AA_F" Association="Self.PRODUCTO_TIPOPRODU_DD6D32AA_F">

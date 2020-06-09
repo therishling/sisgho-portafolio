@@ -56,10 +56,12 @@ namespace CapaNegocio
 
         }
 
-        public bool AgregarProducto(string descripcion, int stock, int precio, string tipoproducto)
+        public bool AgregarProducto(string descripcion, int stock, int precio, string tipoproducto, int idAdmin, string prov)
         {
             ServiceProducto sp = new ServiceProducto();
             ServiceTipoProducto stp = new ServiceTipoProducto();
+            ServiceProveedor spp = new ServiceProveedor();
+            PROVEEDOR proveedor = spp.getPorRubro(prov);
 
             TIPOPRODUCTO tp = stp.getEntity(tipoproducto);
             try
@@ -71,7 +73,8 @@ namespace CapaNegocio
                 entity.STOCK = stock;
                 entity.PRECIO = precio;
                 entity.TIPOPRODUCTO = tp.IDTIPO;
-                entity.ADMINISTRADOR = 1;
+                entity.ADMINISTRADOR = idAdmin;
+                entity.PROVEEDOR = proveedor.IDPROVEEDOR;
                 sp.addEntity(entity);
 
                
@@ -90,13 +93,15 @@ namespace CapaNegocio
         }
 
        
-        public bool ModificarProducto(string descripcion, int id, int stock, int precio, string tipoproducto)
+        public bool ModificarProducto(string descripcion, int id, int stock, int precio, string tipoproducto, string rubroprov)
         {
             try
             {
                 ServiceProducto sp = new ServiceProducto();
                 ServiceTipoProducto stp = new ServiceTipoProducto();
+                ServiceProveedor spp = new ServiceProveedor();
 
+                PROVEEDOR prov = spp.getPorRubro(rubroprov);
                 TIPOPRODUCTO tp = stp.getEntity(tipoproducto);
 
                 PRODUCTO entity = new PRODUCTO();
@@ -105,6 +110,7 @@ namespace CapaNegocio
                 entity.STOCK = stock;
                 entity.PRECIO = precio;
                 entity.TIPOPRODUCTO = tp.IDTIPO;
+                entity.PROVEEDOR = prov.IDPROVEEDOR;
 
                 sp.updEntity(entity);
 
@@ -127,7 +133,7 @@ namespace CapaNegocio
        
 
 
-        public void LlenarCampos(int id, TextBox descripcion, TextBox stock, TextBox precio, ComboBox tipoproducto, Label idlabel)
+        public void LlenarCampos(int id, TextBox descripcion, TextBox stock, TextBox precio, ComboBox tipoproducto, Label idlabel, ComboBox comboprov)
         {
             ServiceProducto sp = new ServiceProducto();
             ServiceTipoProducto stp = new ServiceTipoProducto();
@@ -136,10 +142,12 @@ namespace CapaNegocio
             PRODUCTO p = sp.getEntity(id);
 
             this.LlenarComboTipo(tipoproducto);
+            this.LlenarComboProveedor(comboprov);
 
             descripcion.Text = p.DESCRIPCION;
             stock.Text = p.STOCK.ToString();
             tipoproducto.SelectedIndex = (int)p.TIPOPRODUCTO - 1;
+            comboprov.SelectedIndex = (int)p.PROVEEDOR - 1;
             idlabel.Text = p.IDPRODUCTO.ToString();
             precio.Text = p.PRECIO.ToString();
 
@@ -157,6 +165,21 @@ namespace CapaNegocio
             foreach (TIPOPRODUCTO ts in lista)
             {
                 tipo.Items.Add(ts.DESCRIPCION);
+            }
+
+        }
+
+        public void LlenarComboProveedor(ComboBox prov)
+        {
+            ServiceProveedor sp = new ServiceProveedor();
+            List<PROVEEDOR> lista = sp.getEntities();
+
+            prov.Items.Clear();
+            prov.DropDownStyle = ComboBoxStyle.DropDownList;
+
+            foreach (PROVEEDOR ts in lista)
+            {
+                prov.Items.Add(ts.RUBRO);
             }
 
         }

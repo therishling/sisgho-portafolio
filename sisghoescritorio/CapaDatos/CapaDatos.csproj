@@ -65,15 +65,6 @@
     <Compile Include="AUTH_PERMISSION.cs">
       <DependentUpon>SISGHOEDM.tt</DependentUpon>
     </Compile>
-    <Compile Include="AUTH_USER.cs">
-      <DependentUpon>SISGHOEDM.tt</DependentUpon>
-    </Compile>
-    <Compile Include="AUTH_USER_GROUPS.cs">
-      <DependentUpon>SISGHOEDM.tt</DependentUpon>
-    </Compile>
-    <Compile Include="AUTH_USER_USER_PERMISSIONS.cs">
-      <DependentUpon>SISGHOEDM.tt</DependentUpon>
-    </Compile>
     <Compile Include="CLIENTE.cs">
       <DependentUpon>SISGHOEDM.tt</DependentUpon>
     </Compile>
@@ -129,6 +120,7 @@
     <Compile Include="RECEPCIONPRODUCTO.cs">
       <DependentUpon>SISGHOEDM.tt</DependentUpon>
     </Compile>
+    <Compile Include="ServiceAdministrador.cs" />
     <Compile Include="ServiceCliente.cs" />
     <Compile Include="ServiceEmpleado.cs" />
     <Compile Include="ServiceHabitacion.cs" />

@@ -32,7 +32,7 @@ namespace CapaPresentacion.Modulos.Producto
                             {
                                 ProductoController pc = new ProductoController();
 
-                                if (pc.ModificarProducto(txtDescripcion.Text,int.Parse(labelID.Text), int.Parse(txtStock.Text), int.Parse(txtPrecio.Text), comboTipo.Text))
+                                if (pc.ModificarProducto(txtDescripcion.Text,int.Parse(labelID.Text), int.Parse(txtStock.Text), int.Parse(txtPrecio.Text), comboTipo.Text,comboProveedor.Text))
                                 {
                                     pc.LlenarGrid(App.fpp.dataProd);
                                     this.Dispose();
@@ -82,6 +82,11 @@ namespace CapaPresentacion.Modulos.Producto
         {
             AgregarTipo at = new AgregarTipo();
             at.Show();
+        }
+
+        private void ModificarProducto_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

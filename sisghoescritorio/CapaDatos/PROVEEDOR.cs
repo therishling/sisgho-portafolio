@@ -17,6 +17,7 @@ namespace CapaDatos
         public PROVEEDOR()
         {
             this.DETALLEPEDIDO = new HashSet<DETALLEPEDIDO>();
+            this.PRODUCTO = new HashSet<PRODUCTO>();
         }
     
         public long IDPROVEEDOR { get; set; }
@@ -27,6 +28,7 @@ namespace CapaDatos
         public long USUARIO { get; set; }
     
         public virtual ICollection<DETALLEPEDIDO> DETALLEPEDIDO { get; set; }
+        public virtual ICollection<PRODUCTO> PRODUCTO { get; set; }
         public virtual USUARIO USUARIO1 { get; set; }
     }
 }

@@ -1,0 +1,252 @@
+{% extends 'dashboard/base.html' %}
+<!-- Titulo de la pagina -->
+{%block title%} Asignar Habitacion {%endblock%}
+
+
+<!-- Contenido -->
+{%block titulo_seccion%} Lista Huespedes {%endblock%}
+
+{%block contenido%}
+{% if messages %}
+
+{% for message in messages %}
+<div class="alert alert-success" role="alert">
+    {{ message }}
+</div>
+
+{% endfor %}
+
+{% endif %}
+{% if form.errors %}
+{% for field in form %}
+{% if field.errors %}
+{% for error in field.errors %}
+<div class="alert alert-danger" role="alert">
+    {{ error|escape }}
+</div>
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+<div class="form-group">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+        </div>
+        <input type="text" class="form-control" placeholder="Buscar" id="buscar" required>
+    </div>
+</div>
+<table class="table">
+    <thead class="thead-entel">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">RUT</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Apellido Paterno</th>
+            <th scope="col">Apellido Materno</th>
+            <th scope="col">Fecha Reserva</th>
+            <th scope="col">Fecha Fin Reserva</th>
+            <th scope="col">Habitacion</th>
+            <th scope="col">Opciones</th>
+        </tr>
+    </thead>
+    <tbody id="tabla">
+        {%if huespedes %}
+        {% for huesped in huespedes %}
+        <tr>
+
+            <th scope="row">{{huesped.idhuesped}}</th>
+            <td>{{huesped.rut}}</td>
+            <td>{{huesped.nombre}}</td>
+            <td>{{huesped.apellidopaterno}}</td>
+            <td>{{huesped.apellidomaterno}}</td>
+            <td>{{huesped.fechadesde|date:'Y-m-d'}}</td>
+            <td>{{huesped.fechahasta|date:'Y-m-d'}}</td>
+            {%if huesped.habitacion == null %}
+            <td>No asignada</td>
+            {% else %}
+            <td>{{huesped.habitacion.numero}}</td>
+            {% endif %}
+            <td>
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#editModal{{huesped.idhuesped}}">
+                    <i class="fas fa-plus"></i>
+                </button>
+
+
+                <div class="modal fade" id="editModal{{huesped.idhuesped}}">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Nueva solicitud de servicio</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+
+
+
+
+                            <form method="POST">
+                                {% csrf_token %}
+                                <!-- Modal body -->
+
+
+                                <div class="modal-body">
+
+
+                                    <div class="form-group">
+                                        <label for="vendedor">Servicio</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                            </div>
+                                            <input name="huesped" type="hidden" value="{{huesped.idhuesped}}">
+                                            <select class="form-control" id="servicioComedor" name="servicio" readonly>
+                                                {% for servicio in servicios %}
+                                                <option  value="{{servicio.idservicio}}"> {{servicio.plato}}: $<label
+                                                        id="precioservicio">{{servicio.precio}}</label>
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                                            </div>
+                                            <input type="number" class="form-control" id="cantidad" name="cantidad"
+                                                placeholder="Cantidad" required>
+
+                                        </div>
+
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <h4 class="modal-title">Total: $ </h4>
+                                                <h4 id="totalservicio" class="modal-title"> 0 </h4>
+                                            </div>
+
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <!-- Modal footer  -->
+
+                                <div class="modal-footer">
+
+                                    <button type="submit" class="btn btn-primary">Asignar</button>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                </div>
+                            </form>
+
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+
+            </td>
+        </tr>
+
+        {% endfor %}
+        {% else %}
+        <h1>No existen registros</h1>
+        {% endif %}
+
+    </tbody>
+
+</table>
+
+{%endblock%}
+
+{%block scripts%}
+
+<script>
+    $(document).ready(function () {
+
+        $("#buscar").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#tabla tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+
+        $("#cantidad").on("change", function () {
+            cantidad = $(this).val();
+            e = document.getElementById("servicioComedor");
+            servicioId = e.options[e.selectedIndex].value;
+            {% for servicio in servicios %}
+               if(servicioId == {{servicio.idservicio}}){
+                precio = {{servicio.precio}};
+                total = precio * cantidad;
+               }                  
+            {% endfor %}
+            document.getElementById('totalservicio').innerHTML = total;
+
+        });
+    });
+    
+</script>
+
+<script>
+    $(document).ready(function () {
+        var cantidad = 0;
+        var total = 0;
+        var precio = 0;
+        var servicioId;
+        $("#servicioComedor").on("change", function () {
+            cantidad = document.getElementById("cantidad").value;
+            e = document.getElementById("servicioComedor");
+            servicioId = e.options[e.selectedIndex].value;
+            {% for servicio in servicios %}
+               if(servicioId == {{servicio.idservicio}}){
+                precio = {{servicio.precio}};
+                total = precio * cantidad;
+               }                  
+            {% endfor %}
+            document.getElementById('totalservicio').innerHTML = total;
+
+        });
+    });
+    
+</script>
+
+
+<script>
+    $(document).ready(function () {
+        var cantidad = 0;
+        var total = 0;
+        var precio = 0;
+        var servicioId;
+        $("#cantidad").on("keyup", function () {
+            cantidad = $(this).val();
+            e = document.getElementById("servicioComedor");
+            servicioId = e.options[e.selectedIndex].value;
+            {% for servicio in servicios %}
+               if(servicioId == {{servicio.idservicio}}){
+                precio = {{servicio.precio}};
+                total = precio * cantidad;
+               }                  
+            {% endfor %}
+            document.getElementById('totalservicio').innerHTML = total;
+
+        });
+    });
+</script>
+{%endblock%}

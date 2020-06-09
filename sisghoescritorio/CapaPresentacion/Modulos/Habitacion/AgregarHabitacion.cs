@@ -33,7 +33,7 @@ namespace CapaPresentacion.Modulos.Habitacion
                                 if (!String.IsNullOrEmpty(txtAccesorios.Text))
                                 {
                                     HabitacionController hc = new HabitacionController();
-                                    if(hc.AgregarHabitacion(int.Parse(txtNumero.Text), txtTipoCama.Text, txtAccesorios.Text, int.Parse(txtPrecio.Text)))
+                                    if(hc.AgregarHabitacion(int.Parse(txtNumero.Text), txtTipoCama.Text, txtAccesorios.Text, int.Parse(txtPrecio.Text),(int)App.user.IDADMINISTRADOR))
                                     {
                                         hc.LlenarGrid(App.fh.dataHabitaciones);
                                         this.Dispose();

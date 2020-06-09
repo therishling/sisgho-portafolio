@@ -18,6 +18,7 @@ namespace CapaDatos
         {
             this.ADMINISTRADOR = new HashSet<ADMINISTRADOR>();
             this.CLIENTE = new HashSet<CLIENTE>();
+            this.DJANGO_ADMIN_LOG = new HashSet<DJANGO_ADMIN_LOG>();
             this.EMPLEADO = new HashSet<EMPLEADO>();
             this.PROVEEDOR = new HashSet<PROVEEDOR>();
         }
@@ -34,6 +35,7 @@ namespace CapaDatos
     
         public virtual ICollection<ADMINISTRADOR> ADMINISTRADOR { get; set; }
         public virtual ICollection<CLIENTE> CLIENTE { get; set; }
+        public virtual ICollection<DJANGO_ADMIN_LOG> DJANGO_ADMIN_LOG { get; set; }
         public virtual ICollection<EMPLEADO> EMPLEADO { get; set; }
         public virtual ICollection<PROVEEDOR> PROVEEDOR { get; set; }
         public virtual TIPOUSUARIO TIPOUSUARIO1 { get; set; }

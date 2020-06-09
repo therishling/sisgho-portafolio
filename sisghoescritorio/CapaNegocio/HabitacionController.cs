@@ -59,7 +59,7 @@ namespace CapaNegocio
             dt.ReadOnly = true;
         }
 
-        public bool AgregarHabitacion(int numero, string tipoCama, string accesorios, int precio)
+        public bool AgregarHabitacion(int numero, string tipoCama, string accesorios, int precio, int idAdministrador)
         {
             ServiceHabitacion sh = new ServiceHabitacion();
 
@@ -72,7 +72,7 @@ namespace CapaNegocio
                 h.TIPOCAMA = tipoCama;
                 h.ACCESORIOS = accesorios;
                 h.PRECIO = precio;
-                h.ADMINISTRADOR = 1;
+                h.ADMINISTRADOR = idAdministrador;
                 h.ESTADOHABITACION = 1;
 
                 if (this.BuscarHabitacion((int)h.NUMERO) == false)

@@ -41,6 +41,8 @@
             this.txtDescripcion = new System.Windows.Forms.TextBox();
             this.labelTitulo = new System.Windows.Forms.Label();
             this.labelID = new System.Windows.Forms.Label();
+            this.comboProveedor = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // btnAgregarTipo
@@ -55,7 +57,7 @@
             // 
             // btnCancelar
             // 
-            this.btnCancelar.Location = new System.Drawing.Point(155, 278);
+            this.btnCancelar.Location = new System.Drawing.Point(144, 317);
             this.btnCancelar.Name = "btnCancelar";
             this.btnCancelar.Size = new System.Drawing.Size(86, 23);
             this.btnCancelar.TabIndex = 25;
@@ -65,7 +67,7 @@
             // 
             // btnModificar
             // 
-            this.btnModificar.Location = new System.Drawing.Point(38, 278);
+            this.btnModificar.Location = new System.Drawing.Point(27, 317);
             this.btnModificar.Name = "btnModificar";
             this.btnModificar.Size = new System.Drawing.Size(111, 23);
             this.btnModificar.TabIndex = 24;
@@ -157,11 +159,30 @@
             this.labelID.TabIndex = 27;
             this.labelID.Text = "id";
             // 
+            // comboProveedor
+            // 
+            this.comboProveedor.FormattingEnabled = true;
+            this.comboProveedor.Location = new System.Drawing.Point(70, 281);
+            this.comboProveedor.Name = "comboProveedor";
+            this.comboProveedor.Size = new System.Drawing.Size(147, 21);
+            this.comboProveedor.TabIndex = 29;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(67, 264);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(56, 13);
+            this.label1.TabIndex = 28;
+            this.label1.Text = "Proveedor";
+            // 
             // ModificarProducto
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(282, 345);
+            this.ClientSize = new System.Drawing.Size(282, 365);
+            this.Controls.Add(this.comboProveedor);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.labelID);
             this.Controls.Add(this.btnAgregarTipo);
             this.Controls.Add(this.btnCancelar);
@@ -177,6 +198,7 @@
             this.Controls.Add(this.labelTitulo);
             this.Name = "ModificarProducto";
             this.Text = "ModificarProducto";
+            this.Load += new System.EventHandler(this.ModificarProducto_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -197,5 +219,7 @@
         public System.Windows.Forms.TextBox txtPrecio;
         public System.Windows.Forms.TextBox txtDescripcion;
         public System.Windows.Forms.Label labelID;
+        private System.Windows.Forms.Label label1;
+        public System.Windows.Forms.ComboBox comboProveedor;
     }
 }

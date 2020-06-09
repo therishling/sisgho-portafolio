@@ -17,7 +17,6 @@ namespace CapaDatos
         public AUTH_PERMISSION()
         {
             this.AUTH_GROUP_PERMISSIONS = new HashSet<AUTH_GROUP_PERMISSIONS>();
-            this.AUTH_USER_USER_PERMISSIONS = new HashSet<AUTH_USER_USER_PERMISSIONS>();
         }
     
         public long ID { get; set; }
@@ -27,6 +26,5 @@ namespace CapaDatos
     
         public virtual ICollection<AUTH_GROUP_PERMISSIONS> AUTH_GROUP_PERMISSIONS { get; set; }
         public virtual DJANGO_CONTENT_TYPE DJANGO_CONTENT_TYPE { get; set; }
-        public virtual ICollection<AUTH_USER_USER_PERMISSIONS> AUTH_USER_USER_PERMISSIONS { get; set; }
     }
 }

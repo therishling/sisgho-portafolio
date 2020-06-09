@@ -29,9 +29,6 @@ namespace CapaDatos
         public DbSet<AUTH_GROUP> AUTH_GROUP { get; set; }
         public DbSet<AUTH_GROUP_PERMISSIONS> AUTH_GROUP_PERMISSIONS { get; set; }
         public DbSet<AUTH_PERMISSION> AUTH_PERMISSION { get; set; }
-        public DbSet<AUTH_USER> AUTH_USER { get; set; }
-        public DbSet<AUTH_USER_GROUPS> AUTH_USER_GROUPS { get; set; }
-        public DbSet<AUTH_USER_USER_PERMISSIONS> AUTH_USER_USER_PERMISSIONS { get; set; }
         public DbSet<CLIENTE> CLIENTE { get; set; }
         public DbSet<DETALLEFACTURA> DETALLEFACTURA { get; set; }
         public DbSet<DETALLEPEDIDO> DETALLEPEDIDO { get; set; }

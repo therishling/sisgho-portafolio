@@ -298,6 +298,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CapaDatos\CapaDatos.csproj">
+      <Project>{F314019C-7C4D-4D7C-8BC1-7CCAA03E4B8F}</Project>
+      <Name>CapaDatos</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CapaNegocio\CapaNegocio.csproj">
       <Project>{d5ca0002-04bf-4b13-a8f0-6a757f78c3fe}</Project>
       <Name>CapaNegocio</Name>

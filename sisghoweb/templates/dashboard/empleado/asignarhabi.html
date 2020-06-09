@@ -31,7 +31,7 @@
 <div class="form-group">
     <div class="input-group">
         <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-search" ></i></span>
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
         </div>
         <input type="text" class="form-control" placeholder="Buscar" id="buscar" required>
     </div>
@@ -68,13 +68,21 @@
             <td>{{huesped.habitacion.numero}}</td>
             {% endif %}
             <td>
+                {%if huesped.habitacion == null %}
                 <button type="button" class="btn btn-primary" data-toggle="modal"
-                    data-target="#editModal{{huesped.idhuesped}}">
+                    data-target="#reservaModal{{huesped.idhuesped}}">
+                    <i class="fas fa-plus"></i>
+                </button>
+                {% else %}
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#reservaModal{{huesped.idhuesped}}">
                     <i class="fas fa-edit"></i>
                 </button>
+                {% endif %}
 
 
-                <div class="modal fade" id="editModal{{huesped.idhuesped}}">
+
+                <div class="modal fade" id="reservaModal{{huesped.idhuesped}}">
                     <div class="modal-dialog">
                         <div class="modal-content">
 
@@ -90,14 +98,18 @@
 
 
 
-                            <form action="{% url 'asignar habitacion huesped' huesped.idhuesped %}" method="POST">
+                            <form 
+                            {%if huesped.habitacion != null %}
+                            action="{% url 'asignar habitacion huesped' huesped.idhuesped %}" 
+                            {% endif %}
+                            method="POST">
                                 {% csrf_token %}
                                 <!-- Modal body -->
 
 
                                 <div class="modal-body">
 
-
+                                    <input name="huesped" type="hidden" value="{{huesped.idhuesped}}">
                                     <div class="form-group">
                                         <label for="vendedor">Habitacion</label>
                                         <div class="input-group">
@@ -136,7 +148,7 @@
         {% else %}
         <h1>No existen registros</h1>
         {% endif %}
-        
+
     </tbody>
 
 </table>
@@ -147,7 +159,7 @@
 
 <script>
     $(document).ready(function () {
-        
+
         $("#buscar").on("keyup", function () {
             var value = $(this).val().toLowerCase();
             $("#tabla tr").filter(function () {

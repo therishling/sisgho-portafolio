@@ -38,7 +38,7 @@ namespace CapaPresentacion.Modulos.Producto
                 int id = int.Parse(dataProd.CurrentRow.Cells[0].Value.ToString());
                 ModificarProducto mp = new ModificarProducto();
                 pc.LlenarComboTipo(mp.comboTipo);
-                pc.LlenarCampos(id,mp.txtDescripcion,mp.txtStock,mp.txtPrecio,mp.comboTipo,mp.labelID);
+                pc.LlenarCampos(id,mp.txtDescripcion,mp.txtStock,mp.txtPrecio,mp.comboTipo,mp.labelID,mp.comboProveedor);
                 mp.Show();
             }
             catch (Exception ex)

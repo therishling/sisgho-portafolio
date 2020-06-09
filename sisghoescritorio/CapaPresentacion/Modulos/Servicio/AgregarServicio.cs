@@ -39,7 +39,7 @@ namespace CapaPresentacion.Modulos.Servicio
                     try
                     {
                         ServicioController sc = new ServicioController();
-                        if(sc.AgregarServicio(txtPlato.Text, int.Parse(txtPrecio.Text), comboServicio.Text))
+                        if(sc.AgregarServicio(txtPlato.Text, int.Parse(txtPrecio.Text), comboServicio.Text,(int)App.user.IDADMINISTRADOR))
                         {
                             sc.LlenarGrid(App.fs.dataServicios);
                             this.Dispose();

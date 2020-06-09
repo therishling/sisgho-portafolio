@@ -59,6 +59,14 @@ namespace CapaDatos
             }
         }
 
+        public PROVEEDOR getPorRubro(string rubro)
+        {
+            
+            PROVEEDOR prov = em.PROVEEDOR.Where(q => q.RUBRO == rubro).FirstOrDefault<PROVEEDOR>();
+
+            return prov;
+        }
+
         public int id()
         {
             PROVEEDOR prov = em.PROVEEDOR.OrderByDescending(x => x.IDPROVEEDOR).FirstOrDefault<PROVEEDOR>();

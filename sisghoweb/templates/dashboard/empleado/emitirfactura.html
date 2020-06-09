@@ -1,0 +1,91 @@
+{% extends 'dashboard/base.html' %}
+<!-- Titulo de la pagina -->
+{%block title%} Emitir Factura {%endblock%}
+
+
+<!-- Contenido -->
+{%block titulo_seccion%} Emitir Factura {%endblock%}
+
+{%block contenido%}
+{% if messages %}
+
+{% for message in messages %}
+<div class="alert alert-success" role="alert">
+    {{ message }}
+</div>
+
+{% endfor %}
+
+{% endif %}
+{% if form.errors %}
+{% for field in form %}
+{% if field.errors %}
+{% for error in field.errors %}
+<div class="alert alert-danger" role="alert">
+    {{ error|escape }}
+</div>
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+<div class="form-group">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+        </div>
+        <input type="text" class="form-control" placeholder="Buscar" id="buscar" required>
+    </div>
+</div>
+<table class="table">
+    <thead class="thead-entel">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">RUT Empresa</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Rubro</th>
+            <th scope="col">Direccion</th>
+            <th scope="col">Telefono</th>
+            <th scope="col">Opciones</th>
+        </tr>
+    </thead>
+    <tbody id="tabla">
+        {%if clientes %}
+        {% for cliente in clientes %}
+        <tr>
+
+            <th scope="row">{{cliente.idcliente}}</th>
+            <td>{{cliente.rut}}</td>
+            <td>{{cliente.nombre}}</td>
+            <td>{{cliente.rubro}}</td>
+            <td>{{cliente.direccion}}</td>
+            <td>{{cliente.telefono}}</td>
+            <td>
+                <a class="btn btn-primary" href="{% url 'emitir factura form' cliente.idcliente %}"><i class="fas fa-plus"></i></a>
+            </td>
+        </tr>
+
+        {% endfor %}
+        {% else %}
+        <h1>No existen registros</h1>
+        {% endif %}
+
+    </tbody>
+
+</table>
+
+{%endblock%}
+
+{%block scripts%}
+
+<script>
+    $(document).ready(function () {
+
+        $("#buscar").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#tabla tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+{%endblock%}

@@ -17,13 +17,11 @@ namespace CapaDatos
         public AUTH_GROUP()
         {
             this.AUTH_GROUP_PERMISSIONS = new HashSet<AUTH_GROUP_PERMISSIONS>();
-            this.AUTH_USER_GROUPS = new HashSet<AUTH_USER_GROUPS>();
         }
     
         public long ID { get; set; }
         public string NAME { get; set; }
     
         public virtual ICollection<AUTH_GROUP_PERMISSIONS> AUTH_GROUP_PERMISSIONS { get; set; }
-        public virtual ICollection<AUTH_USER_GROUPS> AUTH_USER_GROUPS { get; set; }
     }
 }

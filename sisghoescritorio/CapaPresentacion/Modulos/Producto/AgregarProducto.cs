@@ -37,7 +37,7 @@ namespace CapaPresentacion.Modulos.Producto
                             {
                                 ProductoController pc = new ProductoController();
                                 
-                                if (pc.AgregarProducto(txtDescripcion.Text,int.Parse(txtStock.Text),int.Parse(txtPrecio.Text),comboTipo.Text))
+                                if (pc.AgregarProducto(txtDescripcion.Text,int.Parse(txtStock.Text),int.Parse(txtPrecio.Text),comboTipo.Text,(int)App.user.IDADMINISTRADOR,comboProveedor.Text))
                                 {
                                     pc.LlenarGrid(App.fpp.dataProd);
                                     this.Dispose();
@@ -76,6 +76,8 @@ namespace CapaPresentacion.Modulos.Producto
             ProductoController pc = new ProductoController();
             pc.LlenarComboTipo(comboTipo);
             comboTipo.SelectedIndex = 0;
+            pc.LlenarComboProveedor(comboProveedor);
+            comboProveedor.SelectedIndex = 0;
         }
 
         private void btnAgregarTipo_Click(object sender, EventArgs e)

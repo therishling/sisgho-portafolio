@@ -54,7 +54,7 @@ namespace CapaNegocio
             dt.ReadOnly = true;
         }
 
-        public bool AgregarServicio(string plato, int precio, string tipoServicio)
+        public bool AgregarServicio(string plato, int precio, string tipoServicio, int idAdmin)
         {
            
             ServiceServicioComedor ssc = new ServiceServicioComedor();
@@ -69,7 +69,7 @@ namespace CapaNegocio
                 sc.PLATO = plato;
                 sc.PRECIO = precio;
                 sc.TIPOSERVICIO = ts.IDTIPO;
-                sc.ADMINISTRADOR = 1;
+                sc.ADMINISTRADOR = idAdmin;
                 
 
                 if (sc.PRECIO >= 0)

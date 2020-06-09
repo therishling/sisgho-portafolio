@@ -99,12 +99,30 @@ class Detallefactura(models.Model):
     iddetalle = models.AutoField(primary_key=True)
     total = models.BigIntegerField()
     factura = models.ForeignKey('Factura', models.DO_NOTHING, db_column='factura')
-    serviciocomedor = models.ForeignKey('Serviciocomedor', models.DO_NOTHING, db_column='serviciocomedor', blank=True, null=True)
+    solicitudcompra = models.ForeignKey('SolicitudCompra', models.DO_NOTHING, db_column='solicitudcompra', blank=True, null=True)
+    detallereserva = models.ForeignKey('DetalleReserva', models.DO_NOTHING, db_column='detallereserva', blank=True, null=True)
     huesped = models.ForeignKey('Huesped', models.DO_NOTHING, db_column='huesped', blank=True, null=True)
 
     class Meta:
         db_table = 'detallefactura'
 
+class SolicitudCompra(models.Model):
+    idsolicitud = models.AutoField(primary_key = True)
+    serviciocomedor = models.ForeignKey('Serviciocomedor', models.DO_NOTHING, db_column='serviciocomedor')
+    cantidad = models.IntegerField()
+    fecha = models.DateField()
+    huesped = models.ForeignKey('Huesped', models.DO_NOTHING, db_column='huesped')
+    class Meta:
+        db_table = 'solicitudcompra'
+
+class DetalleReserva(models.Model):
+    idreserva = models.AutoField(primary_key = True)
+    huesped = models.ForeignKey('Huesped', models.DO_NOTHING, db_column='huesped')
+    habitacion = models.ForeignKey('Habitacion', models.DO_NOTHING, db_column='habitacion')
+    dias = models.IntegerField()
+    total = models.IntegerField()
+    class Meta:
+        db_table = 'detallereserva'
 
 class Detallepedido(models.Model):
     idedetalle = models.AutoField(primary_key=True)
@@ -155,6 +173,8 @@ class Factura(models.Model):
     giro = models.CharField(max_length=100)
     cliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='cliente')
     estadofactura = models.ForeignKey(Estadofactura, models.DO_NOTHING, db_column='estadofactura')
+    fechafactura = models.DateField()
+    fechapago =models.DateField(blank = True, null = True)
 
     class Meta:
         db_table = 'factura'
@@ -171,6 +191,10 @@ class Habitacion(models.Model):
 
     class Meta:
         db_table = 'habitacion'
+    
+
+    def __str__(self):
+        return str(self.numero)
 
 
 class Huesped(models.Model):
@@ -187,6 +211,10 @@ class Huesped(models.Model):
     class Meta:
         db_table = 'huesped'
 
+    def __str__(self):
+        return self.nombre + ' ' + self.apellidopaterno + ' ' + self.apellidomaterno
+    
+
 
 class Pedido(models.Model):
     idpedido = models.AutoField(primary_key=True)
@@ -198,19 +226,6 @@ class Pedido(models.Model):
     class Meta:
         db_table = 'pedido'
 
-
-class Producto(models.Model):
-    idproducto = models.AutoField(primary_key=True)
-    descripcion = models.CharField(max_length=70)
-    stock = models.BigIntegerField()
-    administrador = models.ForeignKey(Administrador, models.DO_NOTHING, db_column='administrador')
-    tipoproducto = models.ForeignKey('Tipoproducto', models.DO_NOTHING, db_column='tipoproducto')
-    precio = models.IntegerField()
-
-    class Meta:
-        db_table = 'producto'
-
-
 class Proveedor(models.Model):
     idproveedor = models.AutoField(primary_key=True)
     rubro = models.CharField(max_length=100)
@@ -221,6 +236,19 @@ class Proveedor(models.Model):
 
     class Meta:
         db_table = 'proveedor'
+        
+
+class Producto(models.Model):
+    idproducto = models.AutoField(primary_key=True)
+    descripcion = models.CharField(max_length=70)
+    stock = models.BigIntegerField()
+    administrador = models.ForeignKey(Administrador, models.DO_NOTHING, db_column='administrador')
+    tipoproducto = models.ForeignKey('Tipoproducto', models.DO_NOTHING, db_column='tipoproducto')
+    precio = models.IntegerField()
+    proveedor = models.ForeignKey(Proveedor, models.DO_NOTHING, db_column='proveedor')
+
+    class Meta:
+        db_table = 'producto'
 
 
 class Recepcionproducto(models.Model):
@@ -242,6 +270,9 @@ class Serviciocomedor(models.Model):
 
     class Meta:
         db_table = 'serviciocomedor'
+    
+    def __str__(self):
+        return self.plato
 
 
 class Tipoproducto(models.Model):
