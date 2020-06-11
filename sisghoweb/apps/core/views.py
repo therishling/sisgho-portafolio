@@ -11,6 +11,7 @@ from django.db import connection
 from datetime import date
 from itertools import chain
 from django.db.models import Q
+from sisghoweb.utileria import render_pdf
 # Create your views here.
 class Index(TemplateView):
     template_name = 'index.html'
@@ -314,16 +315,23 @@ class ListarFacturasEmitidas(UserPassesTestMixin, TemplateView):
 
     def test_func(self):
         user = self.request.user
-        if user.tipousuario.idtipousuario == 3:
+        if user.tipousuario.idtipousuario == 3 or user.tipousuario.idtipousuario == 2:
             return True
     
     def handle_no_permission(self):
         return redirect('dashboard')
     
     def get_context_data(self,**kwargs):
-        cliente = modelos.Cliente.objects.get(usuario = self.request.user.idusuario)
-        facturas = modelos.Factura.objects.all().filter(cliente = cliente.idcliente)
-        facturasid = modelos.Factura.objects.values_list('idfactura', flat = True).filter(cliente = cliente.idcliente)
+        if self.request.user.tipousuario.idtipousuario == 3:
+            cliente = modelos.Cliente.objects.get(usuario = self.request.user.idusuario)
+            facturas = modelos.Factura.objects.all().filter(cliente = cliente.idcliente)
+            facturasid = modelos.Factura.objects.values_list('idfactura', flat = True).filter(cliente = cliente.idcliente)
+        else:
+            cliente = modelos.Cliente.objects.all().values_list('idcliente', flat = True)
+            facturas = modelos.Factura.objects.all().filter(cliente__in = cliente)
+            facturasid = modelos.Factura.objects.values_list('idfactura', flat = True).filter(cliente__in = cliente)
+        
+
         detallefactura = modelos.Detallefactura.objects.all().filter(factura__in = facturasid)
 
         context = super(ListarFacturasEmitidas,self).get_context_data(**kwargs)
@@ -336,14 +344,14 @@ class PagoFactura(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
     model = modelos.Factura
     form_class = formularios.FacturaForm
     template_name = 'dashboard/cliente/mediodepago.html'
-    success_message = ''
+    success_message = 'Pago confirmado'
     context_object_name = 'factura'
 
 
 
     def test_func(self):
         user = self.request.user
-        if user.tipousuario.idtipousuario == 3:
+        if user.tipousuario.idtipousuario == 3 or user.tipousuario.idtipousuario == 2:
             return True
     
     def handle_no_permission(self):
@@ -351,10 +359,13 @@ class PagoFactura(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
 
     def post(self, request, *args, **kwargs):
         if self.request.method == 'POST':
-            factura = modelos.Factura.objects.get(idfactura=self.kwargs['pk'])
-            options = int(self.request.POST.get('options'))
+            if self.request.user.tipousuario.idtipousuario == 3:
+                options = int(self.request.POST.get('options'))
             
-            estadofactura = modelos.Estadofactura.objects.get(idestado = options)
+                estadofactura = modelos.Estadofactura.objects.get(idestado = options)
+            else:
+                estadofactura = modelos.Estadofactura.objects.get(idestado = 2)
+            factura = modelos.Factura.objects.get(idfactura=self.kwargs['pk'])
             factura.estadofactura = estadofactura
             factura.save()
             
@@ -364,7 +375,10 @@ class PagoFactura(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
     def get_success_url(self, **kwargs):
         idfact = int(self.kwargs['pk'])
         factura = modelos.Factura.objects.get(idfactura=idfact)
-        return reverse_lazy('detalle pago', kwargs = {'pk': factura.estadofactura.idestado,'pk2':factura.idfactura})
+        if self.request.user.tipousuario.idtipousuario == 3:
+            return reverse_lazy('detalle pago', kwargs = {'pk': factura.estadofactura.idestado,'pk2':factura.idfactura})
+        else:
+            return reverse_lazy('listar facturas emitidas')
         
 
 class DetallePago(UserPassesTestMixin, SuccessMessageMixin, TemplateView):
@@ -388,3 +402,153 @@ class DetallePago(UserPassesTestMixin, SuccessMessageMixin, TemplateView):
         context['option'] = int(self.kwargs['pk'])
         context['total'] =total
         return context
+#PDF 
+
+class FacturaPDF(TemplateView):
+
+    def get(self, request, *args, **kwargs):
+        pdf = render_pdf("pdf/factura.html")
+        return HttpResponse(pdf,content_type = "application/pdf")
+#PEDIDOS
+class ListaProveedor(UserPassesTestMixin, TemplateView):
+    template_name = 'dashboard/empleado/solicitarprod.html'
+
+    def test_func(self):
+        user = self.request.user
+        if user.tipousuario.idtipousuario == 2:
+            return True
+    
+    def handle_no_permission(self):
+        return redirect('dashboard')
+    
+    def get_context_data(self,**kwargs):
+        
+        context = super(ListaProveedor,self).get_context_data(**kwargs)
+        context['proveedores'] = modelos.Proveedor.objects.all()
+        return context
+
+
+class SolicitarProducto(UserPassesTestMixin, SuccessMessageMixin, CreateView):
+    model = modelos.Pedido
+    form_class = formularios.PedidoForm
+    template_name = 'dashboard/empleado/seleccionarprod.html'
+    success_message = 'Productos solicitados.'
+    success_url = reverse_lazy('listar proveedor')
+
+    def test_func(self):
+        user = self.request.user
+        if user.tipousuario.idtipousuario == 2:
+            return True
+    
+    def handle_no_permission(self):
+        return redirect('dashboard')
+
+    def get_context_data(self,**kwargs):
+        productos = modelos.Producto.objects.all().filter(proveedor = self.kwargs['pk'])
+        
+        context = super(SolicitarProducto,self).get_context_data(**kwargs)
+        context['productos'] = productos
+        return context
+    
+    def form_valid(self,form, **kwargs):
+        cantidad = self.request.POST.getlist('cantidad[]')
+        idprod = self.request.POST.getlist('idpro[]')
+        arr = []
+        cont = 0
+        for c in idprod:
+            arr.append([c,cantidad[cont]])
+            cont = cont+1
+
+        proveedorid = self.kwargs['pk']
+        emp = modelos.Empleado.objects.get(usuario = self.request.user.idusuario)
+
+        estadopedido = modelos.Estadopedido.objects.get(idestado = 1)
+
+        self.object = form.save(commit=False)
+        self.object.observaciones = self.request.POST.get('observaciones')
+        self.object.fechapedido = date.today()
+        self.object.empleado = emp
+        self.object.estadopedido = estadopedido
+        self.object.proveedor = modelos.Proveedor.objects.get(idproveedor = proveedorid)
+        self.object = form.save()
+
+        for pedido in arr:
+            if int(pedido[1]) > 0:
+                producto = modelos.Producto.objects.get(idproducto = int(pedido[0]))
+                detallepedido = modelos.Detallepedido()
+                detallepedido.cantidad = int(pedido[1])
+                detallepedido.total = int(pedido[1])*producto.precio
+                detallepedido.pedido = self.object
+                detallepedido.producto = producto
+                detallepedido.save()
+
+
+        return super(SolicitarProducto,self).form_valid(form)
+
+class ListarPedidos(UserPassesTestMixin, SuccessMessageMixin, ListView):
+
+    model = modelos.Pedido
+    template_name = 'dashboard/empleado/solicitudes.html'
+    context_object_name = 'pedido'
+
+
+
+    def test_func(self):
+        user = self.request.user
+        if user.tipousuario.idtipousuario == 2 or user.tipousuario.idtipousuario == 4:
+            return True
+    
+    def handle_no_permission(self):
+        return redirect('dashboard')
+    
+    def get_context_data(self,**kwargs):
+        if self.request.user.tipousuario.idtipousuario == 2:
+
+            pedidos = modelos.Pedido.objects.all()
+        if self.request.user.tipousuario.idtipousuario == 4:
+            proveedor = modelos.Proveedor.objects.get(usuario = self.request.user.idusuario)
+            pedidos = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor)
+            
+
+        
+        context = super(ListarPedidos,self).get_context_data(**kwargs)
+        context['pedidos'] = pedidos
+        context['detalles'] = modelos.Detallepedido.objects.all()
+        return context
+
+   
+class AdministrarSolicitud(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
+
+    model = modelos.Pedido
+    form_class = formularios.PedidoForm
+    template_name = 'dashboard/empleado/solicitudes.html'
+    success_message = 'Solicitud Actualizada'
+    context_object_name = 'pedido'
+    success_url = reverse_lazy('listar pedidos')
+
+
+
+    def test_func(self):
+        user = self.request.user
+        if user.tipousuario.idtipousuario == 2 or user.tipousuario.idtipousuario == 4:
+            return True
+    
+    def handle_no_permission(self):
+        return redirect('dashboard')
+
+    def post(self, request, *args, **kwargs):
+
+        if self.request.method == 'POST':
+            pedido = modelos.Pedido.objects.get(idpedido = self.kwargs['pk'] )
+            if 'rechazar' in self.request.POST:
+                estadopedido = modelos.Estadopedido.objects.get(idestado = 4)
+                
+            if 'aceptar' in self.request.POST and self.request.user.tipousuario.idtipousuario == 4:
+                estadopedido = modelos.Estadopedido.objects.get(idestado = 2)
+            if 'recibir' in self.request.POST and self.request.user.tipousuario.idtipousuario == 2:
+                estadopedido = modelos.Estadopedido.objects.get(idestado = 3)
+            pedido.estadopedido = estadopedido
+            pedido.save()
+        return super().post(request, *args, **kwargs)
+
+        

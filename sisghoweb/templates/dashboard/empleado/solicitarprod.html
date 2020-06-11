@@ -1,0 +1,89 @@
+{% extends 'dashboard/base.html' %}
+<!-- Titulo de la pagina -->
+{%block title%} Solicitar Producto {%endblock%}
+
+
+<!-- Contenido -->
+{%block titulo_seccion%} Solicitar Producto {%endblock%}
+
+{%block contenido%}
+{% if messages %}
+
+{% for message in messages %}
+<div class="alert alert-success" role="alert">
+    {{ message }}
+</div>
+
+{% endfor %}
+
+{% endif %}
+{% if form.errors %}
+{% for field in form %}
+{% if field.errors %}
+{% for error in field.errors %}
+<div class="alert alert-danger" role="alert">
+    {{ error|escape }}
+</div>
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+<div class="form-group">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+        </div>
+        <input type="text" class="form-control" placeholder="Buscar" id="buscar" required>
+    </div>
+</div>
+<table class="table">
+    <thead class="thead-entel">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Rubro</th>
+            <th scope="col">Descripcion</th>
+            <th scope="col">Telefono</th>
+            <th scope="col">Sitio Web</th>
+            <th scope="col">Opciones</th>
+        </tr>
+    </thead>
+    <tbody id="tabla">
+        {%if proveedores %}
+        {% for proveedor in proveedores %}
+        <tr>
+
+            <th scope="row">{{proveedor.idproveedor}}</th>
+            <td>{{proveedor.rubro}}</td>
+            <td>{{proveedor.descripcion}}</td>
+            <td>{{proveedor.telefono}}</td>
+            <td>{{proveedor.sitioweb}}</td>
+            <td>
+                <a class="btn btn-primary" href="{% url 'solicitar producto' proveedor.idproveedor %}"><i class="fas fa-plus"></i></a>
+            </td>
+        </tr>
+
+        {% endfor %}
+        {% else %}
+        <h1>No existen registros</h1>
+        {% endif %}
+
+    </tbody>
+
+</table>
+
+{%endblock%}
+
+{%block scripts%}
+
+<script>
+    $(document).ready(function () {
+
+        $("#buscar").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#tabla tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+{%endblock%}

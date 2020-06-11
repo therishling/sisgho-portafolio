@@ -1,10 +1,10 @@
 {% extends 'dashboard/base.html' %}
 <!-- Titulo de la pagina -->
-{%block title%} Asignar Habitacion {%endblock%}
+{%block title%} Facturas {%endblock%}
 
 
 <!-- Contenido -->
-{%block titulo_seccion%} Lista Huespedes {%endblock%}
+{%block titulo_seccion%} Facturas {%endblock%}
 
 {%block contenido%}
 {% if messages %}
@@ -56,16 +56,32 @@
             <td>{{factura.giro}}</td>
             <td>{{factura.fechafactura|date:'Y-m-d'}}</td>
             <td>{{factura.cliente}}</td>
-            <td>{{factura.estadofactura.descripcion}}</td>
             <td>
-                {%if factura.estadofactura.idestado == 1 %}
+                
+                {%if factura.estadofactura.idestado == 1%}
+                <h6><span class="badge badge-danger">{{factura.estadofactura.descripcion}}</span></h6>
+                {%endif%}
+                {%if factura.estadofactura.idestado == 2%}
+                <h6><span class="badge badge-success">{{factura.estadofactura.descripcion}}</span></h6>
+                {%endif%}
+                {%if factura.estadofactura.idestado == 3 or factura.estadofactura.idestado == 4 %}
+                <h6><span class="badge badge-warning">{{factura.estadofactura.descripcion}}</span></h6>
+                {%endif%}
+                
+                
+                
+                
+            
+            </td>
+            <td>
+                {%if factura.estadofactura.idestado == 1 and user.tipousuario.idtipousuario == 3 %}
                 <button type="button" class="btn btn-primary" data-toggle="modal"
                     data-target="#detalleModal{{factura.idfactura}}">
                     <i class="fas fa-wallet"></i>
                 </button>
                 {% else %}
                 <button type="button" class="btn btn-primary" data-toggle="modal"
-                    data-target="#reservaModal{{huesped.idhuesped}}">
+                    data-target="#detalleModal{{factura.idfactura}}">
                     <i class="fas fa-edit"></i>
                 </button>
                 {% endif %}
@@ -86,10 +102,27 @@
 
 
 
-
+                            {%if user.tipousuario.idtipousuario == 3 and factura.estadofactura.idestado == 1 %}
                             <form 
-                                action="{% url 'pago factura' factura.idfactura %}" 
-                                method="GET">
+                            
+                            action="{% url 'pago factura' factura.idfactura %}" 
+                            method="GET">
+
+                            {% endif %}
+                            {%if user.tipousuario.idtipousuario == 2 %}
+                            <form 
+                            
+                            action="{% url 'pago factura' factura.idfactura %}" 
+                            method="POST">
+
+                            {% endif %}
+
+                            {%if user.tipousuario.idtipousuario == 3 and factura.estadofactura.idestado == 2  %}
+                            <form 
+                            
+                            action="{% url 'factura pdf' %}" 
+                            method="GET">
+                            {% endif %}
                                 {% csrf_token %}
                                 <!-- Modal body -->
 
@@ -130,8 +163,20 @@
                                 </div>
                                 <!-- Modal footer  -->
                                 <div class="modal-footer">
+                                    {%if factura.estadofactura.idestado == 1 and user.tipousuario.idtipousuario == 3 %}
                                     <button type="submit" class="btn btn-primary">Pagar</button>
                                     <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                                    {% else %}
+                                    {%if user.tipousuario.idtipousuario == 2  %}
+                                    {%if factura.estadofactura.idestado == 3 or factura.estadofactura.idestado == 4  %}
+                                    <button type="submit" class="btn btn-primary">Confirmar Pago</button>
+                                    {% endif %}
+                                    {% endif %}
+                                    {%if factura.estadofactura.idestado == 2 and user.tipousuario.idtipousuario == 3 %}
+                                    <button type="submit" class="btn btn-primary">Descargar Factura</button>
+                                    {% endif %}
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                                    {% endif %}
                                 </div>
                             </form>
 
@@ -179,15 +224,15 @@
         var total = 0;
         var e = "";
         var res = "";
-        
+
         for (let index = 1; index < document.getElementById("table{{factura.idfactura}}").rows.length; index++) {
             e = document.getElementById("table{{factura.idfactura}}").rows[index].cells.item(4).innerHTML
             res = e.split("$");
             total = total + parseInt(res[1]);
             console.log(total);
-            document.getElementById('totalFactura{{factura.idfactura}}').innerHTML = "Total: $"+ total;
+            document.getElementById('totalFactura{{factura.idfactura}}').innerHTML = "Total: $" + total;
         }
-        
+
     }
 </script>
 

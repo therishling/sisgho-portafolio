@@ -4,7 +4,7 @@
 
 
 <!-- Contenido -->
-{%block titulo_seccion%} Lista Huespedes {%endblock%}
+{%block titulo_seccion%} Asignar Habitacion {%endblock%}
 
 {%block contenido%}
 {% if messages %}
@@ -114,7 +114,7 @@
                                         <label for="vendedor">Habitacion</label>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                <span class="input-group-text"><i class="fas fa-hotel"></i></span>
                                             </div>
                                             <select class="form-control" name="habitacion" readonly>
                                                 {% for habitacion in habitaciones %}

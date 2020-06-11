@@ -132,7 +132,6 @@ class DetalleReserva(models.Model):
 
 class Detallepedido(models.Model):
     idedetalle = models.AutoField(primary_key=True)
-    proveedor = models.ForeignKey('Proveedor', models.DO_NOTHING, db_column='proveedor')
     pedido = models.ForeignKey('Pedido', models.DO_NOTHING, db_column='pedido')
     producto = models.ForeignKey('Producto', models.DO_NOTHING, db_column='producto')
     cantidad = models.IntegerField()
@@ -148,6 +147,9 @@ class Empleado(models.Model):
 
     class Meta:
         db_table = 'empleado'
+
+    def __str__(self):
+        return self.usuario.nombre + ' ' + self.usuario.apellido_paterno
 
 
 class Estadofactura(models.Model):
@@ -172,6 +174,9 @@ class Estadopedido(models.Model):
 
     class Meta:
         db_table = 'estadopedido'
+    
+    def __str__(self):
+        return self.descripcion
 
 
 class Factura(models.Model):
@@ -225,9 +230,10 @@ class Huesped(models.Model):
 class Pedido(models.Model):
     idpedido = models.AutoField(primary_key=True)
     empleado = models.ForeignKey(Empleado, models.DO_NOTHING, db_column='empleado')
-    observaciones = models.CharField(max_length=255)
+    observaciones = models.CharField(max_length=255, blank = True, null = True)
     estadopedido = models.ForeignKey(Estadopedido, models.DO_NOTHING, db_column='estadopedido')
     fechapedido = models.DateField()
+    proveedor = models.ForeignKey('Proveedor', models.DO_NOTHING, db_column='proveedor')
 
     class Meta:
         db_table = 'pedido'
@@ -255,6 +261,9 @@ class Producto(models.Model):
 
     class Meta:
         db_table = 'producto'
+
+    def __str__(self):
+        return self.descripcion
 
 
 class Recepcionproducto(models.Model):
@@ -287,6 +296,9 @@ class Tipoproducto(models.Model):
 
     class Meta:
         db_table = 'tipoproducto'
+    
+    def __str__(self):
+        return self.descripcion
 
 
 class Tiposervicio(models.Model):

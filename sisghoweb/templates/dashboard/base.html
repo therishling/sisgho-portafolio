@@ -41,6 +41,10 @@
         {% include 'menu/empleado.html' %}
         {%endif%}
 
+        {%if user.tipousuario.idtipousuario == 4 or user.tipousuario.idtipousuario == 1%}
+        {% include 'menu/proveedor.html' %}
+        {%endif%}
+
       </div>
       <div class="dropdown-divider"></div>
 

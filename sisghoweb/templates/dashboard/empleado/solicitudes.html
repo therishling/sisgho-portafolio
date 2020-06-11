@@ -1,0 +1,193 @@
+{% extends 'dashboard/base.html' %}
+<!-- Titulo de la pagina -->
+{%block title%} Solicitudes de Productos {%endblock%}
+
+
+<!-- Contenido -->
+{%block titulo_seccion%}Solicitudes de Productos {%endblock%}
+
+{%block contenido%}
+{% if messages %}
+
+{% for message in messages %}
+<div class="alert alert-success" role="alert">
+    {{ message }}
+</div>
+
+{% endfor %}
+
+{% endif %}
+{% if form.errors %}
+{% for field in form %}
+{% if field.errors %}
+{% for error in field.errors %}
+<div class="alert alert-danger" role="alert">
+    {{ error|escape }}
+</div>
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+<div class="form-group">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <span class="input-group-text"><i class="fas fa-search"></i></span>
+        </div>
+        <input type="text" class="form-control" placeholder="Buscar" id="buscar" required>
+    </div>
+</div>
+<table class="table">
+    <thead class="thead-entel">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Fecha Pedido</th>
+            <th scope="col">Empleado</th>
+            <th scope="col">Observaciones</th>
+            <th scope="col">Estado Pedido</th>
+            <th scope="col">Opciones</th>
+        </tr>
+    </thead>
+    <tbody id="tabla">
+        {%if pedidos %}
+        {% for pedido in pedidos %}
+        <tr>
+
+            <th scope="row">{{pedido.idpedido}}</th>
+            <td>{{pedido.fechapedido}}</td>
+            <td>{{pedido.empleado}}</td>
+            <td>{{pedido.observaciones}}</td>
+            <td>
+                {%if pedido.estadopedido.idestado == 1 or pedido.estadopedido.idestado == 2 %}
+                <h6><span class="badge badge-warning">{{pedido.estadopedido}}</span></h6>
+                {%endif%}
+
+                {%if pedido.estadopedido.idestado == 3%}
+                <h6><span class="badge badge-success">{{pedido.estadopedido}}</span></h6>
+                {%endif%}
+                
+                {%if pedido.estadopedido.idestado == 4%}
+                <h6><span class="badge badge-danger">{{pedido.estadopedido}}</span></h6>
+                {%endif%}
+
+
+            </td>
+            <td>
+                <button type="button" class="btn btn-primary" data-toggle="modal"
+                    data-target="#pedidos{{pedido.idpedido}}">
+                    <i class="fas fa-plus"></i>
+                </button>
+
+                <div class="modal fade" id="pedidos{{pedido.idpedido}}">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Detalle Pedido: {{pedido.idpedido}}
+                                </h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+
+
+
+
+                            
+                                <!-- Modal body -->
+
+
+                                <div class="modal-body">
+
+                                    <table class="table">
+                                        <thead class="thead-dark">
+                                            <tr>
+                                                <th scope="col">#</th>
+                                                <th scope="col">Producto</th>
+                                                <th scope="col">Cantidad</th>
+                                                <th scope="col">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for detalle in detalles %}
+                                            {%if detalle.pedido.idpedido == pedido.idpedido%}
+                                            <tr>
+                                                <th scope="row">{{detalle.idedetalle}}</th>
+                                                <td>{{detalle.producto}}</td>
+                                                <td>{{detalle.cantidad}}</td>
+                                                <td>${{detalle.total}}</td>
+
+
+                                            </tr>
+                                            {%endif%}
+                                            {%endfor%}
+                                        </tbody>
+                                    </table>
+                                    <form  action="{% url 'administrar solicitud' pedido.idpedido %}" method="POST">
+                                        {% csrf_token %}
+                                        {%if pedido.estadopedido.idestado == 1 and user.tipousuario.idtipousuario == 4%}
+                                        <input type="text" class="form-control" name="observaciones"
+                                        placeholder="Observaciones">
+                                        
+                                        {%endif%}
+
+                                    {%if pedido.estadopedido.idestado == 2 and user.tipousuario.idtipousuario == 2%}
+                                    <input type="text" class="form-control" name="observaciones"
+                                        placeholder="Observaciones" >
+                                    {%endif%}
+                                </div>
+                                <!-- Modal footer  -->
+                                <div class="modal-footer">
+                                    {%if pedido.estadopedido.idestado == 1 and user.tipousuario.idtipousuario == 4%}
+
+                                    <button type="submit" name="aceptar" class="btn btn-primary">Aceptar Pedido</button>
+                                    <button type="submit" name="rechazar" class="btn btn-danger">Rechazar Pedido</button>
+                                    {%endif%}
+                                    {%if pedido.estadopedido.idestado == 2 and user.tipousuario.idtipousuario == 2%}
+                                    <button type="submit" name="recibir" class="btn btn-primary">Confirmar Entrega</button>
+                                    
+                                    <button type="submit" name="rechazar" class="btn btn-danger">Rechazar Entrega</button>
+                                    {%endif%}
+                                    
+                                    
+                                    
+                                </form>
+                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+                                </div>
+                           
+
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+
+        {% endfor %}
+        {% else %}
+        <h1>No existen registros</h1>
+        {% endif %}
+
+    </tbody>
+
+</table>
+
+{%endblock%}
+
+{%block scripts%}
+
+<script>
+    $(document).ready(function () {
+
+        $("#buscar").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#tabla tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+    });
+</script>
+{%endblock%}

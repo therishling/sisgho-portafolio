@@ -4,14 +4,14 @@
 
 
 <!-- Contenido -->
-{%block titulo_seccion%} Lista Huespedes {%endblock%}
+{%block titulo_seccion%} Reservar Habitacion {%endblock%}
 
 {%block contenido%}
 {% if messages %}
 
 {% for message in messages %}
 <div class="alert alert-success" role="alert">
-    {{ message }}
+  {{ message }}
 </div>
 
 {% endfor %}
@@ -106,36 +106,40 @@
                   <div class="form-group">
                     <div class="input-group">
                       <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
                       </div>
-                      <input type="text" class="form-control" name="rut" value="{{huesped.rut}}" placeholder="RUT" required>
+                      <input type="text" class="form-control" name="rut" value="{{huesped.rut}}" placeholder="RUT"
+                        required>
                     </div>
                   </div>
 
                   <div class="form-group">
                     <div class="input-group">
                       <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
                       </div>
-                      <input type="text" class="form-control" name="nombre" placeholder="Nombre" value="{{huesped.nombre}}" required> 
+                      <input type="text" class="form-control" name="nombre" placeholder="Nombre"
+                        value="{{huesped.nombre}}" required>
                     </div>
                   </div>
 
                   <div class="form-group">
                     <div class="input-group">
                       <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
                       </div>
-                      <input type="text" class="form-control" name="apellidopaterno" placeholder="Apellido Paterno" value="{{huesped.apellidopaterno}}" required> 
+                      <input type="text" class="form-control" name="apellidopaterno" placeholder="Apellido Paterno"
+                        value="{{huesped.apellidopaterno}}" required>
                     </div>
                   </div>
 
                   <div class="form-group">
                     <div class="input-group">
                       <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
                       </div>
-                      <input type="text" class="form-control" name="apellidomaterno" placeholder="Apellido Materno" value="{{huesped.apellidomaterno}}" required>
+                      <input type="text" class="form-control" name="apellidomaterno" placeholder="Apellido Materno"
+                        value="{{huesped.apellidomaterno}}" required>
                     </div>
                   </div>
 
@@ -143,9 +147,10 @@
                     <label for="fechadesde">Desde</label>
                     <div class="input-group">
                       <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                        <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
                       </div>
-                      <input type="date" class="form-control" name="fechadesde" value="{{huesped.fechadesde|date:'Y-m-d'}}" required>
+                      <input type="date" class="form-control" name="fechadesde"
+                        value="{{huesped.fechadesde|date:'Y-m-d'}}" required>
                     </div>
                   </div>
 
@@ -153,9 +158,10 @@
                     <label for="fechahasta">Hasta</label>
                     <div class="input-group">
                       <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                        <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
                       </div>
-                      <input type="date" class="form-control" name="fechahasta" value="{{huesped.fechahasta|date:'Y-m-d'}}" >
+                      <input type="date" class="form-control" name="fechahasta"
+                        value="{{huesped.fechahasta|date:'Y-m-d'}}">
                     </div>
                   </div>
 
@@ -189,7 +195,7 @@
               <form action="{% url 'cancelar reserva' huesped.idhuesped %}" method="POST">
                 {% csrf_token %}
                 <!-- Modal body -->
-                
+
                 <div class="modal-body">
                   Estas seguro que deseas cancelar la reserva?
                 </div>
@@ -211,7 +217,7 @@
     {% endif %}
     {% endfor %}
     {% else %}
-    <h1>No existen registros</h1>
+    <h1>No existen huespedes</h1>
     {% endif %}
     <tr>
       <th scope="row"></th>
@@ -264,7 +270,7 @@
                   <div class="form-group">
                     <div class="input-group">
                       <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
                       </div>
                       <input type="text" class="form-control" name="rut" placeholder="RUT" required>
                     </div>
@@ -273,27 +279,29 @@
                   <div class="form-group">
                     <div class="input-group">
                       <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
                       </div>
-                      <input type="text" class="form-control" name="nombre" placeholder="Nombre" required> 
+                      <input type="text" class="form-control" name="nombre" placeholder="Nombre" required>
                     </div>
                   </div>
 
                   <div class="form-group">
                     <div class="input-group">
                       <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
                       </div>
-                      <input type="text" class="form-control" name="apellidopaterno" placeholder="Apellido Paterno" required> 
+                      <input type="text" class="form-control" name="apellidopaterno" placeholder="Apellido Paterno"
+                        required>
                     </div>
                   </div>
 
                   <div class="form-group">
                     <div class="input-group">
                       <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
                       </div>
-                      <input type="text" class="form-control" name="apellidomaterno" placeholder="Apellido Materno" required>
+                      <input type="text" class="form-control" name="apellidomaterno" placeholder="Apellido Materno"
+                        required>
                     </div>
                   </div>
 
@@ -301,7 +309,7 @@
                     <label for="fechadesde">Desde</label>
                     <div class="input-group">
                       <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                        <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
                       </div>
                       <input type="date" class="form-control" name="fechadesde" required>
                     </div>
@@ -311,9 +319,9 @@
                     <label for="fechahasta">Hasta</label>
                     <div class="input-group">
                       <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                        <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
                       </div>
-                      <input type="date" class="form-control" name="fechahasta" >
+                      <input type="date" class="form-control" name="fechahasta">
                     </div>
                   </div>
 

@@ -13,11 +13,25 @@
 
 <a href="{% url 'nueva solicitud compra' %}"
     class="list-group-item list-group-item-action {% active 'nueva solicitud compra' %}"><i
-        class="fas fa-calendar-plus"></i><span> Nueva Solicitud</span></a>
+        class="fas fa-utensils"></i><span> Nueva Compra</span></a>
 
 <div class="categoria">
     <span>Factura</span>
 </div>
-<a href="{% url 'emitir factura' %}"
-    class="list-group-item list-group-item-action {% active 'emitir factura' %}"><i
-        class="fas fa-calendar-plus"></i><span> Emitir Factura</span></a>
+<a href="{% url 'emitir factura' %}" class="list-group-item list-group-item-action {% active 'emitir factura' %}"><i
+        class="fas fa-receipt"></i><span> Emitir Factura</span></a>
+
+<a href="{% url 'listar facturas emitidas' %}"
+    class="list-group-item list-group-item-action {% active 'listar facturas emitidas' %}"><i
+        class="fas fa-table"></i><span> Facturas</span></a>
+
+
+<div class="categoria">
+    <span>Producto</span>
+</div>
+
+<a href="{% url 'listar proveedor' %}" class="list-group-item list-group-item-action {% active 'listar proveedor' %}"><i
+        class="fas fa-cart-plus"></i><span> Solicitar Producto</span></a>
+
+<a href="{% url 'listar pedidos' %}" class="list-group-item list-group-item-action {% active 'listar pedidos' %}"><i
+        class="fas fa-table"></i><span> Ver Solicitudes</span></a>

@@ -27,3 +27,8 @@ class FacturaForm(forms.ModelForm):
     class Meta:
         model = modelo.Factura
         fields = ('fechapago',)
+
+class PedidoForm(forms.ModelForm):
+    class Meta:
+        model = modelo.Pedido
+        fields = ('observaciones',)

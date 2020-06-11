@@ -1,10 +1,10 @@
 {% extends 'dashboard/base.html' %}
 <!-- Titulo de la pagina -->
-{%block title%} Asignar Habitacion {%endblock%}
+{%block title%} Solicitud de Compra {%endblock%}
 
 
 <!-- Contenido -->
-{%block titulo_seccion%} Lista Huespedes {%endblock%}
+{%block titulo_seccion%} Solicitud de Compra {%endblock%}
 
 {%block contenido%}
 {% if messages %}
@@ -98,10 +98,10 @@
 
 
                                     <div class="form-group">
-                                        <label for="vendedor">Servicio</label>
+                                        <label for="servicio">Servicio</label>
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                <span class="input-group-text"><i class="fas fa-utensils"></i></span>
                                             </div>
                                             <input name="huesped" type="hidden" value="{{huesped.idhuesped}}">
                                             <select class="form-control" id="servicioComedor" name="servicio" readonly>
@@ -117,7 +117,7 @@
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                                                <span class="input-group-text"><i class="fas fa-plus"></i></span>
                                             </div>
                                             <input type="number" class="form-control" id="cantidad" name="cantidad"
                                                 placeholder="Cantidad" required>

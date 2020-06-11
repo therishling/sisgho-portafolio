@@ -21,5 +21,12 @@ urlpatterns = [
     path('dashboard/listar-facturas-emitidas', login_required(vista.ListarFacturasEmitidas.as_view()) ,name='listar facturas emitidas'),
     re_path(r'^dashboard/pagar-factura/(?P<pk>\d+)/$', login_required(vista.PagoFactura.as_view()) ,name='pago factura'),
     re_path(r'^dashboard/detalle-pago/(?P<pk>\d+)/(?P<pk2>\d+)/$', login_required(vista.DetallePago.as_view()) ,name='detalle pago'),
+    #PDF
+    path('dashboard/facturapdf', login_required(vista.FacturaPDF.as_view()) ,name='factura pdf'),
+    #PEDIDO PRODUCTOS
+    path('dashboard/listar-proveedor', login_required(vista.ListaProveedor.as_view()) ,name='listar proveedor'),
+    re_path(r'^dashboard/solicitar-producto/(?P<pk>\d+)/$', login_required(vista.SolicitarProducto.as_view()) ,name='solicitar producto'),
+    path('dashboard/pedidos', login_required(vista.ListarPedidos.as_view()) ,name='listar pedidos'),
+    re_path(r'^dashboard/pedidos/(?P<pk>\d+)/$', login_required(vista.AdministrarSolicitud.as_view()) ,name='administrar solicitud'),
 
 ]
