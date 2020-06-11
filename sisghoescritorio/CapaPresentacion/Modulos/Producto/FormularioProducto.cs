@@ -43,7 +43,7 @@ namespace CapaPresentacion.Modulos.Producto
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Debe seleccionar un producto.", "Modificar Producto", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+               MessageBox.Show("Debe seleccionar un producto." + ex.Message, "Modificar Producto", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 

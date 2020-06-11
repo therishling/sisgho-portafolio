@@ -547,6 +547,11 @@ class AdministrarSolicitud(UserPassesTestMixin, SuccessMessageMixin, UpdateView)
                 estadopedido = modelos.Estadopedido.objects.get(idestado = 2)
             if 'recibir' in self.request.POST and self.request.user.tipousuario.idtipousuario == 2:
                 estadopedido = modelos.Estadopedido.objects.get(idestado = 3)
+                detallepedido = modelos.Detallepedido.objects.all().filter(pedido = pedido.idpedido)
+                for dp in detallepedido:
+                    producto = modelos.Producto.objects.get(idproducto = dp.producto.idproducto)
+                    producto.stock = producto.stock + dp.cantidad
+                    producto.save()
             pedido.estadopedido = estadopedido
             pedido.save()
         return super().post(request, *args, **kwargs)

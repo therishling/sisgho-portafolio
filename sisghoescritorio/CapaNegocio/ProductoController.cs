@@ -146,7 +146,7 @@ namespace CapaNegocio
 
             descripcion.Text = p.DESCRIPCION;
             stock.Text = p.STOCK.ToString();
-            tipoproducto.SelectedIndex = (int)p.TIPOPRODUCTO - 1;
+            tipoproducto.Text = p.TIPOPRODUCTO1.DESCRIPCION;
             comboprov.SelectedIndex = (int)p.PROVEEDOR - 1;
             idlabel.Text = p.IDPRODUCTO.ToString();
             precio.Text = p.PRECIO.ToString();
