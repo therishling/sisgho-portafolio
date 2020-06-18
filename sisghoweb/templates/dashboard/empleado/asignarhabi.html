@@ -152,6 +152,20 @@
     </tbody>
 
 </table>
+<div class="row">
+    <div class="col-md-12 d-flex justify-content-end">
+        <form action="{% url 'actualizar estado habitacion' %}" method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary" data-toggle="modal"
+            data-target="#reservaModal{{huesped.idhuesped}}">
+            <i class="fas fa-sync"> Actualizar Habitaciones</i>
+        </button>
+        </form>
+        
+    </div>
+
+</div>
+
 
 {%endblock%}
 

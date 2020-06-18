@@ -60,13 +60,24 @@
       <td>{{huesped.habitacion.numero}}</td>
       {% endif %}
       <td>
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#editModal{{huesped.idhuesped}}">
-          <i class="fas fa-edit"></i>
-        </button>
+        {%if huesped.fechahasta >= time%}
+        <div class="row">
+          <div class="col-md-6">
+            <button type="button" class="btn btn-primary" data-toggle="modal"
+              data-target="#editModal{{huesped.idhuesped}}">
+              <i class="fas fa-edit"></i>
+            </button>
+          </div>
+          <div class="col-md-6">
+            <button type="button" class="btn btn-danger" data-toggle="modal"
+              data-target="#delModal{{huesped.idhuesped}}">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
 
-        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#delModal{{huesped.idhuesped}}">
-          <i class="fas fa-trash"></i>
-        </button>
+        {%endif%}
+
 
         <div class="modal fade" id="editModal{{huesped.idhuesped}}">
           <div class="modal-dialog">

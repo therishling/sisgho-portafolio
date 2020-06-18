@@ -1,1 +1,108 @@
-FACTURA
+{%load static%}
+<!DOCTYPE html>
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<style>
+    .img-invoice {
+        width: 50px;
+        text-align: center;
+        margin: 0 auto;
+    }
+
+    .head {
+        text-align: center;
+        text-transform: uppercase;
+    }
+
+    #invoice thead tr th {
+        text-align: left;
+        border-bottom: 1px solid black;
+        border-top: 1px solid black;
+        padding-top: 4px;
+    }
+
+    #invoice thead tr {
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    #invoice tbody tr {
+        padding: 0;
+    }
+
+    .text-center{
+        text-align: center;
+    }
+</style>
+<body>
+<img src="{% static 'img/logonofondo.png' %}" class="img-invoice">
+<p class="head">
+    Hostal Doña Clarita<br>
+    77.777.777-7<br>
+    Direccion Hostal #1234
+</p>
+<p>
+    <b>FACTURA:</b> {{ factura.idfactura }}<br>
+    <b>FECHA DE VENTA:</b> {{ factura.fechafactura|date:'Y-m-d' }}<br>
+    <b>CLIENTE:</b> {{ factura.cliente }}<br>
+    <b>RUT:</b> {{ factura.cliente.rut }}<br>
+</p>
+<table id="invoice">
+    <thead>
+    <tr>
+        <th style="width: 10%;">CANTIDAD</th>
+        <th style="width: 15%;">PRECIO UNITARIO</th>
+        <th style="width: 20%;">CATEGORIA</th>
+        <th style="width: 40%;">PRODUCTO</th>
+        <th style="width: 15%;">TOTAL</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for detalle in detallefactura %}
+        <tr {% if forloop.first %}style="padding-top: 3px;" {% endif %}>
+            {%if detalle.solicitudcompra == null %}
+            <td class="text-center">{{ detalle.detallereserva.dias}}</td>
+            <td class="text-center">${{ detalle.detallereserva.habitacion.precio }}</td>
+            
+            <td>Reserva habitacion</td>
+            <td>Habitacion: {{ detalle.detallereserva.habitacion.numero}}</td>
+            <td style="text-align: right;">${{ detalle.total }}</td>
+            {%else%}
+            <td class="text-center">{{ detalle.solicitudcompra.cantidad}}</td>
+            <td class="text-center">${{ detalle.solicitudcompra.serviciocomedor.precio }}</td>
+            
+            <td>Servicio Comedor</td>
+            <td>{{ detalle.solicitudcompra.serviciocomedor}}</td>
+            <td style="text-align: right;">${{ detalle.total }}</td>
+            {%endif%}
+            
+        </tr>
+    {% endfor %}
+    <tr style="border-top: 1px solid black; padding-top: 4px;">
+        <td colspan="4"><b>SUBTOTAL</b></td>
+        <td style="text-align: right">${{ subtotal }}</td>
+    </tr>
+    <tr style="padding-top: 0px;">
+        <td colspan="4"><b>IVA 19%</b></td>
+        <td style="text-align: right">${{ iva }}</td>
+    </tr>
+    <tr style="padding-top: 0px;">
+        <td colspan="4"><b>TOTAL A PAGAR</b></td>
+        <td style="text-align: right">${{ total }}</td>
+    </tr>
+    </tbody>
+</table>
+<table style="margin-top: 250px;">
+    <thead>
+    <tr>
+        <th>****GRACIAS POR SU COMPRA****</th>
+    </tr>
+    <tr>
+        <th>Vuelva pronto!!</th>
+    </tr>
+    </thead>
+</table>
+
+
+</body>
+</html>

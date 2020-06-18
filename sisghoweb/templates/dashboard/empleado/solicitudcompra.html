@@ -104,7 +104,7 @@
                                                 <span class="input-group-text"><i class="fas fa-utensils"></i></span>
                                             </div>
                                             <input name="huesped" type="hidden" value="{{huesped.idhuesped}}">
-                                            <select class="form-control" id="servicioComedor" name="servicio" readonly>
+                                            <select class="form-control" id="servicioComedor{{huesped.idhuesped}}" name="servicio" readonly>
                                                 {% for servicio in servicios %}
                                                 <option  value="{{servicio.idservicio}}"> {{servicio.plato}}: $<label
                                                         id="precioservicio">{{servicio.precio}}</label>
@@ -119,7 +119,7 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text"><i class="fas fa-plus"></i></span>
                                             </div>
-                                            <input type="number" class="form-control" id="cantidad" name="cantidad"
+                                            <input type="number" class="form-control" id="cantidad{{huesped.idhuesped}}" name="cantidad"
                                                 placeholder="Cantidad" required>
 
                                         </div>
@@ -129,7 +129,7 @@
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <h4 class="modal-title">Total: $ </h4>
-                                                <h4 id="totalservicio" class="modal-title"> 0 </h4>
+                                                <h4 id="totalservicio{{huesped.idhuesped}}" class="modal-title"> 0 </h4>
                                             </div>
 
 
@@ -186,10 +186,10 @@
 
 <script>
     $(document).ready(function () {
-
-        $("#cantidad").on("change", function () {
+        {% for huesped in huespedes %}
+        $("#cantidad{{huesped.idhuesped}}").on("change", function () {
             cantidad = $(this).val();
-            e = document.getElementById("servicioComedor");
+            e = document.getElementById("servicioComedor{{huesped.idhuesped}}");
             servicioId = e.options[e.selectedIndex].value;
             {% for servicio in servicios %}
                if(servicioId == {{servicio.idservicio}}){
@@ -197,22 +197,17 @@
                 total = precio * cantidad;
                }                  
             {% endfor %}
-            document.getElementById('totalservicio').innerHTML = total;
+            document.getElementById('totalservicio{{huesped.idhuesped}}').innerHTML = total;
 
         });
-    });
-    
-</script>
 
-<script>
-    $(document).ready(function () {
         var cantidad = 0;
         var total = 0;
         var precio = 0;
         var servicioId;
-        $("#servicioComedor").on("change", function () {
-            cantidad = document.getElementById("cantidad").value;
-            e = document.getElementById("servicioComedor");
+        $("#servicioComedor{{huesped.idhuesped}}").on("change", function () {
+            cantidad = document.getElementById("cantidad{{huesped.idhuesped}}").value;
+            e = document.getElementById("servicioComedor{{huesped.idhuesped}}");
             servicioId = e.options[e.selectedIndex].value;
             {% for servicio in servicios %}
                if(servicioId == {{servicio.idservicio}}){
@@ -220,33 +215,29 @@
                 total = precio * cantidad;
                }                  
             {% endfor %}
-            document.getElementById('totalservicio').innerHTML = total;
+            document.getElementById('totalservicio{{huesped.idhuesped}}').innerHTML = total;
 
         });
+
+        $("#cantidad{{huesped.idhuesped}}").on("keyup", function () {
+            cantidad = $(this).val();
+            e = document.getElementById("servicioComedor{{huesped.idhuesped}}");
+            servicioId = e.options[e.selectedIndex].value;
+            {% for servicio in servicios %}
+               if(servicioId == {{servicio.idservicio}}){
+                precio = {{servicio.precio}};
+                total = precio * cantidad;
+               }                  
+            {% endfor %}
+            document.getElementById('totalservicio{{huesped.idhuesped}}').innerHTML = total;
+
+        });
+        {% endfor %}
     });
     
 </script>
 
 
-<script>
-    $(document).ready(function () {
-        var cantidad = 0;
-        var total = 0;
-        var precio = 0;
-        var servicioId;
-        $("#cantidad").on("keyup", function () {
-            cantidad = $(this).val();
-            e = document.getElementById("servicioComedor");
-            servicioId = e.options[e.selectedIndex].value;
-            {% for servicio in servicios %}
-               if(servicioId == {{servicio.idservicio}}){
-                precio = {{servicio.precio}};
-                total = precio * cantidad;
-               }                  
-            {% endfor %}
-            document.getElementById('totalservicio').innerHTML = total;
 
-        });
-    });
-</script>
+
 {%endblock%}

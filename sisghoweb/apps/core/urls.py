@@ -22,11 +22,14 @@ urlpatterns = [
     re_path(r'^dashboard/pagar-factura/(?P<pk>\d+)/$', login_required(vista.PagoFactura.as_view()) ,name='pago factura'),
     re_path(r'^dashboard/detalle-pago/(?P<pk>\d+)/(?P<pk2>\d+)/$', login_required(vista.DetallePago.as_view()) ,name='detalle pago'),
     #PDF
-    path('dashboard/facturapdf', login_required(vista.FacturaPDF.as_view()) ,name='factura pdf'),
+    re_path(r'^dashboard/factura-pdf/(?P<pk>\d+)/$', login_required(vista.FacturaPDF.as_view()) ,name='factura pdf'),
     #PEDIDO PRODUCTOS
     path('dashboard/listar-proveedor', login_required(vista.ListaProveedor.as_view()) ,name='listar proveedor'),
     re_path(r'^dashboard/solicitar-producto/(?P<pk>\d+)/$', login_required(vista.SolicitarProducto.as_view()) ,name='solicitar producto'),
     path('dashboard/pedidos', login_required(vista.ListarPedidos.as_view()) ,name='listar pedidos'),
     re_path(r'^dashboard/pedidos/(?P<pk>\d+)/$', login_required(vista.AdministrarSolicitud.as_view()) ,name='administrar solicitud'),
+    path('dashboard/actualizar', login_required(vista.ActualizarEstHab.as_view()) ,name='actualizar estado habitacion'),
+    #ESTADISTICAS
+    path('dashboard/estadisticas', login_required(vista.obtener_datos) ,name='estadisticas'),
 
 ]

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField, UserChangeForm
 from apps.core import models as modelo
-
+from datetime import date
 
 class HuespedForm(forms.ModelForm):
     class Meta:
@@ -32,3 +32,18 @@ class PedidoForm(forms.ModelForm):
     class Meta:
         model = modelo.Pedido
         fields = ('observaciones',)
+
+class HabitacionForm(forms.Form):
+    
+    def actualizar_estado(self):
+        huespedes = modelo.Huesped.objects.all()
+        for huesped in huespedes:
+            if huesped.fechahasta < date.today():
+              habitacion = modelo.Habitacion.objects.get(idhabitacion = huesped.habitacion.idhabitacion)
+              habitacion.estadohabitacion = modelo.Estadohabitacion.objects.get(idestado = 1)
+              habitacion.save()
+            if huesped.fechahasta > date.today() and huesped.habitacion is not None:
+                habitacion = modelo.Habitacion.objects.get(idhabitacion = huesped.habitacion.idhabitacion)
+                habitacion.estadohabitacion = modelo.Estadohabitacion.objects.get(idestado = 2)
+                habitacion.save()
+                

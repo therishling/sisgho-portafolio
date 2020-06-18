@@ -120,7 +120,7 @@
                             {%if user.tipousuario.idtipousuario == 3 and factura.estadofactura.idestado == 2  %}
                             <form 
                             
-                            action="{% url 'factura pdf' %}" 
+                            action="{% url 'factura pdf' factura.idfactura %}" 
                             method="GET">
                             {% endif %}
                                 {% csrf_token %}

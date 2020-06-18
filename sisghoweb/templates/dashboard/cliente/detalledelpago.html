@@ -7,27 +7,7 @@
 {%block titulo_seccion%} Detalle Pago {%endblock%}
 
 {%block contenido%}
-{% if messages %}
 
-{% for message in messages %}
-<div class="alert alert-success" role="alert">
-    {{ message }}
-</div>
-
-{% endfor %}
-
-{% endif %}
-{% if form.errors %}
-{% for field in form %}
-{% if field.errors %}
-{% for error in field.errors %}
-<div class="alert alert-danger" role="alert">
-    {{ error|escape }}
-</div>
-{% endfor %}
-{% endif %}
-{% endfor %}
-{% endif %}
 
 
 <div class="col-md-6">

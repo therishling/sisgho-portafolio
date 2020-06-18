@@ -1,5 +1,6 @@
-
 {% extends 'dashboard/base.html' %}
+{%load static%}
+
 <!-- Titulo de la pagina -->
 {%block title%} Dashboard {%endblock%}
 
@@ -8,5 +9,41 @@
 {%block titulo_seccion%} Dashboard {%endblock%}
 
 {%block contenido%}
-Contenido Pagina Principal
+{%if user.tipousuario.idtipousuario == 3%}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card border-primary mb-5">
+            <div class="card-header text-center">Reservas</div>
+            <div class="card-body text-center">
+
+                <canvas id="reservas">
+
+                </canvas><br>
+               <h4>Total Reservas:</h4> <h4 class="reservas" id="total_reserva">0</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-success mb-5">
+            <div class="card-header text-center">Facturas</div>
+            <div class="card-body text-center">
+                <canvas id="facturas">
+
+                </canvas><br>
+                <h4>Total Facturas:</h4> <h4 class="facturas" id="total_facturas">0</h4>
+        </div>
+        
+    </div>
+
+
+</div>
+{%endif%}
+{%endblock%}
+
+{%block scripts%}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="{% static 'js/estadisticas.js' %}"></script>
+
 {%endblock%}
