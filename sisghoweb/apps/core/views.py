@@ -313,6 +313,9 @@ class EmitirFactura(UserPassesTestMixin, SuccessMessageMixin, CreateView):
         self.object.fechafactura = date.today()
         self.object.cliente = cliente
         self.object.estadofactura = estadofactura
+        self.object.subtotal = 0
+        self.object.iva = 0
+        self.object.total = 0
         self.object = form.save()
 
         for reservaid in reservas:
@@ -336,7 +339,19 @@ class EmitirFactura(UserPassesTestMixin, SuccessMessageMixin, CreateView):
             detallefact.solicitudcompra = servicio
             detallefact.save()
 
-        print(self.object.idfactura)
+        detfactura = modelos.Detallefactura.objects.all().filter(factura = self.object.idfactura)
+        
+        subtotal = 0
+        for d in detfactura:
+            subtotal = subtotal + d.total
+        
+        iva = round(subtotal * 0.19)
+        total = subtotal + iva
+        
+        self.object.subtotal = subtotal
+        self.object.total = total
+        self.object.iva = iva
+        self.object = form.save()
         return super(EmitirFactura, self).form_valid(form)
 
 
@@ -400,10 +415,18 @@ class PagoFactura(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
                 estadofactura = modelos.Estadofactura.objects.get(idestado=2)
             factura = modelos.Factura.objects.get(idfactura=self.kwargs['pk'])
             factura.estadofactura = estadofactura
-            factura.fechapago = date.today()
+            
+            
+            print(factura.fechapago)
             factura.save()
 
         return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form, **kwargs):
+        self.object = form.save(commit=False)
+        self.object.fechapago = date.today()
+        self.object = form.save()
+        return super(PagoFactura, self).form_valid(form)
 
     def get_success_url(self, **kwargs):
         idfact = int(self.kwargs['pk'])
@@ -647,6 +670,7 @@ def obtener_datos(request, *args, **kwargs):
     
     #USUARIO CLIENTE
     if request.user.tipousuario.idtipousuario == 3:
+
         #DATOS DEL USUARIO
         cliente = modelos.Cliente.objects.get(usuario = request.user.idusuario)
         tipousuario = request.user.tipousuario.idtipousuario
@@ -682,6 +706,24 @@ def obtener_datos(request, *args, **kwargs):
         # FACTURAS TOTALES
         facturas_totales = facturas_no_pagadas + facturas_en_proceso + facturas_pagadas
         
+        # FACTURA TOTAL MES (FTM)
+        ftm_labels = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
+        ftm_data = []
+
+        # OTRAS ESTADISTICAS
+        huespedes_totales = len(modelos.Huesped.objects.all().filter(cliente = cliente.idcliente))
+
+        facturas_ids = modelos.Factura.objects.values_list('idfactura', flat=True).filter(cliente = cliente.idcliente)
+        servicios_totales = len(modelos.Detallefactura.objects.all().filter(factura__in = facturas_ids))
+        
+        
+        for i in range(1,13):
+            facturas = modelos.Factura.objects.all().filter(fechapago__year = date.today().strftime("%Y"),fechapago__month = i)
+            ftm_total = 0
+            for factura in facturas:
+                ftm_total = ftm_total + factura.total
+            
+            ftm_data.append(ftm_total)
 
         
         # JSON    
@@ -693,8 +735,18 @@ def obtener_datos(request, *args, **kwargs):
                 "total_reserva": total_reservas,
                 "labels_factura" : labels_factura,
                 "data_factura" : data_factura,
-                "total_factura" : facturas_totales
-            
+                "total_factura" : facturas_totales,
+                "ftm_labels" : ftm_labels,
+                "ftm_data" : ftm_data,
+                "huespedes" : huespedes_totales,
+                "servicios" : servicios_totales
+             
         }
         return JsonResponse(data)
+
+    if request.user.tipousuario.idtipousuario == 2:
+        #DATOS DEL USUARIO
+        empleado = modelos.Empleado.objects.get(usuario = request.user.idusuario)
+        tipousuario = request.user.tipousuario.idtipousuario
+
     return HttpResponse("NO DATA")

@@ -6,10 +6,40 @@
 
 
 <!-- Contenido -->
-{%block titulo_seccion%} Dashboard {%endblock%}
+{%block titulo_seccion%} Inicio {%endblock%}
 
 {%block contenido%}
 {%if user.tipousuario.idtipousuario == 3%}
+<div class="row">
+    <div class="col-md-6 col-lg-4">
+        <div class="statistic__item statistic__item--green">
+            <h2 class="number huespedes_stat" id="huespedes_stat">10,368</h2>
+            <span class="desc">Huespedes</span>
+            <div class="icon">
+                <i class="far fa-user"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="statistic__item statistic__item--orange">
+            <h2 class="number servicios_stat" id="servicios_stat">10,368</h2>
+            <span class="desc">Servicios Solicitados</span>
+            <div class="icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-4">
+        <div class="statistic__item statistic__item--blue">
+            <h2 class="number fact_stat"id="fact_stat">10,368</h2>
+            <span class="desc">Facturas</span>
+            <div class="icon">
+                <i class="fas fa-file-invoice"></i>
+            </div>
+        </div>
+    </div>
+
+</div>
 <div class="row">
     <div class="col-md-6">
         <div class="card border-primary mb-5">
@@ -19,7 +49,7 @@
                 <canvas id="reservas">
 
                 </canvas><br>
-               <h4>Total Reservas:</h4> <h4 class="reservas" id="total_reserva">0</h4>
+               <h4>Total Reservas:</h4> <h4 class="total_reserva" id="total_reserva">0</h4>
             </div>
         </div>
     </div>
@@ -31,12 +61,27 @@
                 <canvas id="facturas">
 
                 </canvas><br>
-                <h4>Total Facturas:</h4> <h4 class="facturas" id="total_facturas">0</h4>
+                <h4>Total Facturas:</h4> <h4 class="total_facturas" id="total_facturas">0</h4>
         </div>
         
     </div>
 
 
+</div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card border-dark mb-5">
+            <div class="card-header text-center">Grafico Facturas</div>
+            <div class="card-body text-center">
+                <canvas id="grafico_facturas" height="100px">
+
+                </canvas>
+            
+            </div>
+        </div>
+    </div>
 </div>
 {%endif%}
 {%endblock%}

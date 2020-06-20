@@ -1,22 +1,30 @@
 var endpoint = 'estadisticas'
+function animacion_numero(idh, valor){
+    document.getElementById(idh).innerHTML = valor;
+    
+    $({
+        Counter: 0
+    }).animate({
+        Counter: $('.'+idh).text()
+    }, {
+        duration: 1000,
+        easing: 'swing',
+        step: function () {
+            $('.'+idh).text(Math.ceil(this.Counter));
+        }
+    });
+};
 $.ajax({
     method: "GET",
     url: endpoint,
     success: function (data) {
+
         if (data.tipousuario == 3) {
-            document.getElementById('total_reserva').innerHTML = data.total_reserva;
-            $({
-                Counter: 0
-            }).animate({
-                Counter: $('.reservas').text()
-            }, {
-                duration: 1000,
-                easing: 'swing',
-                step: function () {
-                    $('.reservas').text(Math.ceil(this.Counter));
-                }
-            });
+            animacion_numero('huespedes_stat',data.huespedes)
+            animacion_numero('servicios_stat',data.servicios)
+            animacion_numero('fact_stat',data.total_factura)
             var ctx = document.getElementById('reservas');
+            animacion_numero('total_reserva',data.total_reserva)
             var estadisticasReserva = new Chart(ctx, {
                 type: 'pie',
                 data: {
@@ -27,12 +35,12 @@ $.ajax({
 
                             ,
                         backgroundColor: [
-                            'rgb(54,162,235)',
-                            'rgb(54,235,127)'
+                            'rgb(120, 210, 55)',
+                            'rgb(255, 210, 70)'
                         ],
                         borderColor: [
-                            'rgb(54,162,235)',
-                            'rgb(54,235,127)'
+                            'rgb(120, 210, 55)',
+                            'rgb(255, 210, 70)'
                         ],
                         borderWidth: 1
                     }]
@@ -41,18 +49,7 @@ $.ajax({
                     responsive: true
                 }
             });
-            document.getElementById('total_facturas').innerHTML = data.total_factura;
-            $({
-                Counter: 0
-            }).animate({
-                Counter: $('.facturas').text()
-            }, {
-                duration: 1000,
-                easing: 'swing',
-                step: function () {
-                    $('.facturas').text(Math.ceil(this.Counter));
-                }
-            });
+            animacion_numero('total_facturas',data.total_factura)
             ctx = document.getElementById('facturas');
             var estadisticasFactura = new Chart(ctx,{
                 type : 'pie',
@@ -62,21 +59,85 @@ $.ajax({
                         label: 'Facturas',
                         data: data.data_factura,
                         backgroundColor: [
-                            'rgb(54,162,235)',
-                            'yellow',
-                            'red'
+                            'rgb(120, 210, 55)',
+                            'rgb(255, 210, 70)',
+                            'rgb(255, 99, 88)'
                         ],
                         borderColor: [
-                            'rgb(54,162,235)',
-                            'yellow',
-                            'red'
+                            'rgb(120, 210, 55)',
+                            'rgb(255, 210, 70)',
+                            'rgb(255, 99, 88)'
                         ],
                         borderWidth: 1
                     }]
                 }
             });
+            ctx = document.getElementById('grafico_facturas');
+            //var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            var grafico_facturas_line = new Chart(ctx,{
+                type : 'line',
+                data: {
+                    labels: data.ftm_labels,
+                    datasets: [{
+                        label: 'Facturas',
+                        data: data.ftm_data,
+                        backgroundColor: [
+                            'rgb(120, 210, 55)',
+                            'rgb(120, 210, 55)',
+                            'rgb(120, 210, 55)',
+                            'rgb(120, 210, 55)',
+                            'rgb(120, 210, 55)',
+                            'rgb(120, 210, 55)',
+                            'rgb(120, 210, 55)',
+                            'rgb(120, 210, 55)',
+                            'rgb(120, 210, 55)',
+                            'rgb(120, 210, 55)',
+                            'rgb(120, 210, 55)',
+                            'rgb(120, 210, 55)'
+                            
+                        ],
+                        borderColor: [
+                            'rgb(120, 210, 55)'
+                            
+                        ],
+                        borderWidth: 1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    
+				tooltips: {
+					mode: 'index',
+					intersect: false,
+				},
+				hover: {
+					mode: 'nearest',
+					intersect: true
+				},
+				scales: {
+					xAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Mes'
+						}
+					}],
+					yAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Total $'
+						}
+					}]
+				}
+                }
+            });
         }
 
+        if(data.tipousuario == 2){
+            
+        }
 
     },
     error: function (error_data) {

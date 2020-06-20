@@ -186,6 +186,9 @@ class Factura(models.Model):
     estadofactura = models.ForeignKey(Estadofactura, models.DO_NOTHING, db_column='estadofactura')
     fechafactura = models.DateField()
     fechapago =models.DateField(blank = True, null = True)
+    subtotal = models.IntegerField()
+    iva = models.IntegerField()
+    total = models.IntegerField()
 
     class Meta:
         db_table = 'factura'

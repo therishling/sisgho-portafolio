@@ -47,6 +47,7 @@
     {% for huesped in huespedes %}
     <tr>
       {%if huesped.cliente.usuario.idusuario == user.idusuario %}
+      {%if huesped.fechahasta >= time%}
       <th scope="row">{{huesped.idhuesped}}</th>
       <td>{{huesped.rut}}</td>
       <td>{{huesped.nombre}}</td>
@@ -60,7 +61,7 @@
       <td>{{huesped.habitacion.numero}}</td>
       {% endif %}
       <td>
-        {%if huesped.fechahasta >= time%}
+        
         <div class="row">
           <div class="col-md-6">
             <button type="button" class="btn btn-primary" data-toggle="modal"
