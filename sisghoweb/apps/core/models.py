@@ -112,6 +112,7 @@ class SolicitudCompra(models.Model):
     cantidad = models.IntegerField()
     fecha = models.DateField()
     huesped = models.ForeignKey('Huesped', models.DO_NOTHING, db_column='huesped')
+    empleado = models.ForeignKey('Empleado', models.DO_NOTHING, db_column='empleado')
     class Meta:
         db_table = 'solicitudcompra'
 
@@ -183,6 +184,7 @@ class Factura(models.Model):
     idfactura = models.AutoField(primary_key=True)
     giro = models.CharField(max_length=100)
     cliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='cliente')
+    empleado = models.ForeignKey('Empleado', models.DO_NOTHING, db_column='empleado')
     estadofactura = models.ForeignKey(Estadofactura, models.DO_NOTHING, db_column='estadofactura')
     fechafactura = models.DateField()
     fechapago =models.DateField(blank = True, null = True)
@@ -221,6 +223,7 @@ class Huesped(models.Model):
     habitacion = models.ForeignKey(Habitacion, models.DO_NOTHING, db_column='habitacion', blank=True, null=True)
     fechadesde = models.DateField(blank=True, null=True)
     fechahasta = models.DateField(blank=True, null=True)
+    empleado = models.ForeignKey('Empleado', models.DO_NOTHING, db_column='empleado', blank = True, null = True)
 
     class Meta:
         db_table = 'huesped'
@@ -236,8 +239,11 @@ class Pedido(models.Model):
     observaciones = models.CharField(max_length=255, blank = True, null = True)
     estadopedido = models.ForeignKey(Estadopedido, models.DO_NOTHING, db_column='estadopedido')
     fechapedido = models.DateField()
+    fechaentrega = models.DateField(blank = True, null = True)
     proveedor = models.ForeignKey('Proveedor', models.DO_NOTHING, db_column='proveedor')
-
+    subtotal = models.IntegerField()
+    iva = models.IntegerField()
+    total = models.IntegerField()
     class Meta:
         db_table = 'pedido'
 

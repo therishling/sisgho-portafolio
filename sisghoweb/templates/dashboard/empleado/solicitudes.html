@@ -123,6 +123,11 @@
                                             {%endfor%}
                                         </tbody>
                                     </table>
+                                    <div class="card-header"><h5>Subtotal: ${{pedido.subtotal}} </h5></div>
+                                    
+                                    <div class="card-header"><h5>IVA 19%: ${{pedido.iva}} </h5></div>
+                                    
+                                    <div class="card-header"><h5>Total: ${{pedido.total}} </h5></div>
                                     <form  action="{% url 'administrar solicitud' pedido.idpedido %}" method="POST">
                                         {% csrf_token %}
                                         {%if pedido.estadopedido.idestado == 1 and user.tipousuario.idtipousuario == 4%}

@@ -46,11 +46,26 @@ class ReservarHabitacion(UserPassesTestMixin, SuccessMessageMixin, CreateView):
         return redirect('dashboard')
 
     def get_context_data(self, **kwargs):
+
+        habitaciones_disponible = len(modelos.Habitacion.objects.all().filter(estadohabitacion = 1))
+        huespedes_sin_hab = len(modelos.Huesped.objects.all().filter(habitacion__isnull = True))
+        hay_disponible = False
+        if habitaciones_disponible > 0:
+            hay_disponible = True
+            if huespedes_sin_hab < habitaciones_disponible:
+                hay_disponible = True
+            else:
+                hay_disponible = False
+            
+
+
+
         context = super(ReservarHabitacion, self).get_context_data(**kwargs)
-        context['huespedes'] = modelos.Huesped.objects.all()
+        context['huespedes'] = modelos.Huesped.objects.all().order_by('idhuesped')
         context['cliente'] = modelos.Cliente.objects.get(
             usuario=self.request.user.idusuario)
         context['time'] = date.today()
+        context['hay_disponible'] = hay_disponible
         return context
 
 
@@ -104,10 +119,18 @@ class SeleccionarHabitacion(UserPassesTestMixin, SuccessMessageMixin, CreateView
         return redirect('dashboard')
 
     def get_context_data(self, **kwargs):
+
+        habitaciones_disponible = len(modelos.Habitacion.objects.all().filter(estadohabitacion = 1))
+        hay_disponible = False
+        if habitaciones_disponible > 0:
+            hay_disponible = True
+            
+        
         context = super(SeleccionarHabitacion, self).get_context_data(**kwargs)
         context['huespedes'] = modelos.Huesped.objects.all().filter(fechahasta__gte = date.today()).order_by('idhuesped')
         context['habitaciones'] = modelos.Habitacion.objects.all().filter(
             estadohabitacion=1)
+        context['hay_disponible'] = hay_disponible
         return context
 
     def post(self, request, *args, **kwargs):
@@ -119,6 +142,9 @@ class SeleccionarHabitacion(UserPassesTestMixin, SuccessMessageMixin, CreateView
             habitacion = modelos.Habitacion.objects.get(
                 idhabitacion=self.request.POST.get('habitacion'))
             huesped.habitacion = habitacion
+            empleado = modelos.Empleado.objects.get(usuario = self.request.user.idusuario)
+            huesped.empleado = empleado
+       
             huesped.save()
             if self.request.POST.get('habitacion'):
                 habitacion = modelos.Habitacion.objects.get(
@@ -133,6 +159,7 @@ class SeleccionarHabitacion(UserPassesTestMixin, SuccessMessageMixin, CreateView
     def form_valid(self, form):
         huesped = modelos.Huesped.objects.get(
             idhuesped=self.request.POST.get('huesped'))
+
         habitacion = modelos.Habitacion.objects.get(
             idhabitacion=self.request.POST.get('habitacion'))
         dias = huesped.fechahasta - huesped.fechadesde
@@ -143,6 +170,7 @@ class SeleccionarHabitacion(UserPassesTestMixin, SuccessMessageMixin, CreateView
         self.object.total = total
         self.object.habitacion = habitacion
         self.object = form.save()
+        
         # Llamado a procedimiento almacenado
         with connection.cursor() as cursor:
             cursor.callproc('p_actualizar_habitaciones')
@@ -160,6 +188,7 @@ class AsignarHabitacion(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
     def post(self, request, *args, **kwargs):
         huesped = modelos.Huesped.objects.get(
             idhuesped=self.request.POST.get('huesped'))
+       
         habitacion = modelos.Habitacion.objects.get(
             idhabitacion=self.request.POST.get('habitacion'))
         dias = huesped.fechahasta - huesped.fechadesde
@@ -178,7 +207,9 @@ class AsignarHabitacion(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
         return super().post(request, *args, **kwargs)
 
     def form_valid(self, form):
-
+        empleado = modelos.Empleado.objects.get(usuario = self.request.user.idusuario)
+        self.object = form.save(commit=False)
+        self.object.empleado = empleado
         self.object = form.save()
         # Llamado a procedimiento almacenado
         with connection.cursor() as cursor:
@@ -222,10 +253,12 @@ class SolicitudCompra(UserPassesTestMixin, SuccessMessageMixin, CreateView):
             idhuesped=self.request.POST.get('huesped'))
         servicio = modelos.Serviciocomedor.objects.get(
             idservicio=self.request.POST.get('servicio'))
+        empleado = modelos.Empleado.objects.get(usuario = self.request.user.idusuario)
         self.object = form.save(commit=False)
         self.object.fecha = date.today()
         self.object.huesped = huesped
         self.object.serviciocomedor = servicio
+        self.object.empleado = empleado
         self.object = form.save()
         return super(SolicitudCompra, self).form_valid(form)
 
@@ -307,11 +340,12 @@ class EmitirFactura(UserPassesTestMixin, SuccessMessageMixin, CreateView):
         clienteid = self.kwargs['pk']
         cliente = modelos.Cliente.objects.get(idcliente=clienteid)
         estadofactura = modelos.Estadofactura.objects.get(idestado=1)
-
+        empleado = modelos.Empleado.objects.get(usuario = self.request.user.idusuario)
         self.object = form.save(commit=False)
         self.object.giro = 'Hostal Doña Clarita'
         self.object.fechafactura = date.today()
         self.object.cliente = cliente
+        self.object.empleado = empleado
         self.object.estadofactura = estadofactura
         self.object.subtotal = 0
         self.object.iva = 0
@@ -559,6 +593,9 @@ class SolicitarProducto(UserPassesTestMixin, SuccessMessageMixin, CreateView):
         self.object.observaciones = self.request.POST.get('observaciones')
         self.object.fechapedido = date.today()
         self.object.empleado = emp
+        self.object.subtotal = 0
+        self.object.iva = 0
+        self.object.total = 0
         self.object.estadopedido = estadopedido
         self.object.proveedor = modelos.Proveedor.objects.get(
             idproveedor=proveedorid)
@@ -574,6 +611,22 @@ class SolicitarProducto(UserPassesTestMixin, SuccessMessageMixin, CreateView):
                 detallepedido.pedido = self.object
                 detallepedido.producto = producto
                 detallepedido.save()
+        
+        dp = modelos.Detallepedido.objects.all().filter(pedido = self.object.idpedido)
+        subtotal = 0
+        iva = 0
+        total = 0
+        for detalle in dp:
+            subtotal += detalle.total
+        
+        iva = round(subtotal*0.19)
+        total = subtotal + iva
+
+        self.object = form.save(commit=False)
+        self.object.subtotal = subtotal
+        self.object.iva = iva
+        self.object.total = total
+        self.object = form.save()
         return super(SolicitarProducto, self).form_valid(form)
 
 
@@ -635,6 +688,7 @@ class AdministrarSolicitud(UserPassesTestMixin, SuccessMessageMixin, UpdateView)
             if 'recibir' in self.request.POST and self.request.user.tipousuario.idtipousuario == 2:
                 estadopedido = modelos.Estadopedido.objects.get(idestado=3)
                 detallepedido = modelos.Detallepedido.objects.all().filter(pedido=pedido.idpedido)
+                pedido.fechaentrega = date.today()
                 for dp in detallepedido:
                     producto = modelos.Producto.objects.get(
                         idproducto=dp.producto.idproducto)
@@ -716,9 +770,10 @@ def obtener_datos(request, *args, **kwargs):
         facturas_ids = modelos.Factura.objects.values_list('idfactura', flat=True).filter(cliente = cliente.idcliente)
         servicios_totales = len(modelos.Detallefactura.objects.all().filter(factura__in = facturas_ids))
         
+        habitaciones_disponibles = len(modelos.Habitacion.objects.all().filter(estadohabitacion = 1))
         
         for i in range(1,13):
-            facturas = modelos.Factura.objects.all().filter(fechapago__year = date.today().strftime("%Y"),fechapago__month = i)
+            facturas = modelos.Factura.objects.all().filter(fechapago__year = date.today().strftime("%Y"),fechapago__month = i, cliente = cliente.idcliente)
             ftm_total = 0
             for factura in facturas:
                 ftm_total = ftm_total + factura.total
@@ -739,7 +794,8 @@ def obtener_datos(request, *args, **kwargs):
                 "ftm_labels" : ftm_labels,
                 "ftm_data" : ftm_data,
                 "huespedes" : huespedes_totales,
-                "servicios" : servicios_totales
+                "servicios" : servicios_totales,
+                "habitaciones_disponible" : habitaciones_disponibles
              
         }
         return JsonResponse(data)
@@ -748,5 +804,115 @@ def obtener_datos(request, *args, **kwargs):
         #DATOS DEL USUARIO
         empleado = modelos.Empleado.objects.get(usuario = request.user.idusuario)
         tipousuario = request.user.tipousuario.idtipousuario
+
+        # ESTADISTICAS NO GRAFICOS
+        habitaciones_asignadas = len(modelos.Huesped.objects.all().filter(empleado = empleado.idempleado))
+        servicios_solicitados = len(modelos.SolicitudCompra.objects.all().filter(empleado = empleado.idempleado))
+        facturas_emitidas = len(modelos.Factura.objects.all().filter(empleado = empleado.idempleado))
+        ganancias_totales = 0
+        facturas_gt = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 2)
+        for f in facturas_gt:
+            ganancias_totales += f.total
+        
+        # GRAFICO GANANCIAS
+        ganancias_labels = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
+        ganancias_data = []
+
+        for i in range(1,13):
+            ganancia = 0
+            fact = modelos.Factura.objects.all().filter(fechapago__year = date.today().strftime("%Y"),fechapago__month = i, empleado = empleado.idempleado)
+            for j in fact:
+                ganancia += j.total
+            ganancias_data.append(ganancia)
+
+        
+        # SOLICITUDES PRODUCTOS
+        sdp_labels = ["Solicitados", "En Transito", "Recibidos", "Rechazaados"]
+        sdp_data = []
+
+        sdp_solicitados = len(modelos.Pedido.objects.all().filter(estadopedido = 1))
+        sdp_entransito = len(modelos.Pedido.objects.all().filter(estadopedido = 2))
+        sdp_recibidos = len(modelos.Pedido.objects.all().filter(estadopedido = 3))
+        sdp_rechazados = len(modelos.Pedido.objects.all().filter(estadopedido = 4))
+        sdp_total = sdp_solicitados + sdp_entransito + sdp_recibidos + sdp_rechazados
+
+        sdp_data.append(sdp_solicitados)
+        sdp_data.append(sdp_entransito)
+        sdp_data.append(sdp_recibidos)
+        sdp_data.append(sdp_rechazados)
+
+        # FACTURAS
+        f_labels = ["Pagadas","En Proceso","No Pagadas"]
+        f_data = []
+
+        f_pagadas = len(modelos.Factura.objects.all().filter(estadofactura = 2))
+        f_enproceso = len(modelos.Factura.objects.all().filter(estadofactura__in = (3,4)))
+        f_nopagada = len(modelos.Factura.objects.all().filter(estadofactura = 1))
+
+        f_data.append(f_pagadas)
+        f_data.append(f_enproceso)
+        f_data.append(f_nopagada)
+
+        f_total = f_pagadas + f_enproceso + f_nopagada
+
+
+        # JSON    
+        data = {
+            
+                "tipousuario": tipousuario,
+                "habitaciones_asignadas" : habitaciones_asignadas,
+                "servicios_solicitados" : servicios_solicitados,
+                "facturas_emitidas" : facturas_emitidas,
+                "ganacias_totales" : ganancias_totales,
+                "ganancias_labels" : ganancias_labels,
+                "ganancias_data" : ganancias_data,
+                "sdp_labels" : sdp_labels,
+                "sdp_data" : sdp_data,
+                "sdp_total" : sdp_total,
+                "f_labels" : f_labels,
+                "f_data" : f_data,
+                "f_total" : f_total
+
+               
+             
+        }
+        return JsonResponse(data)
+
+    if request.user.tipousuario.idtipousuario == 4:
+        #DATOS DEL USUARIO
+        proveedor = modelos.Proveedor.objects.get(usuario = request.user.idusuario)
+        tipousuario = request.user.tipousuario.idtipousuario
+
+        # ESTADISTICAS NO GRAFICOS
+        pedidos_solicitados = len(modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 1))
+        pedidos_transito = len(modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 2))
+        pedidos_entregados = len(modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 3))
+        pedidos_rechazados = len(modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 4))
+        
+        
+        # GRAFICO GANANCIAS
+        ganancias_labels = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
+        ganancias_data = []
+
+        for i in range(1,13):
+            ganancia = 0
+            pedido = modelos.Pedido.objects.all().filter(fechaentrega__year = date.today().strftime("%Y"),fechaentrega__month = i, proveedor = proveedor.idproveedor)
+            for j in pedido:
+                ganancia += j.total
+            ganancias_data.append(ganancia)
+
+        # JSON    
+        data = {
+            
+                "pedidos_solicitados": pedidos_solicitados,
+                "pedidos_transito" : pedidos_transito,
+                "pedidos_entregados" : pedidos_entregados,
+                "pedidos_rechazados" : pedidos_rechazados,
+                "tipousuario" : tipousuario,
+                "ganancias_data" : ganancias_data,
+                "ganancias_labels" : ganancias_labels
+             
+        }
+        return JsonResponse(data)
 
     return HttpResponse("NO DATA")

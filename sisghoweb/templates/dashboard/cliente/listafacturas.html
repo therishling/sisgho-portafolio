@@ -157,7 +157,12 @@
                                             {%endfor%}
                                         </tbody>
                                     </table>
-                                    <h3 id="totalFactura{{factura.idfactura}}">0 </h3>
+                                    <div class="card-header"><h5>Subtotal: ${{factura.subtotal}} </h5></div>
+                                    
+                                    <div class="card-header"><h5>IVA 19%: ${{factura.iva}} </h5></div>
+                                    
+                                    <div class="card-header"><h5>Total: ${{factura.total}} </h5></div>
+                                    
 
 
                                 </div>
@@ -215,26 +220,5 @@
         });
     });
 </script>
-{%for factura in facturas %}
 
-<script>
-    calculartotal();
-
-    function calculartotal() {
-        var total = 0;
-        var e = "";
-        var res = "";
-
-        for (let index = 1; index < document.getElementById("table{{factura.idfactura}}").rows.length; index++) {
-            e = document.getElementById("table{{factura.idfactura}}").rows[index].cells.item(4).innerHTML
-            res = e.split("$");
-            total = total + parseInt(res[1]);
-            console.log(total);
-            document.getElementById('totalFactura{{factura.idfactura}}').innerHTML = "Total: $" + total;
-        }
-
-    }
-</script>
-
-{%endfor%}
 {%endblock%}

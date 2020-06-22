@@ -263,10 +263,10 @@
                 {% csrf_token %}
                 <!-- Modal body -->
 
-
+                
                 <div class="modal-body">
 
-
+                  {% if hay_disponible %}
                   <div class="form-group">
                     <label for="vendedor">Cliente</label>
                     <div class="input-group">
@@ -341,11 +341,20 @@
                 <!-- Modal footer  -->
                 <div class="modal-footer">
                   <button type="submit" class="btn btn-primary">Agregar</button>
+                  
                   <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
                 </div>
               </form>
+              {%else%}
+              <h4>No hay habitaciones disponibles</h4>
+              <div class="modal-footer">
+               
+                
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
+              </div>
+              {%endif%}
 
-
+              
 
             </div>
           </div>

@@ -11,30 +11,40 @@
 {%block contenido%}
 {%if user.tipousuario.idtipousuario == 3%}
 <div class="row">
-    <div class="col-md-6 col-lg-4">
+    <div class="col-md-6 col-lg-3">
         <div class="statistic__item statistic__item--green">
-            <h2 class="number huespedes_stat" id="huespedes_stat">10,368</h2>
+            <h2 class="number huespedes_stat" id="huespedes_stat">0</h2>
             <span class="desc">Huespedes</span>
             <div class="icon">
                 <i class="far fa-user"></i>
             </div>
         </div>
     </div>
-    <div class="col-md-6 col-lg-4">
+    <div class="col-md-6 col-lg-3">
         <div class="statistic__item statistic__item--orange">
-            <h2 class="number servicios_stat" id="servicios_stat">10,368</h2>
+            <h2 class="number servicios_stat" id="servicios_stat">0</h2>
             <span class="desc">Servicios Solicitados</span>
             <div class="icon">
                 <i class="fas fa-shopping-cart"></i>
             </div>
         </div>
     </div>
-    <div class="col-md-6 col-lg-4">
+    <div class="col-md-6 col-lg-3">
         <div class="statistic__item statistic__item--blue">
-            <h2 class="number fact_stat"id="fact_stat">10,368</h2>
+            <h2 class="number fact_stat"id="fact_stat">0</h2>
             <span class="desc">Facturas</span>
             <div class="icon">
                 <i class="fas fa-file-invoice"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="statistic__item statistic__item--red">
+            <h2 class="number"id="habitaciones_disponibles">0</h2>
+            <span class="desc">Habitaciones Disponibles</span>
+            <div class="icon">
+                <i class="far fa-hotel"></i>
             </div>
         </div>
     </div>
@@ -84,6 +94,166 @@
     </div>
 </div>
 {%endif%}
+
+{%if user.tipousuario.idtipousuario == 2%}
+<div class="row">
+    <div class="col-md-6 col-lg-3">
+        <div class="statistic__item statistic__item--green">
+            <h2 class="number" id="habit_stat">0</h2>
+            <span class="desc">Habitaciones Asignadas</span>
+            <div class="icon">
+                <i class="far fa-hotel"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="statistic__item statistic__item--orange">
+            <h2 class="number" id="servicios_stat">0</h2>
+            <span class="desc">Servicios Solicitados</span>
+            <div class="icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="statistic__item statistic__item--blue">
+            <h2 class="number"id="fact_stat">0</h2>
+            <span class="desc">Facturas Emitidas</span>
+            <div class="icon">
+                <i class="fas fa-file-invoice"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="statistic__item statistic__item--red">
+            <h2 class="number"id="ganancias_stat">0</h2>
+            <span class="desc">Ganancias Totales</span>
+            <div class="icon">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card border-primary mb-5">
+            <div class="card-header text-center">Solicitud de Productos</div>
+            <div class="card-body text-center">
+
+                <canvas id="solicitudesproductos">
+
+                </canvas><br>
+               <h4>Total Solicitudes:</h4> <h4 id="total_solicitudes">0</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-success mb-5">
+            <div class="card-header text-center">Facturas</div>
+            <div class="card-body text-center">
+                <canvas id="facturas">
+
+                </canvas><br>
+                <h4>Total Facturas:</h4> <h4 class="total_facturas" id="total_facturas">0</h4>
+        </div>
+        
+    </div>
+
+
+</div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card border-dark mb-5">
+            <div class="card-header text-center">Grafico Ganancias</div>
+            <div class="card-body text-center">
+                <canvas id="grafico_facturas" height="100px">
+
+                </canvas>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{%endif%}
+
+
+
+{%if user.tipousuario.idtipousuario == 4%}
+<div class="row">
+    <div class="col-md-6 col-lg-3">
+        <div class="statistic__item statistic__item--green">
+            <h2 class="number" id="p_solicitados">0</h2>
+            <span class="desc">Pedidos Solicitados</span>
+            <div class="icon">
+                <i class="far fa-truck"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="statistic__item statistic__item--orange">
+            <h2 class="number" id="p_transito">0</h2>
+            <span class="desc">Pedidos En Transito</span>
+            <div class="icon">
+                <i class="fas fa-truck-moving"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="statistic__item statistic__item--blue">
+            <h2 class="number"id="p_entregados">0</h2>
+            <span class="desc">Pedidos Entregados</span>
+            <div class="icon">
+                <i class="fas fa-truck-loading"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="statistic__item statistic__item--red">
+            <h2 class="number"id="p_rechazados">0</h2>
+            <span class="desc">Pedidos Rechazados</span>
+            <div class="icon">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card border-dark mb-5">
+            <div class="card-header text-center">Grafico Ganancias</div>
+            <div class="card-body text-center">
+                <canvas id="grafico_ganancias" height="100px">
+
+                </canvas>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{%endif%}
+
+
+
+
+
+
+
+
+
+
+
+
+
 {%endblock%}
 
 {%block scripts%}
