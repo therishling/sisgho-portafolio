@@ -29,7 +29,8 @@ urlpatterns = [
     path('dashboard/pedidos', login_required(vista.ListarPedidos.as_view()) ,name='listar pedidos'),
     re_path(r'^dashboard/pedidos/(?P<pk>\d+)/$', login_required(vista.AdministrarSolicitud.as_view()) ,name='administrar solicitud'),
     path('dashboard/actualizar', login_required(vista.ActualizarEstHab.as_view()) ,name='actualizar estado habitacion'),
-    #ESTADISTICAS
+    # INFORMES Y ESTADISTICAS
     path('dashboard/estadisticas', login_required(vista.obtener_datos) ,name='estadisticas'),
+    path('dashboard/informes', login_required(vista.Informes.as_view()) ,name='informes'),
 
 ]

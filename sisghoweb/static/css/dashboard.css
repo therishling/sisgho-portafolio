@@ -266,3 +266,7 @@
 .statistic2 .statistic__item .desc {
   color: rgba(255, 255, 255, 0.6);
 }
+
+.tamano_card {
+  height: 439px;
+}
