@@ -958,10 +958,10 @@ class Informes(UserPassesTestMixin, TemplateView):
                 
                 if bandera:
                     ws = wb.active
-                    ws.title = "Habitaciones Asignadas"
+                    ws.title = "Informe Habitaciones Asignadas"
                     bandera = False
                 else:
-                    ws = wb.create_sheet("Habitaciones Asignadas")
+                    ws = wb.create_sheet("Informe Habitaciones Asignadas")
 
                 # TITULO DEL REPORTE
                 ws['B1'].alignment = Alignment(horizontal = "center", vertical = "center")
@@ -1049,10 +1049,10 @@ class Informes(UserPassesTestMixin, TemplateView):
 
                 if bandera:
                     ws = wb.active
-                    ws.title = "Compras Realizadas"
+                    ws.title = "Informe Compras Realizadas"
                     bandera = False
                 else:
-                    ws = wb.create_sheet("Compras Realizadas")
+                    ws = wb.create_sheet("Informe Compras Realizadas")
 
                 # TITULO DEL REPORTE
                 ws['B1'].alignment = Alignment(horizontal = "center", vertical = "center")
@@ -1127,10 +1127,10 @@ class Informes(UserPassesTestMixin, TemplateView):
                     rep = False
                     if bandera:
                         ws = wb.active
-                        ws.title = "Reporte Facturas"
+                        ws.title = "Informe Facturas"
                         bandera = False
                     else:
-                        ws = wb.create_sheet("Reporte Facturas")
+                        ws = wb.create_sheet("Informe Facturas")
                     
                     # TITULO DEL REPORTE
                     ws['B1'].alignment = Alignment(horizontal = "center", vertical = "center")
@@ -1327,10 +1327,10 @@ class Informes(UserPassesTestMixin, TemplateView):
                     rep_pedidos = False
                     if bandera:
                         ws = wb.active
-                        ws.title = "Reporte Productos Solicitados"
+                        ws.title = "Informe Productos Solicitados"
                         bandera = False
                     else:
-                        ws = wb.create_sheet("Reporte Productos Solicitados")
+                        ws = wb.create_sheet("Informe Productos Solicitados")
                     
                     # TITULO DEL REPORTE
                     ws['B1'].alignment = Alignment(horizontal = "center", vertical = "center")
@@ -1340,7 +1340,7 @@ class Informes(UserPassesTestMixin, TemplateView):
 
                     ws['B1'] = "INFORME DE PRODUCTOS SOLICITADOS"
                     ws.row_dimensions[1].height = 45
-                    ws.merge_cells('B1:J1')
+                    ws.merge_cells('B1:K1')
 
                     # TAMAÑO COLUMNAS
                     ws.column_dimensions['B'].width = 15
@@ -1349,23 +1349,25 @@ class Informes(UserPassesTestMixin, TemplateView):
                     ws.column_dimensions['E'].width = 22
                     ws.column_dimensions['F'].width = 22
                     ws.column_dimensions['G'].width = 22
-                    ws.column_dimensions['H'].width = 15
-                    ws.column_dimensions['I'].width = 15
+                    ws.column_dimensions['H'].width = 22
+                    ws.column_dimensions['I'].width = 22
                     ws.column_dimensions['J'].width = 15
+                    ws.column_dimensions['K'].width = 15
 
                     # CAMPOS
-                    ws['B3'] = "#"
-                    ws['C3'] = "CLIENTE"
-                    ws['D3'] = "GIRO"
-                    ws['E3'] = "FECHA EMITIDA"
-                    ws['F3'] = "FECHA PAGO"
-                    ws['G3'] = "ESTADO"
-                    ws['H3'] = "SUBTOTAL"
-                    ws['I3'] = "IVA"
-                    ws['J3'] = "TOTAL"
+                    ws['B3'] = "# PEDIDO"
+                    ws['C3'] = "FECHA PEDIDO"
+                    ws['D3'] = "ESTADO"
+                    ws['E3'] = "FECHA ENTREGA"
+                    ws['F3'] = "PRODUCTO"
+                    ws['G3'] = "CANTIDAD"
+                    ws['H3'] = "PROVEEDOR"
+                    ws['I3'] = "SUBTOTAL"
+                    ws['J3'] = "IVA"
+                    ws['K3'] = "TOTAL"
 
                     # ESTILO CABEZERA
-                    for i in range(2, 11):
+                    for i in range(2, 12):
                         ws.cell(row = 3, column = i).alignment = Alignment(horizontal = "center", vertical = "center")
                         ws.cell(row = 3, column = i).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
                         ws.cell(row = 3, column = i).fill = PatternFill(start_color = 'A0A0A0', end_color = 'A0A0A0', fill_type = "solid")
@@ -1373,160 +1375,177 @@ class Informes(UserPassesTestMixin, TemplateView):
                     
                     # DATOS
                     cont = 4
+                 
+                pedidos_nuevos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 1).order_by('fechapedido')
+                pedidos_en_transito = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 2).order_by('fechapedido')
+                pedidos_recibidos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 3).order_by('fechapedido')
+                pedidos_rechazados = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 4).order_by('fechapedido')
 
-                facturas_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 2).order_by('fechafactura')
-                facturas_no_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 1).order_by('fechafactura')
-                facturas_trans_bancaria = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 3).order_by('fechafactura')
-                factura_presencial = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 4).order_by('fechafactura')
-
-                if self.request.POST.get('fechadesdeFacturas'):
-                    facturas_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 2, fechafactura__gte = self.request.POST.get('fechadesdeFacturas')).order_by('fechafactura')
-                    facturas_no_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 1, fechafactura__gte = self.request.POST.get('fechadesdeFacturas')).order_by('fechafactura')
-                    facturas_trans_bancaria = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 3, fechafactura__gte = self.request.POST.get('fechadesdeFacturas')).order_by('fechafactura')
-                    factura_presencial = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 4, fechafactura__gte = self.request.POST.get('fechadesdeFacturas')).order_by('fechafactura')
+                if self.request.POST.get('fechadesdeSolicitudes'):
+                    pedidos_nuevos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 1, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
+                    pedidos_en_transito = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 2, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
+                    pedidos_recibidos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 3, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
+                    pedidos_rechazados = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 4, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
                 
-                if self.request.POST.get('fechahastaFacturas'):
-                    facturas_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 2, fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
-                    facturas_no_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 1, fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
-                    facturas_trans_bancaria = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 3, fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
-                    factura_presencial = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 4, fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                if self.request.POST.get('fechahastaSolicitudes'):
+                    pedidos_nuevos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 1, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                    pedidos_en_transito = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 2, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                    pedidos_recibidos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 3, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                    pedidos_rechazados = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 4, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
                 
-                if self.request.POST.get('fechadesdeFacturas') and self.request.POST.get('fechahastaFacturas'):
-                    facturas_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 2, fechafactura__gte = self.request.POST.get('fechadesdeFacturas'),fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
-                    facturas_no_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 1, fechafactura__gte = self.request.POST.get('fechadesdeFacturas'),fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
-                    facturas_trans_bancaria = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 3, fechafactura__gte = self.request.POST.get('fechadesdeFacturas'),fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
-                    factura_presencial = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 4, fechafactura__gte = self.request.POST.get('fechadesdeFacturas'),fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                if self.request.POST.get('fechadesdeSolicitudes') and self.request.POST.get('fechahastaSolicitudes'):
+                    pedidos_nuevos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 1, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                    pedidos_en_transito = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 2, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                    pedidos_recibidos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 3, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                    pedidos_rechazados = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 4, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
 
 
-                if int(op) == 3:
-                    for fp in facturas_pagadas:
-                        ws.cell(row = cont, column = 2).value = fp.idfactura
-                        ws.cell(row = cont, column = 2).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 2).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 3).value = fp.cliente.nombre
-                        ws.cell(row = cont, column = 3).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 3).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 4).value = fp.giro
-                        ws.cell(row = cont, column = 4).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 4).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 5).value = fp.fechafactura
-                        ws.cell(row = cont, column = 5).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 5).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 6).value = fp.fechapago
-                        ws.cell(row = cont, column = 6).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 6).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 7).value = fp.estadofactura.descripcion
-                        ws.cell(row = cont, column = 7).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 7).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 8).value = fp.subtotal
-                        ws.cell(row = cont, column = 8).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 8).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 9).value = fp.iva
-                        ws.cell(row = cont, column = 9).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 9).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 10).value = fp.total
-                        ws.cell(row = cont, column = 10).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 10).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        cont += 1
-                    
-                if int(op) == 4:
-                    for fp in facturas_no_pagadas:
-                        ws.cell(row = cont, column = 2).value = fp.idfactura
-                        ws.cell(row = cont, column = 2).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 2).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 3).value = fp.cliente.nombre
-                        ws.cell(row = cont, column = 3).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 3).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 4).value = fp.giro
-                        ws.cell(row = cont, column = 4).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 4).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 5).value = fp.fechafactura
-                        ws.cell(row = cont, column = 5).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 5).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 6).value = fp.fechapago
-                        ws.cell(row = cont, column = 6).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 6).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 7).value = fp.estadofactura.descripcion
-                        ws.cell(row = cont, column = 7).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 7).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 8).value = fp.subtotal
-                        ws.cell(row = cont, column = 8).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 8).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 9).value = fp.iva
-                        ws.cell(row = cont, column = 9).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 9).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 10).value = fp.total
-                        ws.cell(row = cont, column = 10).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 10).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        cont += 1
+                if int(op) == 7:
+                    for p in pedidos_nuevos:
+                        detalles = modelos.Detallepedido.objects.all().filter(pedido = p.idpedido)
+                        for d in detalles:
+                            ws.cell(row = cont, column = 2).value = p.idpedido
+                            ws.cell(row = cont, column = 2).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 2).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 3).value = p.fechapedido
+                            ws.cell(row = cont, column = 3).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 3).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 4).value = p.estadopedido.descripcion
+                            ws.cell(row = cont, column = 4).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 4).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 5).value = p.fechaentrega
+                            ws.cell(row = cont, column = 5).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 5).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 6).value = d.producto.descripcion
+                            ws.cell(row = cont, column = 6).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 6).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 7).value = d.cantidad
+                            ws.cell(row = cont, column = 7).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 7).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 8).value = p.proveedor.rubro
+                            ws.cell(row = cont, column = 8).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 8).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 9).value = d.total
+                            ws.cell(row = cont, column = 9).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 9).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 10).value = round(d.total*0.19)
+                            ws.cell(row = cont, column = 10).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 10).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 11).value = round(d.total*0.19) + d.total
+                            ws.cell(row = cont, column = 11).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 11).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            cont += 1
 
-                if int(op) == 5:
-                    for fp in facturas_trans_bancaria:
-                        ws.cell(row = cont, column = 2).value = fp.idfactura
-                        ws.cell(row = cont, column = 2).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 2).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 3).value = fp.cliente.nombre
-                        ws.cell(row = cont, column = 3).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 3).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 4).value = fp.giro
-                        ws.cell(row = cont, column = 4).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 4).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 5).value = fp.fechafactura
-                        ws.cell(row = cont, column = 5).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 5).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 6).value = fp.fechapago
-                        ws.cell(row = cont, column = 6).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 6).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 7).value = fp.estadofactura.descripcion
-                        ws.cell(row = cont, column = 7).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 7).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 8).value = fp.subtotal
-                        ws.cell(row = cont, column = 8).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 8).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 9).value = fp.iva
-                        ws.cell(row = cont, column = 9).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 9).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 10).value = fp.total
-                        ws.cell(row = cont, column = 10).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 10).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        cont += 1
+                if int(op) == 8:
+                    for p in pedidos_en_transito:
+                        detalles = modelos.Detallepedido.objects.all().filter(pedido = p.idpedido)
+                        for d in detalles:
+                            ws.cell(row = cont, column = 2).value = p.idpedido
+                            ws.cell(row = cont, column = 2).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 2).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 3).value = p.fechapedido
+                            ws.cell(row = cont, column = 3).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 3).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 4).value = p.estadopedido.descripcion
+                            ws.cell(row = cont, column = 4).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 4).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 5).value = p.fechaentrega
+                            ws.cell(row = cont, column = 5).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 5).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 6).value = d.producto.descripcion
+                            ws.cell(row = cont, column = 6).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 6).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 7).value = d.cantidad
+                            ws.cell(row = cont, column = 7).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 7).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 8).value = p.proveedor.rubro
+                            ws.cell(row = cont, column = 8).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 8).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 9).value = d.total
+                            ws.cell(row = cont, column = 9).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 9).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 10).value = round(d.total*0.19)
+                            ws.cell(row = cont, column = 10).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 10).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 11).value = round(d.total*0.19) + d.total
+                            ws.cell(row = cont, column = 11).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 11).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            cont += 1
 
-                if int(op) == 6:
-                    for fp in factura_presencial:
-                        ws.cell(row = cont, column = 2).value = fp.idfactura
-                        ws.cell(row = cont, column = 2).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 2).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 3).value = fp.cliente.nombre
-                        ws.cell(row = cont, column = 3).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 3).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 4).value = fp.giro
-                        ws.cell(row = cont, column = 4).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 4).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 5).value = fp.fechafactura
-                        ws.cell(row = cont, column = 5).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 5).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 6).value = fp.fechapago
-                        ws.cell(row = cont, column = 6).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 6).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 7).value = fp.estadofactura.descripcion
-                        ws.cell(row = cont, column = 7).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 7).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 8).value = fp.subtotal                            
-                        ws.cell(row = cont, column = 8).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 8).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 9).value = fp.iva
-                        ws.cell(row = cont, column = 9).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 9).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        ws.cell(row = cont, column = 10).value = fp.total
-                        ws.cell(row = cont, column = 10).alignment = Alignment(horizontal = "center", vertical = "center")
-                        ws.cell(row = cont, column = 10).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
-                        cont += 1
+                if int(op) == 9:
+                    for p in pedidos_recibidos:
+                        detalles = modelos.Detallepedido.objects.all().filter(pedido = p.idpedido)
+                        for d in detalles:
+                            ws.cell(row = cont, column = 2).value = p.idpedido
+                            ws.cell(row = cont, column = 2).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 2).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 3).value = p.fechapedido
+                            ws.cell(row = cont, column = 3).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 3).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 4).value = p.estadopedido.descripcion
+                            ws.cell(row = cont, column = 4).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 4).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 5).value = p.fechaentrega
+                            ws.cell(row = cont, column = 5).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 5).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 6).value = d.producto.descripcion
+                            ws.cell(row = cont, column = 6).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 6).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 7).value = d.cantidad
+                            ws.cell(row = cont, column = 7).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 7).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 8).value = p.proveedor.rubro
+                            ws.cell(row = cont, column = 8).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 8).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 9).value = d.total
+                            ws.cell(row = cont, column = 9).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 9).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 10).value = round(d.total*0.19)
+                            ws.cell(row = cont, column = 10).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 10).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 11).value = round(d.total*0.19) + d.total
+                            ws.cell(row = cont, column = 11).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 11).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            cont += 1
 
-                
-                
-                
-
-
+                if int(op) == 10:
+                    for p in pedidos_rechazados:
+                        detalles = modelos.Detallepedido.objects.all().filter(pedido = p.idpedido)
+                        for d in detalles:
+                            ws.cell(row = cont, column = 2).value = p.idpedido
+                            ws.cell(row = cont, column = 2).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 2).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 3).value = p.fechapedido
+                            ws.cell(row = cont, column = 3).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 3).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 4).value = p.estadopedido.descripcion
+                            ws.cell(row = cont, column = 4).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 4).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 5).value = p.fechaentrega
+                            ws.cell(row = cont, column = 5).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 5).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 6).value = d.producto.descripcion
+                            ws.cell(row = cont, column = 6).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 6).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 7).value = d.cantidad
+                            ws.cell(row = cont, column = 7).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 7).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 8).value = p.proveedor.rubro
+                            ws.cell(row = cont, column = 8).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 8).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 9).value = d.total
+                            ws.cell(row = cont, column = 9).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 9).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 10).value = round(d.total*0.19)
+                            ws.cell(row = cont, column = 10).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 10).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 11).value = round(d.total*0.19) + d.total
+                            ws.cell(row = cont, column = 11).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 11).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            cont += 1
+                                        
+               
+               
         nombre_archivo = "reporte-"+str(date.today())+".xlsx"
         response = HttpResponse(content_type = "application/ms-excel")
         content = "attachment; filename = {0}".format(nombre_archivo)
