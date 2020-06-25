@@ -16,12 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
+from apps.core import forms as formularios
 
 from apps.core import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('apps.core.urls'), name='core'),
-    path('login/', auth_views.LoginView.as_view(template_name='login/index.html', redirect_authenticated_user = True), name='login'),
+    path('login/', auth_views.LoginView.as_view(template_name='login/index.html', redirect_authenticated_user = True, authentication_form = formularios.FormLogin), name='login'),
     path('logout/', auth_views.logout_then_login , name='logout'),
 ]

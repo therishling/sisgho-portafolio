@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField, UserChangeForm
 from apps.core import models as modelo
 from datetime import date
-
+from django.contrib.auth.forms import AuthenticationForm
 
 class HuespedForm(forms.ModelForm):
     class Meta:
@@ -58,3 +58,11 @@ class HabitacionForm(forms.Form):
                 habitacion.estadohabitacion = modelo.Estadohabitacion.objects.get(
                     idestado=2)
                 habitacion.save()
+
+class FormLogin(AuthenticationForm):
+    error_messages = {
+        'invalid_login': (
+            "Porfavor ingrese un nombre de usuario o contraseña correcto. "
+        ),
+        'inactive': ("This account is inactive."),
+    }
