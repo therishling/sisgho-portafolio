@@ -502,6 +502,108 @@
 {% endif %}
 
 {% if user.tipousuario.idtipousuario == 4 %}
+<div class="row">
+
+  <div class="col-md-6">
+      <div id="accordion" >
+
+      </div>
+      <div class="card border-primary mb-3">
+          <div class="card-header text-center" id="heading3">
+              
+              <button type="button" class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse3" aria-expanded="false" aria-controls="collapse3">
+                  Productos Solicitados <i
+                  class="fas fa-expand-arrows-alt"></i>
+                </button>
+          </div>
+
+          <div id="collapse3" class="collapse" aria-labelledby="heading2" data-parent="#accordion">
+            <div class="card-body">
+
+
+
+              <div class="form-group">
+                  <h5 class="card-title text-center">Fecha</h5>
+                  <div class="row">
+
+                      <div class="col-md-6">
+                          <label>Desde</label>
+                          <div class="input-group">
+                              
+                              <input type="date" class="form-control" name="fechadesdeSolicitudes" >
+                          </div>
+                      </div>
+                      <div class="col-md-6">
+                          <label>Hasta</label>
+                          <div class="input-group">
+                              
+                              <input type="date" class="form-control" name="fechahastaSolicitudes">
+                          </div>
+                      </div>
+                  </div>
+                  <br>
+                  <h5 class="card-title text-center">Opciones</h5>
+                  <div class="row">
+
+                      <div class="col-md-12">
+                          <div class="input-group mb-3">
+                              <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                  <input type="checkbox" name="opcion[]" value="1">
+                                </div>
+                              </div>
+                              <span class="input-group-text col-md-11" >Pedidos Nuevos</span>
+                            </div>
+                      </div>
+
+                      <div class="col-md-12">
+                          <div class="input-group mb-3">
+                              <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                  <input type="checkbox" name="opcion[]" value="2">
+                                </div>
+                              </div>
+                              <span class="input-group-text col-md-11" >Pedidos En Transito</span>
+                            </div>
+                      </div>
+
+                      <div class="col-md-12">
+                          <div class="input-group mb-3">
+                              <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                  <input type="checkbox" name="opcion[]" value="3">
+                                </div>
+                              </div>
+                              <span class="input-group-text col-md-11" >Pedidos Entregados</span>
+                            </div>
+                      </div>
+
+                      <div class="col-md-12">
+                          <div class="input-group mb-3">
+                              <div class="input-group-prepend">
+                                <div class="input-group-text">
+                                  <input type="checkbox" name="opcion[]" value="4">
+                                </div>
+                              </div>
+                              <span class="input-group-text col-md-11" >Pedidos Rechazados</span>
+                            </div>
+                      </div>
+                   
+                  </div>
+
+
+
+
+              </div>
+
+          </div>  
+          </div>
+          
+      </div>
+  </div>
+
+
+</div>
 
 {% endif %}
 

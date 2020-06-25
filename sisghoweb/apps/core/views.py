@@ -18,6 +18,8 @@ from xhtml2pdf import pisa
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from django.contrib import messages
+from django.conf import settings
+import os
 
 # Create your views here.
 
@@ -504,6 +506,32 @@ class DetallePago(UserPassesTestMixin, SuccessMessageMixin, TemplateView):
 
 class FacturaPDF(View):
 
+    def link_callback(self, uri, rel):
+        """
+        Convert HTML URIs to absolute system paths so xhtml2pdf can access those
+        resources
+        """
+        # use short variable names
+        sUrl = settings.STATIC_URL  # Typically /static/
+        sRoot = settings.STATIC_ROOT  # Typically /home/userX/project_static/
+        mUrl = settings.MEDIA_URL  # Typically /static/media/
+        mRoot = settings.MEDIA_ROOT  # Typically /home/userX/project_static/media/
+
+        # convert URIs to absolute system paths
+        if uri.startswith(mUrl):
+            path = os.path.join(mRoot, uri.replace(mUrl, ""))
+        elif uri.startswith(sUrl):
+            path = os.path.join(sRoot, uri.replace(sUrl, ""))
+        else:
+            return uri  # handle absolute uri (ie: http://some.tld/foo.png)
+
+        # make sure that file exists
+        if not os.path.isfile(path):
+            raise Exception(
+                'media URI must start with %s or %s' % (sUrl, mUrl)
+            )
+        return path
+
     def get(self, request, *args, **kwargs):
         template = get_template('pdf/factura.html')
         factura = modelos.Factura.objects.get(idfactura=self.kwargs['pk'])
@@ -521,14 +549,17 @@ class FacturaPDF(View):
                 'detallefactura': detallefactura,
                 'subtotal': subtotal,
                 'iva': iva,
-                'total': subtotal + iva
+                'total': subtotal + iva,
+                'logo' : '{}{}'.format(settings.MEDIA_URL, 'logonofondo.png')
             }
             html = template.render(context)
             response = HttpResponse(content_type="application/pdf")
             response['Content-Disposition'] = 'attachment; filename=' + \
                 "factura-numero-" + self.kwargs['pk'] + ".pdf"
             pisaStatus = pisa.CreatePDF(
-                html, dest=response)
+                html, dest=response,
+                link_callback=self.link_callback
+            )
 
             
 
@@ -2010,7 +2041,223 @@ class Informes(UserPassesTestMixin, TemplateView):
                                 cont += 1
 
 
-            #if self.request.user.tipousuario.idtipousuario == 4:
+            if self.request.user.tipousuario.idtipousuario == 4:
+
+                proveedor = modelos.Proveedor.objects.get(usuario = self.request.user.idusuario)
+                rep_sol_prov = True
+                for op in opciones:
+
+                    if int(op) == 1 or int(op) == 2 or int(op) == 3 or int(op) == 4:
+                        if rep_sol_prov:
+                            rep_sol_prov = False
+                            if bandera:
+                                ws = wb.active
+                                ws.title = "Informe Productos Solicitados"
+                                bandera = False
+                            else:
+                                ws = wb.create_sheet("Informe Productos Solicitados")
+                            
+                            # TITULO DEL REPORTE
+                            ws['B1'].alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws['B1'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws['B1'].fill = PatternFill(start_color = '3D3D3D', end_color = '3D3D3D', fill_type = "solid")
+                            ws['B1'].font = Font(name = 'Calibri', size = 12, bold = True, color = 'FFFFFF')
+
+                            ws['B1'] = "INFORME DE PRODUCTOS SOLICITADOS"
+                            ws.row_dimensions[1].height = 45
+                            ws.merge_cells('B1:J1')
+
+                            # TAMAÑO COLUMNAS
+                            ws.column_dimensions['B'].width = 15
+                            ws.column_dimensions['C'].width = 22
+                            ws.column_dimensions['D'].width = 22
+                            ws.column_dimensions['E'].width = 22
+                            ws.column_dimensions['F'].width = 22
+                            ws.column_dimensions['G'].width = 22
+                            ws.column_dimensions['H'].width = 22
+                            ws.column_dimensions['I'].width = 15
+                            ws.column_dimensions['J'].width = 15
+
+                            # CAMPOS
+                            ws['B3'] = "# PEDIDO"
+                            ws['C3'] = "FECHA PEDIDO"
+                            ws['D3'] = "ESTADO"
+                            ws['E3'] = "FECHA ENTREGA"
+                            ws['F3'] = "PRODUCTO"
+                            ws['G3'] = "CANTIDAD"
+                            ws['H3'] = "SUBTOTAL"
+                            ws['I3'] = "IVA"
+                            ws['J3'] = "TOTAL"
+
+                            # ESTILO CABEZERA
+                            for i in range(2, 11):
+                                ws.cell(row = 3, column = i).alignment = Alignment(horizontal = "center", vertical = "center")
+                                ws.cell(row = 3, column = i).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                ws.cell(row = 3, column = i).fill = PatternFill(start_color = 'A0A0A0', end_color = 'A0A0A0', fill_type = "solid")
+                                ws.cell(row = 3, column = i).font = Font(name = 'Calibri', size = 12, bold = True)
+                            
+                            # DATOS
+                            cont = 4
+                        
+                        pedidos_nuevos = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 1).order_by('fechapedido')
+                        pedidos_en_transito = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 2).order_by('fechapedido')
+                        pedidos_recibidos = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 3).order_by('fechapedido')
+                        pedidos_rechazados = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 4).order_by('fechapedido')
+
+                        if self.request.POST.get('fechadesdeSolicitudes'):
+                            pedidos_nuevos = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 1, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
+                            pedidos_en_transito = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 2, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
+                            pedidos_recibidos = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 3, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
+                            pedidos_rechazados = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 4, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
+                        
+                        if self.request.POST.get('fechahastaSolicitudes'):
+                            pedidos_nuevos = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 1, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                            pedidos_en_transito = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 2, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                            pedidos_recibidos = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 3, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                            pedidos_rechazados = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 4, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                        
+                        if self.request.POST.get('fechadesdeSolicitudes') and self.request.POST.get('fechahastaSolicitudes'):
+                            pedidos_nuevos = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 1, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                            pedidos_en_transito = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 2, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                            pedidos_recibidos = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 3, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                            pedidos_rechazados = modelos.Pedido.objects.all().filter(proveedor = proveedor.idproveedor, estadopedido = 4, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+
+
+                        if int(op) == 1:
+                            for p in pedidos_nuevos:
+                                detalles = modelos.Detallepedido.objects.all().filter(pedido = p.idpedido)
+                                for d in detalles:
+                                    ws.cell(row = cont, column = 2).value = p.idpedido
+                                    ws.cell(row = cont, column = 2).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 2).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 3).value = p.fechapedido
+                                    ws.cell(row = cont, column = 3).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 3).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 4).value = p.estadopedido.descripcion
+                                    ws.cell(row = cont, column = 4).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 4).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 5).value = p.fechaentrega
+                                    ws.cell(row = cont, column = 5).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 5).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 6).value = d.producto.descripcion
+                                    ws.cell(row = cont, column = 6).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 6).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 7).value = d.cantidad
+                                    ws.cell(row = cont, column = 7).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 7).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 8).value = d.total
+                                    ws.cell(row = cont, column = 8).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 8).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 9).value = round(d.total*0.19)
+                                    ws.cell(row = cont, column = 9).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 9).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 10).value = round(d.total*0.19) + d.total
+                                    ws.cell(row = cont, column = 10).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 10).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    cont += 1
+
+                        if int(op) == 2:
+                            for p in pedidos_en_transito:
+                                detalles = modelos.Detallepedido.objects.all().filter(pedido = p.idpedido)
+                                for d in detalles:
+                                    ws.cell(row = cont, column = 2).value = p.idpedido
+                                    ws.cell(row = cont, column = 2).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 2).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 3).value = p.fechapedido
+                                    ws.cell(row = cont, column = 3).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 3).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 4).value = p.estadopedido.descripcion
+                                    ws.cell(row = cont, column = 4).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 4).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 5).value = p.fechaentrega
+                                    ws.cell(row = cont, column = 5).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 5).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 6).value = d.producto.descripcion
+                                    ws.cell(row = cont, column = 6).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 6).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 7).value = d.cantidad
+                                    ws.cell(row = cont, column = 7).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 7).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 8).value = d.total
+                                    ws.cell(row = cont, column = 8).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 8).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 9).value = round(d.total*0.19)
+                                    ws.cell(row = cont, column = 9).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 9).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 10).value = round(d.total*0.19) + d.total
+                                    ws.cell(row = cont, column = 10).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 10).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    cont += 1
+
+                        if int(op) == 3:
+                            for p in pedidos_recibidos:
+                                detalles = modelos.Detallepedido.objects.all().filter(pedido = p.idpedido)
+                                for d in detalles:
+                                    ws.cell(row = cont, column = 2).value = p.idpedido
+                                    ws.cell(row = cont, column = 2).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 2).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 3).value = p.fechapedido
+                                    ws.cell(row = cont, column = 3).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 3).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    
+                                    ws.cell(row = cont, column = 4).value = "Entregado"
+                                    ws.cell(row = cont, column = 4).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 4).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 5).value = p.fechaentrega
+                                    ws.cell(row = cont, column = 5).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 5).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 6).value = d.producto.descripcion
+                                    ws.cell(row = cont, column = 6).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 6).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 7).value = d.cantidad
+                                    ws.cell(row = cont, column = 7).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 7).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 8).value = d.total
+                                    ws.cell(row = cont, column = 8).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 8).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 9).value = round(d.total*0.19)
+                                    ws.cell(row = cont, column = 9).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 9).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 10).value = round(d.total*0.19) + d.total
+                                    ws.cell(row = cont, column = 10).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 10).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    cont += 1
+
+                        if int(op) == 4:
+                            for p in pedidos_rechazados:
+                                detalles = modelos.Detallepedido.objects.all().filter(pedido = p.idpedido)
+                                for d in detalles:
+                                    ws.cell(row = cont, column = 2).value = p.idpedido
+                                    ws.cell(row = cont, column = 2).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 2).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 3).value = p.fechapedido
+                                    ws.cell(row = cont, column = 3).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 3).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 4).value = p.estadopedido.descripcion
+                                    ws.cell(row = cont, column = 4).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 4).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 5).value = p.fechaentrega
+                                    ws.cell(row = cont, column = 5).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 5).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 6).value = d.producto.descripcion
+                                    ws.cell(row = cont, column = 6).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 6).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 7).value = d.cantidad
+                                    ws.cell(row = cont, column = 7).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 7).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 8).value = d.total
+                                    ws.cell(row = cont, column = 8).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 8).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 9).value = round(d.total*0.19)
+                                    ws.cell(row = cont, column = 9).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 9).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    ws.cell(row = cont, column = 10).value = round(d.total*0.19) + d.total
+                                    ws.cell(row = cont, column = 10).alignment = Alignment(horizontal = "center", vertical = "center")
+                                    ws.cell(row = cont, column = 10).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                                    cont += 1
+
+
+
                                                     
             nombre_archivo = "reporte-"+str(date.today())+".xlsx"
             response = HttpResponse(content_type = "application/ms-excel")
