@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import ReadOnlyPasswordHashField, UserChangeForm
 from apps.core import models as modelo
 from datetime import date
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm
 
 class HuespedForm(forms.ModelForm):
     class Meta:
@@ -66,3 +66,22 @@ class FormLogin(AuthenticationForm):
         ),
         'inactive': ("This account is inactive."),
     }
+
+class PerfilForm(forms.ModelForm):
+    class Meta:
+        model = modelo.Usuario
+        fields = ('nombre','apellido_paterno', 'apellido_materno','correo',)
+    
+class ModificarPassword(forms.ModelForm):
+    class Meta:
+        model = modelo.Usuario
+        fields = ('password',)
+
+    def save(self, commit=True):
+        usuario = super(ModificarPassword, self).save(commit=False)
+        usuario.set_password(self.cleaned_data["password"])
+        
+        if commit:
+            
+            usuario.save()
+        return usuario

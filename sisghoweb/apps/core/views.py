@@ -20,6 +20,7 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from django.contrib import messages
 from django.conf import settings
 import os
+from django.contrib.auth.forms import PasswordChangeForm
 
 # Create your views here.
 
@@ -2270,4 +2271,59 @@ class Informes(UserPassesTestMixin, TemplateView):
             return redirect('informes')
 
        
+# USUARIO
+class ModificarPerfil(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
+    model = modelos.Usuario
+    form_class = formularios.PerfilForm
+    template_name = 'dashboard/usuario/perfil.html'
+    success_message = 'Perfil Actualizado'
+    context_object_name = 'usuario'
+
+    def test_func(self):
+        user = self.request.user
+        if str(user.idusuario) == self.kwargs['pk']:
+            return True
+
+    def handle_no_permission(self):
+        return redirect('dashboard')
+
+    def get_success_url(self):
+
+        return reverse_lazy('actualizar perfil', kwargs={'pk': self.request.user.idusuario})
+    
+    def get_context_data(self, **kwargs):
+        usuario = self.request.user
+        context = super(ModificarPerfil, self).get_context_data(**kwargs)
+
+        if self.request.user.tipousuario.idtipousuario == 3:
+            cliente = modelos.Cliente.objects.get(usuario = usuario.idusuario)
+            context['cliente'] = cliente
+
+        if self.request.user.tipousuario.idtipousuario == 4:
+            proveedor = modelos.Proveedor.objects.get(usuario = usuario.idusuario)
+            context['prov'] = proveedor
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+
+        if self.request.method == 'POST':
+            if self.request.user.tipousuario.idtipousuario == 3:
+                cliente = modelos.Cliente.objects.get(usuario = self.request.user.idusuario)
+                cliente.rut = self.request.POST.get('rutempresa')
+                cliente.nombre = self.request.POST.get('nombre_empresa')
+                cliente.rubro = self.request.POST.get('rubro')
+                cliente.direccion = self.request.POST.get('direccion_empresa')
+                cliente.telefono = self.request.POST.get('telefono')
+                cliente.save()
+
+            if self.request.user.tipousuario.idtipousuario == 4:
+                prov = modelos.Proveedor.objects.get(usuario = self.request.user.idusuario)
+                prov.descripcion = self.request.POST.get('descripcion')
+                prov.rubro = self.request.POST.get('rubro')
+                prov.telefono = self.request.POST.get('telefono')
+                prov.sitioweb = self.request.POST.get('sitio_web')
+                prov.save()
+
+        return super().post(request, *args, **kwargs)
 

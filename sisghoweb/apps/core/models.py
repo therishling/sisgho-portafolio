@@ -43,6 +43,7 @@ class Usuario(AbstractBaseUser):
     apellido_paterno = models.CharField(max_length=100)
     apellido_materno = models.CharField(max_length=100)
     correo = models.CharField(max_length=200)
+    is_active = models.BooleanField(default=True)
 
     class Meta:
         db_table = 'usuario'
@@ -51,9 +52,11 @@ class Usuario(AbstractBaseUser):
 
     USERNAME_FIELD = 'usuario'
     REQUIRED_FIELDS = ['nombre','apellido_paterno','apellido_materno','correo']
+    EMAIL_FIELD = 'correo'
 
     def get_full_name(self):
         return self.nombre + ' ' + self.apellido_paterno + ' ' + self.apellido_materno
+    
     
     def get_short_name(self):
         return self.nombre

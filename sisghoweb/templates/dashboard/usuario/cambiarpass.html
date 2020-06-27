@@ -1,0 +1,77 @@
+{% extends 'dashboard/base.html' %}
+<!-- Titulo de la pagina -->
+{%block title%} Modificar Contraseña {%endblock%}
+
+
+<!-- Contenido -->
+{%block titulo_seccion%} Modificar Contraseña {%endblock%}
+
+{%block contenido%}
+{%if form.errors%}
+{%if form.errors.old_password%}
+<div class="alert alert-danger" role="alert">
+    Su contraseña actual fue incorrecta. Porfavor ingresela nuevamente.
+</div>
+
+{% endif%}
+{%if form.new_password2%}
+<div class="alert alert-danger" role="alert">
+    Las contraseñas no coinciden.
+</div>
+
+{% endif%}
+{% endif%}
+<div class="row d-flex justify-content-center align-items-center">
+    <div class="col-md-6">
+        <form method="POST">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="old_password">Contraseña Actual</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                    </div>
+                    <input type="password" class="form-control" name="old_password" autocomplete="current-password"
+                        placeholder="Contraseña Actual" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="new_password1">Nueva Contraseña</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                    </div>
+                    <input type="password" class="form-control" name="new_password1" autocomplete="new-password"
+                        placeholder="Nueva Contraseña" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="new_password2">Confirmar Contraseña</label>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                    </div>
+                    <input type="password" class="form-control" name="new_password2" autocomplete="new-password"
+                        placeholder="Confirmar Contraseña" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block">Cambiar Contraseña</button>
+
+        </form>
+    </div>
+</div>
+
+
+
+{%endblock%}
+
+{%block scripts%}
+
+
+
+{%endblock%}

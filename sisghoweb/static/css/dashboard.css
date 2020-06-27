@@ -279,3 +279,12 @@
 .p-margin p{
   margin-bottom: 0 !important;
 }
+
+.dropdown-item:hover{
+  background-color: #009393 !important;
+  color: #fff !important;
+}
+
+.navbar-expand-lg .navbar-nav .dropdown-menu {
+margin-top: 8px
+}
