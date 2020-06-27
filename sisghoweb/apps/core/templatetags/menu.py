@@ -15,6 +15,16 @@ def active(context, pattern_or_urlname):
         return 'active'
     return ''
 
+@register.simple_tag(takes_context=True)
+def show(context, pattern_or_urlname):
+    try:
+        pattern = reverse(pattern_or_urlname)
+    except NoReverseMatch:
+        pattern = pattern_or_urlname
+    path = context['request'].path
+    if pattern == path:
+        return 'show'
+    return ''
 
 @register.simple_tag
 def fecha():

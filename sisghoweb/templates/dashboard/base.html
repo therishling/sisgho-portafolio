@@ -12,10 +12,10 @@
   <title>Doña Clarita - {%block title%} Document {%endblock%}</title>
 
   <!-- Estilos-->
+<link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
 
   <link rel="stylesheet" href="{% static 'css/bootstrapdash.css' %}">
-  <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
-
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css">
 
 
@@ -32,7 +32,7 @@
     <!-- Menu Lateral -->
 
     <div class="bg-sidebard border-right menulateral" id="sidebar-wrapper">
-      <div class="sidebar-heading">Doña Clarita </div>
+      <div class="sidebar-heading text-center">Doña Clarita </div>
       <div class="list-group list-group-flush ">
         {%if user.tipousuario.idtipousuario == 3 %}
         {% include 'menu/cliente.html' %}
@@ -46,7 +46,7 @@
         {%endif%}
 
       </div>
-      <div class="dropdown-divider"></div>
+      
 
 
     </div>

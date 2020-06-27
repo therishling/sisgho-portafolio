@@ -7,6 +7,7 @@
     overflow-x: hidden;
   }
   
+  
   #sidebar-wrapper {
     min-height: 100vh;
     margin-left: -15rem;
@@ -19,6 +20,7 @@
   #sidebar-wrapper .sidebar-heading {
     padding: 0.875rem 1.25rem;
     font-size: 1.2rem;
+    background: #016171
   }
   
   #sidebar-wrapper .list-group {
@@ -52,11 +54,11 @@
   
   .menuboton {
     border-radius: 50%;
-    background: #005cff !important;
+    background: #009393 !important;
   }
   
   .bg-sidebard{
-    background: #005cff !important;
+    background: #009393 !important;
     color: white;
    
   }
@@ -65,25 +67,28 @@
     padding-top: 10px;
     padding-bottom: 10px;
     font-size: 18px;
-    background: #2574ff;
     border-bottom: 1px solid black;
+  }
+
+  .bg-sidebard .categoria a{
+    color: #fff;
   }
   
   .list-group-flush .list-group-item{
-    background: #005cff !important;
+    background: #016171 !important;
     color: white;
     
   }
   
   .list-group-flush .list-group-item:hover{
     background: white !important;
-    color: #005cff ;
+    color: #016171 ;
     
   }
   
   .list-group-flush .list-group-item.active{
     background: white !important;
-    color: #005cff;
+    color: #016171;
     
   }
   .secciontitulo {
@@ -93,7 +98,7 @@
     
   }
   .secciontitulo h1{
-    color: #005cff;
+    color: #009393;
     font-size: 30px ;
   }
   
@@ -102,9 +107,9 @@
   }
   
   .table .thead-entel th {
-    background-color: #005cff; 
+    background-color: #009393; 
     color: #fff;
-    border-color: #005cff ;
+    border-color: #009393 ;
   }
   
   .formsentel i{
@@ -269,4 +274,8 @@
 
 .tamano_card {
   height: 439px;
+}
+
+.p-margin p{
+  margin-bottom: 0 !important;
 }
