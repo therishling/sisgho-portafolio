@@ -81,7 +81,7 @@
         <tr>
 
             <th scope="row">{{pedido.idpedido}}</th>
-            <td>{{pedido.fechapedido}}</td>
+            <td>{{pedido.fechapedido|date:'Y-m-d'}}</td>
             <td>{{pedido.empleado}}</td>
             <td>{{pedido.observaciones}}</td>
             <td>
@@ -138,7 +138,11 @@
                                         <tbody>
 
                                             {% for detalle in detalles %}
-                                            {%if detalle.pedido.idpedido == pedido.idpedido%}
+
+
+
+
+                                            {%if detalle.pedido.idpedido == pedido.idpedido and detalle.estado.idestado == 3 and detalle.pedido.estadopedido.idestado == 1 %}
                                             <tr>
                                                 <th scope="row">{{detalle.idedetalle}}</th>
                                                 <td>{{detalle.producto}}</td>
@@ -165,19 +169,135 @@
 
                                             </tr>
                                             {%endif%}
+
+                                            {%if detalle.pedido.idpedido == pedido.idpedido and detalle.estado.idestado == 2 and detalle.pedido.estadopedido.idestado == 1 %}
+                                            <tr>
+                                                <th scope="row">{{detalle.idedetalle}}</th>
+                                                <td>{{detalle.producto}}</td>
+                                                <td>{{detalle.cantidad}}</td>
+                                                <td>${{detalle.total}}</td>
+                                                {% if pedido.estadopedido.idestado == 2 and user.tipousuario.idtipousuario == 2 %}
+                                                <td>
+
+                                                    <div class="form-group">
+                                                        <input type="date" class="form-control"
+                                                            name="date{{detalle.idedetalle}}">
+                                                    </div>
+                                                </td>
+                                                <td>
+
+                                                    <input type="checkbox" name="chkAceptar[]" id="chk{{detalle.idedetalle}}"
+                                                        value="{{detalle.idedetalle}}" checked data-toggle="toggle"
+                                                        data-on="Aceptar  " data-off="Rechazar  " data-onstyle="success"
+                                                        data-offstyle="danger" data-size="small">
+
+
+                                                </td>
+                                                {% endif %}
+
+                                            </tr>
+                                            {%endif%}
+
+                                            {%if detalle.pedido.idpedido == pedido.idpedido and detalle.estado.idestado == 3 and detalle.pedido.estadopedido.idestado == 2 %}
+                                            <tr>
+                                                <th scope="row">{{detalle.idedetalle}}</th>
+                                                <td>{{detalle.producto}}</td>
+                                                <td>{{detalle.cantidad}}</td>
+                                                <td>${{detalle.total}}</td>
+                                                {% if pedido.estadopedido.idestado == 2 and user.tipousuario.idtipousuario == 2 %}
+                                                <td>
+
+                                                    <div class="form-group">
+                                                        <input type="date" class="form-control"
+                                                            name="date{{detalle.idedetalle}}">
+                                                    </div>
+                                                </td>
+                                                <td>
+
+                                                    <input type="checkbox" name="chkAceptar[]" id="chk{{detalle.idedetalle}}"
+                                                        value="{{detalle.idedetalle}}" checked data-toggle="toggle"
+                                                        data-on="Aceptar  " data-off="Rechazar  " data-onstyle="success"
+                                                        data-offstyle="danger" data-size="small">
+
+
+                                                </td>
+                                                {% endif %}
+
+                                            </tr>
+                                            {%endif%}
+
+                                            {%if detalle.pedido.idpedido == pedido.idpedido and detalle.pedido.estadopedido.idestado == 3 %}
+                                            <tr>
+                                                <th scope="row">{{detalle.idedetalle}}</th>
+                                                <td>{{detalle.producto}}</td>
+                                                <td>{{detalle.cantidad}}</td>
+                                                <td>${{detalle.total}}</td>
+                                                {% if pedido.estadopedido.idestado == 2 and user.tipousuario.idtipousuario == 2 %}
+                                                <td>
+
+                                                    <div class="form-group">
+                                                        <input type="date" class="form-control"
+                                                            name="date{{detalle.idedetalle}}">
+                                                    </div>
+                                                </td>
+                                                <td>
+
+                                                    <input type="checkbox" name="chkAceptar[]" id="chk{{detalle.idedetalle}}"
+                                                        value="{{detalle.idedetalle}}" checked data-toggle="toggle"
+                                                        data-on="Aceptar  " data-off="Rechazar  " data-onstyle="success"
+                                                        data-offstyle="danger" data-size="small">
+
+
+                                                </td>
+                                                {% endif %}
+
+                                            </tr>
+                                            {%endif%}
+
+
+                                            
+                                            {%if detalle.pedido.idpedido == pedido.idpedido and detalle.pedido.estadopedido.idestado == 2 and detalle.estado.idestado == 2 %}
+                                            <tr>
+                                                <th scope="row">{{detalle.idedetalle}}</th>
+                                                <td>{{detalle.producto}}</td>
+                                                <td>{{detalle.cantidad}}</td>
+                                                <td>${{detalle.total}}</td>
+                                                {% if pedido.estadopedido.idestado == 2 and user.tipousuario.idtipousuario == 2 %}
+                                                <td>
+
+                                                    <div class="form-group">
+                                                        <input type="date" class="form-control"
+                                                            name="date{{detalle.idedetalle}}">
+                                                    </div>
+                                                </td>
+                                                <td>
+
+                                                    <input type="checkbox" name="chkAceptar[]" id="chk{{detalle.idedetalle}}"
+                                                        value="{{detalle.idedetalle}}" checked data-toggle="toggle"
+                                                        data-on="Aceptar  " data-off="Rechazar  " data-onstyle="success"
+                                                        data-offstyle="danger" data-size="small">
+
+
+                                                </td>
+                                                {% endif %}
+
+                                            </tr>
+                                            {%endif%}
+
+
                                             {%endfor%}
                                         </tbody>
                                     </table>
                                     <div class="card-header">
-                                        <h5>Subtotal: ${{pedido.subtotal}} </h5>
+                                        <h5 id="subtotalsolicitud{{pedido.idpedido}}">Subtotal: ${{pedido.subtotal}} </h5>
                                     </div>
 
                                     <div class="card-header">
-                                        <h5>IVA 19%: ${{pedido.iva}} </h5>
+                                        <h5 id="ivasolicitud{{pedido.idpedido}}">IVA 19%: ${{pedido.iva}} </h5>
                                     </div>
 
                                     <div class="card-header">
-                                        <h5>Total: ${{pedido.total}} </h5>
+                                        <h5 id="totalsolicitud{{pedido.idpedido}}">Total: ${{pedido.total}} </h5>
                                     </div>
 
                                     {% csrf_token %}
@@ -201,7 +321,7 @@
                                         Pedido</button>
                                     {%endif%}
                                     {%if pedido.estadopedido.idestado == 2 and user.tipousuario.idtipousuario == 2%}
-                                    <button type="submit" name="recibir" class="btn btn-primary">Confirmar
+                                    <button type="submit" name="recibir" class="btn btn-primary" id="confirmarEntrega{{pedido.idpedido}}">Confirmar
                                         Entrega</button>
 
                                     <button type="submit" name="rechazar" class="btn btn-danger">Rechazar
@@ -241,6 +361,10 @@
         <li class="page-item">
             <a class="page-link" href="?estado={{estado}}&page={{ pedidos.previous_page_number }}" >Anterior</a>
           </li>
+        {% else %}
+        <li class="page-item disabled">
+            <a class="page-link" href="#" >Anterior</a>
+          </li>
         {% endif %}
       
       {% for n in numero_paginas%}
@@ -251,6 +375,10 @@
     
             <a class="page-link" href="?estado={{estado}}&page={{ pedidos.next_page_number }}">Siguiente</a>
           </li>
+          {% else %}
+          <li class="page-item disabled">
+              <a class="page-link" href="#" >Siguiente</a>
+            </li>
         {% endif %}
     </ul>
   </nav>
@@ -261,6 +389,10 @@
         <li class="page-item">
             <a class="page-link" href="?page={{ pedidos.previous_page_number }}" >Anterior</a>
           </li>
+          {% else %}
+          <li class="page-item disabled">
+              <a class="page-link" href="#" >Anterior</a>
+            </li>
         {% endif %}
       
       {% for n in numero_paginas%}
@@ -271,6 +403,10 @@
     
             <a class="page-link" href="?page={{ pedidos.next_page_number }}">Siguiente</a>
           </li>
+          {% else %}
+          <li class="page-item disabled">
+              <a class="page-link" href="#" >Siguiente</a>
+            </li>
         {% endif %}
     </ul>
   </nav>
@@ -292,4 +428,51 @@
 
 
 </script>
+
+<script>
+
+function calcularTotal(pedido, total_detalle, chk) {
+    $("#chk"+chk).on("change", function () {
+            
+            var checked = document.getElementById("chk"+chk).checked;
+            var subtotal = parseInt(document.getElementById('subtotalsolicitud'+pedido).innerHTML.replace("Subtotal: $",''));
+            var iva = 0
+            var total = 0
+          if (checked) {
+              subtotal+=total_detalle
+              
+              console.log(subtotal)
+          }else{
+            subtotal-=total_detalle
+            console.log(subtotal)
+          }
+            iva = Math.round(subtotal*0.19);
+            total =subtotal + iva;
+            document.getElementById('subtotalsolicitud'+pedido).innerHTML = 'Subtotal: $'+subtotal;
+            document.getElementById('ivasolicitud'+pedido).innerHTML = 'IVA 19%: $'+iva;
+            document.getElementById('totalsolicitud'+pedido).innerHTML = 'Total: $'+total;
+
+            if (total ==0) {
+                document.getElementById("confirmarEntrega"+pedido).disabled = true;
+            }else{
+                document.getElementById("confirmarEntrega"+pedido).disabled = false;
+            }
+          
+
+        });
+}
+
+
+</script>
+{% for pedido in pedidos %}
+{% for detalle in detalles %}
+{% if detalle.pedido.idpedido == pedido.idpedido %}
+<script>
+    
+    calcularTotal({{pedido.idpedido}},{{detalle.total}}, {{detalle.idedetalle}})
+</script>
+{%endif%}
+{% endfor %}
+{% endfor %}
+
 {%endblock%}

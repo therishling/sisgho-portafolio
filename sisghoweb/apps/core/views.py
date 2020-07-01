@@ -553,10 +553,9 @@ class DetallePago(UserPassesTestMixin, SuccessMessageMixin, TemplateView):
     def get_context_data(self, **kwargs):
         factura = modelos.Factura.objects.get(
             idfactura=int(self.kwargs['pk2']))
-        detallefact = modelos.Detallefactura.objects.all().filter(factura=factura)
-        total = 0
-        for detalle in detallefact:
-            total = total + detalle.total
+        
+        total = factura.total
+        
         context = super(DetallePago, self).get_context_data(**kwargs)
         context['option'] = int(self.kwargs['pk'])
         context['total'] = total
@@ -610,7 +609,7 @@ class FacturaPDF(View):
                 'subtotal': subtotal,
                 'iva': iva,
                 'total': subtotal + iva,
-                'logo' : '{}{}'.format(settings.MEDIA_URL, 'logonofondo.png')
+                'logo' : '{}{}'.format(settings.MEDIA_URL, 'logonofondo.png'),
             }
             html = template.render(context)
             response = HttpResponse(content_type="application/pdf")
@@ -857,7 +856,7 @@ class AdministrarSolicitud(UserPassesTestMixin, SuccessMessageMixin, UpdateView)
 
             if 'aceptar' in self.request.POST and self.request.user.tipousuario.idtipousuario == 4:
                 estadopedido = modelos.Estadopedido.objects.get(idestado=2)
-
+                
 
             if 'recibir' in self.request.POST and self.request.user.tipousuario.idtipousuario == 2:
 
@@ -868,7 +867,7 @@ class AdministrarSolicitud(UserPassesTestMixin, SuccessMessageMixin, UpdateView)
                     detalle.estado = modelos.EstadoDetallePedido.objects.get(idestado = 1)
                     detalle.save()
                 
-                estadopedido = modelos.Estadopedido.objects.get(idestado=3)
+                
                 rechazados = modelos.Detallepedido.objects.all().filter(pedido=pedido.idpedido, estado = 3)
                 
                 if rechazados:
@@ -879,22 +878,42 @@ class AdministrarSolicitud(UserPassesTestMixin, SuccessMessageMixin, UpdateView)
 
                 detallepedido = modelos.Detallepedido.objects.all().filter(pedido=pedido.idpedido, estado = 1)
                 pedido.fechaentrega = date.today()
-
+                
                 for dp in detallepedido:
                     producto = modelos.Producto.objects.get(
                         idproducto=dp.producto.idproducto)
                     producto.stock = producto.stock + dp.cantidad
                     producto.save()
                     
-                   
-                    recepcion = modelos.Recepcionproducto()
-                    recepcion.codigo = self.codigo_producto(dp.idedetalle, self.request.POST.get('date'+str(dp.idedetalle)))
-                    recepcion.fecharecepcion = date.today()
-                    recepcion.detallepedido = modelos.Detallepedido.objects.get(idedetalle = dp.idedetalle)
-                    recepcion.empleado = modelos.Empleado.objects.get(usuario = self.request.user.idusuario)
-                    recepcion.save()
+                    if(len(modelos.Recepcionproducto.objects.all().filter(detallepedido = dp.idedetalle)) == 0):
 
+                        recepcion = modelos.Recepcionproducto()
+                        recepcion.codigo = self.codigo_producto(dp.idedetalle, self.request.POST.get('date'+str(dp.idedetalle)))
+                        recepcion.fecharecepcion = date.today()
+                        recepcion.detallepedido = modelos.Detallepedido.objects.get(idedetalle = dp.idedetalle)
+                        recepcion.empleado = modelos.Empleado.objects.get(usuario = self.request.user.idusuario)
+                        recepcion.save()
 
+                if len(modelos.Detallepedido.objects.all().filter(pedido=pedido.idpedido, estado = 2)) == 0:
+
+                    estadopedido = modelos.Estadopedido.objects.get(idestado=3)
+                    detalles = modelos.Detallepedido.objects.all().filter(pedido=pedido.idpedido, estado = 1)
+                    subtotal = 0
+                    for d in detalles:
+                        subtotal += d.total
+                    pedido.subtotal = subtotal
+                    pedido.iva = round(subtotal*0.19)
+                    pedido.total = subtotal + round(subtotal*0.19)
+                else:
+                    pendientes = modelos.Detallepedido.objects.all().filter(pedido=pedido.idpedido, estado = 2)
+                    subtotal = 0
+                    for p in pendientes:
+                        subtotal += p.total
+                
+                    estadopedido = modelos.Estadopedido.objects.get(idestado=1)
+                    pedido.subtotal = subtotal
+                    pedido.iva = round(subtotal*0.19)
+                    pedido.total = subtotal + round(subtotal*0.19)
             pedido.estadopedido = estadopedido
             pedido.save()
         return super().post(request, *args, **kwargs)
@@ -905,9 +924,10 @@ class AdministrarSolicitud(UserPassesTestMixin, SuccessMessageMixin, UpdateView)
        
         idproducto = str(detalle.producto.idproducto).zfill(3)
        
-        fechavencimiento_numero = '000000000'
+        fechavencimiento_numero = '00000000'
         if fechavencimiento:
-            fechavencimiento_numero = datetime.strptime(fechavencimiento, '%Y-%m-%y').strftime("%Y%m%d")
+            fechavencimiento_numero = fechavencimiento.replace("-", "")
+            print(fechavencimiento_numero)
             
         idtipoproducto = str(detalle.producto.tipoproducto.idtipo).zfill(3)
         
@@ -1773,7 +1793,79 @@ class Informes(UserPassesTestMixin, TemplateView):
                                     ws.cell(row = cont, column = 11).alignment = Alignment(horizontal = "center", vertical = "center")
                                     ws.cell(row = cont, column = 11).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
                                     cont += 1
+                    
+                    if int(op) == 11:
+                        if bandera:
+                            ws = wb.active
+                            ws.title = "Informe Productos Recibidos"
+                            bandera = False
+                        else:
+                            ws = wb.create_sheet("Informe Productos Recibidos")
+                        
+                        # TITULO DEL REPORTE
+                        ws['B1'].alignment = Alignment(horizontal = "center", vertical = "center")
+                        ws['B1'].border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                        ws['B1'].fill = PatternFill(start_color = '3D3D3D', end_color = '3D3D3D', fill_type = "solid")
+                        ws['B1'].font = Font(name = 'Calibri', size = 12, bold = True, color = 'FFFFFF')
 
+                        ws['B1'] = "INFORME DE PRODUCTOS RECIBIDOS"
+                        ws.row_dimensions[1].height = 45
+                        ws.merge_cells('B1:F1')
+                        # TAMAÑO COLUMNAS
+                        ws.column_dimensions['B'].width = 15
+                        ws.column_dimensions['C'].width = 25
+                        ws.column_dimensions['D'].width = 22
+                        ws.column_dimensions['E'].width = 22
+                        ws.column_dimensions['F'].width = 22
+                       
+
+                        # CAMPOS
+                        ws['B3'] = "#"
+                        ws['C3'] = "CODIGO"
+                        ws['D3'] = "FECHA RECEPCION"
+                        ws['E3'] = "PRODUCTO"
+                        ws['F3'] = "CANTIDAD"
+                        
+
+                        # ESTILO CABEZERA
+                        for i in range(2, 7):
+                            ws.cell(row = 3, column = i).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = 3, column = i).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = 3, column = i).fill = PatternFill(start_color = 'A0A0A0', end_color = 'A0A0A0', fill_type = "solid")
+                            ws.cell(row = 3, column = i).font = Font(name = 'Calibri', size = 12, bold = True)
+                            
+                        # DATOS
+                        cont = 4
+
+                        productos_recibidos = modelos.Recepcionproducto.objects.all().filter(empleado= empleado.idempleado).order_by('id')
+
+                        if self.request.POST.get('fechadesdeSolicitudes'):
+                            productos_recibidos = modelos.Recepcionproducto.objects.all().filter(empleado= empleado.idempleado, fecharecepcion__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('id')
+
+                        if self.request.POST.get('fechahastaSolicitudes'):
+                           productos_recibidos = modelos.Recepcionproducto.objects.all().filter(empleado= empleado.idempleado, fecharecepcion__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('id')
+
+                        if self.request.POST.get('fechadesdeSolicitudes') and self.request.POST.get('fechahastaSolicitudes'):
+                            productos_recibidos = modelos.Recepcionproducto.objects.all().filter(empleado= empleado.idempleado,fecharecepcion__gte = self.request.POST.get('fechadesdeSolicitudes'), fecharecepcion__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('id')
+
+                        for p in productos_recibidos:
+                            
+                            ws.cell(row = cont, column = 2).value = p.id
+                            ws.cell(row = cont, column = 2).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 2).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 3).value = p.codigo
+                            ws.cell(row = cont, column = 3).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 3).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 4).value = p.fecharecepcion
+                            ws.cell(row = cont, column = 4).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 4).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 5).value = p.detallepedido.producto.descripcion
+                            ws.cell(row = cont, column = 5).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 5).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            ws.cell(row = cont, column = 6).value = p.detallepedido.cantidad
+                            ws.cell(row = cont, column = 6).alignment = Alignment(horizontal = "center", vertical = "center")
+                            ws.cell(row = cont, column = 6).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
+                            cont += 1
 
             if self.request.user.tipousuario.idtipousuario == 3:
                 cliente = modelos.Cliente.objects.get(usuario = self.request.user.idusuario)
