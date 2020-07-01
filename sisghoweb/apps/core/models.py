@@ -134,10 +134,19 @@ class DetalleReserva(models.Model):
     def __str__(self):
         return "Reserva habitacion: "+str(self.habitacion.numero)
 
+
+class EstadoDetallePedido(models.Model):
+    idestado = models.AutoField(primary_key=True)
+    descripcion = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'estadodetallepedido'
+
 class Detallepedido(models.Model):
     idedetalle = models.AutoField(primary_key=True)
     pedido = models.ForeignKey('Pedido', models.DO_NOTHING, db_column='pedido')
     producto = models.ForeignKey('Producto', models.DO_NOTHING, db_column='producto')
+    estado = models.ForeignKey('EstadoDetallePedido', models.DO_NOTHING, db_column='estado')
     cantidad = models.IntegerField()
     total = models.BigIntegerField()
 
@@ -162,6 +171,9 @@ class Estadofactura(models.Model):
 
     class Meta:
         db_table = 'estadofactura'
+
+    def __str__(self):
+        return self.descripcion
 
 
 class Estadohabitacion(models.Model):
@@ -279,7 +291,7 @@ class Producto(models.Model):
 
 
 class Recepcionproducto(models.Model):
-    codigo = models.BigIntegerField()
+    codigo = models.CharField(max_length=20)
     empleado = models.ForeignKey(Empleado, models.DO_NOTHING, db_column='empleado')
     detallepedido = models.ForeignKey(Detallepedido, models.DO_NOTHING, db_column='detallepedido')
     fecharecepcion = models.DateField()

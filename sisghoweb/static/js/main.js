@@ -38,8 +38,8 @@
 		// Bar.
 			$(
 				'<div id="titleBar">' +
-					'<a href="#navPanel" class="toggle"></a>' +
-					'<span class="title">' + $('#logo').html() + '</span>' +
+					'<a href="#navPanel" class="toggle"><i class=" fas fa-bars"></i></a>' +
+					'<span class="title">' + 'Hostal Doña Clarita</span>' +
 				'</div>'
 			)
 				.appendTo($body);

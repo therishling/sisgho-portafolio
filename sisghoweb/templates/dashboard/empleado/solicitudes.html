@@ -1,4 +1,5 @@
 {% extends 'dashboard/base.html' %}
+{%load menu%}
 <!-- Titulo de la pagina -->
 {%block title%} Solicitudes de Productos {%endblock%}
 
@@ -28,14 +29,41 @@
 {% endif %}
 {% endfor %}
 {% endif %}
-<div class="form-group">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-search"></i></span>
+
+      <div class="row">
+      <div class="col-md-8">
+        <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                </div>
+                <input type="text" class="form-control" placeholder="Buscar" id="buscar" required>
+            </div>
         </div>
-        <input type="text" class="form-control" placeholder="Buscar" id="buscar" required>
-    </div>
-</div>
+      </div>
+      
+          
+      <div class="col-md-2">
+        <form method="GET">
+        <div class="form-group">
+            
+
+           
+            <select class="form-control" name="estado">
+                {% for estado in estados%}
+              <option>{{estado}}</option>
+              {%endfor%}
+            </select>
+          </div>
+      </div>
+      <div class="col-md-2">
+        <button type="submit" class="btn btn-primary">Filtrar Solicitudes</button>
+      </div>
+    </form>
+  </div>
+
+
+
 <table class="table">
     <thead class="thead-entel">
         <tr>
@@ -64,7 +92,7 @@
                 {%if pedido.estadopedido.idestado == 3%}
                 <h6><span class="badge badge-success">{{pedido.estadopedido}}</span></h6>
                 {%endif%}
-                
+
                 {%if pedido.estadopedido.idestado == 4%}
                 <h6><span class="badge badge-danger">{{pedido.estadopedido}}</span></h6>
                 {%endif%}
@@ -89,26 +117,26 @@
                                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                             </div>
 
-
-
-
-
-                            
-                                <!-- Modal body -->
-
-
+                            <!-- Modal body -->
+                            <form action="{% url 'administrar solicitud' pedido.idpedido %}" method="POST">
                                 <div class="modal-body">
 
-                                    <table class="table">
+                                    <table class="table" style="width: 100%">
+
                                         <thead class="thead-dark">
                                             <tr>
                                                 <th scope="col">#</th>
                                                 <th scope="col">Producto</th>
                                                 <th scope="col">Cantidad</th>
                                                 <th scope="col">Total</th>
+                                                {% if pedido.estadopedido.idestado == 2 and user.tipousuario.idtipousuario == 2 %}
+                                                <th scope="col">Fecha Vencimiento</th>
+                                                <th scope="col">Opciones</th>
+                                                {% endif %}
                                             </tr>
                                         </thead>
                                         <tbody>
+
                                             {% for detalle in detalles %}
                                             {%if detalle.pedido.idpedido == pedido.idpedido%}
                                             <tr>
@@ -116,29 +144,52 @@
                                                 <td>{{detalle.producto}}</td>
                                                 <td>{{detalle.cantidad}}</td>
                                                 <td>${{detalle.total}}</td>
+                                                {% if pedido.estadopedido.idestado == 2 and user.tipousuario.idtipousuario == 2 %}
+                                                <td>
 
+                                                    <div class="form-group">
+                                                        <input type="date" class="form-control"
+                                                            name="date{{detalle.idedetalle}}">
+                                                    </div>
+                                                </td>
+                                                <td>
+
+                                                    <input type="checkbox" name="chkAceptar[]" id="chk{{detalle.idedetalle}}"
+                                                        value="{{detalle.idedetalle}}" checked data-toggle="toggle"
+                                                        data-on="Aceptar  " data-off="Rechazar  " data-onstyle="success"
+                                                        data-offstyle="danger" data-size="small">
+
+
+                                                </td>
+                                                {% endif %}
 
                                             </tr>
                                             {%endif%}
                                             {%endfor%}
                                         </tbody>
                                     </table>
-                                    <div class="card-header"><h5>Subtotal: ${{pedido.subtotal}} </h5></div>
-                                    
-                                    <div class="card-header"><h5>IVA 19%: ${{pedido.iva}} </h5></div>
-                                    
-                                    <div class="card-header"><h5>Total: ${{pedido.total}} </h5></div>
-                                    <form  action="{% url 'administrar solicitud' pedido.idpedido %}" method="POST">
-                                        {% csrf_token %}
-                                        {%if pedido.estadopedido.idestado == 1 and user.tipousuario.idtipousuario == 4%}
-                                        <input type="text" class="form-control" name="observaciones"
+                                    <div class="card-header">
+                                        <h5>Subtotal: ${{pedido.subtotal}} </h5>
+                                    </div>
+
+                                    <div class="card-header">
+                                        <h5>IVA 19%: ${{pedido.iva}} </h5>
+                                    </div>
+
+                                    <div class="card-header">
+                                        <h5>Total: ${{pedido.total}} </h5>
+                                    </div>
+
+                                    {% csrf_token %}
+                                    {%if pedido.estadopedido.idestado == 1 and user.tipousuario.idtipousuario == 4%}
+                                    <input type="text" class="form-control" name="observaciones"
                                         placeholder="Observaciones">
-                                        
-                                        {%endif%}
+
+                                    {%endif%}
 
                                     {%if pedido.estadopedido.idestado == 2 and user.tipousuario.idtipousuario == 2%}
                                     <input type="text" class="form-control" name="observaciones"
-                                        placeholder="Observaciones" >
+                                        placeholder="Observaciones">
                                     {%endif%}
                                 </div>
                                 <!-- Modal footer  -->
@@ -146,27 +197,30 @@
                                     {%if pedido.estadopedido.idestado == 1 and user.tipousuario.idtipousuario == 4%}
 
                                     <button type="submit" name="aceptar" class="btn btn-primary">Aceptar Pedido</button>
-                                    <button type="submit" name="rechazar" class="btn btn-danger">Rechazar Pedido</button>
+                                    <button type="submit" name="rechazar" class="btn btn-danger">Rechazar
+                                        Pedido</button>
                                     {%endif%}
                                     {%if pedido.estadopedido.idestado == 2 and user.tipousuario.idtipousuario == 2%}
-                                    <button type="submit" name="recibir" class="btn btn-primary">Confirmar Entrega</button>
-                                    
-                                    <button type="submit" name="rechazar" class="btn btn-danger">Rechazar Entrega</button>
+                                    <button type="submit" name="recibir" class="btn btn-primary">Confirmar
+                                        Entrega</button>
+
+                                    <button type="submit" name="rechazar" class="btn btn-danger">Rechazar
+                                        Entrega</button>
                                     {%endif%}
-                                    
-                                    
-                                    
-                                </form>
-                                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
-                                </div>
-                           
 
 
 
-
-
+                            </form>
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">Cerrar</button>
                         </div>
+
+
+
+
+
+
                     </div>
+                </div>
                 </div>
             </td>
         </tr>
@@ -180,6 +234,47 @@
 
 </table>
 
+{% if estado %}
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        {% if pedidos.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?estado={{estado}}&page={{ pedidos.previous_page_number }}" >Anterior</a>
+          </li>
+        {% endif %}
+      
+      {% for n in numero_paginas%}
+      <li class="page-item {% active_pagination n %}"><a class="page-link" href="?estado={{estado}}&page={{n}}">{{ n }}</a></li>
+      {%endfor%}
+      {% if pedidos.has_next %}
+        <li class="page-item">
+    
+            <a class="page-link" href="?estado={{estado}}&page={{ pedidos.next_page_number }}">Siguiente</a>
+          </li>
+        {% endif %}
+    </ul>
+  </nav>
+  {% else %}
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        {% if pedidos.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ pedidos.previous_page_number }}" >Anterior</a>
+          </li>
+        {% endif %}
+      
+      {% for n in numero_paginas%}
+      <li class="page-item {% active_pagination n %}"><a class="page-link" href="?page={{n}}">{{ n }}</a></li>
+      {%endfor%}
+      {% if pedidos.has_next %}
+        <li class="page-item">
+    
+            <a class="page-link" href="?page={{ pedidos.next_page_number }}">Siguiente</a>
+          </li>
+        {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
 {%endblock%}
 
 {%block scripts%}
@@ -194,5 +289,7 @@
             });
         });
     });
+
+
 </script>
 {%endblock%}

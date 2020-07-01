@@ -28,83 +28,85 @@
 {% endif %}
 {% endfor %}
 {% endif %}
-<form  method="POST">
+<form method="POST">
     {% csrf_token %}
-<table class="table">
-    <thead class="thead-entel">
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Dias</th>
-            <th scope="col">Habitacion</th>
-            <th scope="col">Huesped</th>
-            <th scope="col">Total</th>
-            <th scope="col">Opciones</th>
-        </tr>
-    </thead>
-    <tbody id="tabla">
+    <table class="table">
         {%if detallesreservas %}
-        {% for detalle in detallesreservas %}
-        <tr>
+        <thead class="thead-entel">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Dias</th>
+                <th scope="col">Habitacion</th>
+                <th scope="col">Huesped</th>
+                <th scope="col">Total</th>
+                <th scope="col">Opciones</th>
+            </tr>
+        </thead>
+        <tbody id="tabla">
+            
+            {% for detalle in detallesreservas %}
+            <tr>
 
-            <th scope="row">{{detalle.idreserva}}</th>
-            <td>{{detalle.dias}}</td>
-            <td>{{detalle.habitacion}}</td>
-            <td>{{detalle.huesped}}</td>
-            <td>{{detalle.total}}</td>
-            <td>
-                <div class="form-group">
-                    <div class="input-group">
-                      <input type="checkbox" class="form-control" name="chkreserva[]" value="{{detalle.idreserva}}"> 
+                <th scope="row">{{detalle.idreserva}}</th>
+                <td>{{detalle.dias}}</td>
+                <td>{{detalle.habitacion}}</td>
+                <td>{{detalle.huesped}}</td>
+                <td>{{detalle.total}}</td>
+                <td>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="checkbox" class="form-control" name="chkreserva[]"
+                                value="{{detalle.idreserva}}">
+                        </div>
                     </div>
-                  </div>
-            </td>
-        </tr>
+                </td>
+            </tr>
 
-        {% endfor %}
-        {% else %}
-        <h1>No existen registros</h1>
-        {% endif %}
+            {% endfor %}
+            
+            {% endif %}
 
-    </tbody>
-    <thead class="thead-entel">
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">Servicio</th>
-            <th scope="col">Cantidad</th>
-            <th scope="col">Fecha</th>
-            <th scope="col">Huesped</th>
-            <th scope="col">Opciones</th>
-        </tr>
-    </thead>
-    <tbody id="tabla">
+        </tbody>
         {%if solicitudescompras %}
-        {% for solicitud in solicitudescompras %}
-        <tr>
+        <thead class="thead-entel">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Servicio</th>
+                <th scope="col">Cantidad</th>
+                <th scope="col">Fecha</th>
+                <th scope="col">Huesped</th>
+                <th scope="col">Opciones</th>
+            </tr>
+        </thead>
+        <tbody id="tabla">
+            
+            {% for solicitud in solicitudescompras %}
+            <tr>
 
-            <th scope="row">{{solicitud.idsolicitud}}</th>
-            <td>{{solicitud.serviciocomedor}}</td>
-            <td>{{solicitud.cantidad}}</td>
-            <td>{{solicitud.fecha}}</td>
-            <td>{{solicitud.huesped}}</td>
-            <td>
-                <div class="form-group">
-                    <div class="input-group">
-                      <input type="checkbox" class="form-control" name="chkservicio[]" value="{{solicitud.idsolicitud}}"> 
+                <th scope="row">{{solicitud.idsolicitud}}</th>
+                <td>{{solicitud.serviciocomedor}}</td>
+                <td>{{solicitud.cantidad}}</td>
+                <td>{{solicitud.fecha}}</td>
+                <td>{{solicitud.huesped}}</td>
+                <td>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <input type="checkbox" class="form-control" name="chkservicio[]"
+                                value="{{solicitud.idsolicitud}}">
+                        </div>
                     </div>
-                  </div>
-            </td>
-        </tr>
+                </td>
+            </tr>
 
-        {% endfor %}
-        {% else %}
-        <h1>No existen registros</h1>
-        {% endif %}
+            {% endfor %}
+            
+            
+            {% endif %}
+        </tbody>
 
-    </tbody>
-
-</table>
-<button type="submit" class="btn btn-primary float-right">Emitir Factura</button>
-</br>
+    </table>
+    <button type="submit" class="btn btn-primary float-right">Emitir Factura</button>
+    </br>
 
 </form>
 </br>

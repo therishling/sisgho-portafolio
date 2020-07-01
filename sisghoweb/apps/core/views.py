@@ -8,7 +8,8 @@ from apps.core import forms as formularios
 from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import connection
-from datetime import date
+from datetime import date, datetime
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from itertools import chain
 from django.db.models import Q
 from django.views.decorators.http import require_http_methods
@@ -21,7 +22,9 @@ from django.contrib import messages
 from django.conf import settings
 import os
 from django.contrib.auth.forms import PasswordChangeForm
-
+from django.core.mail import send_mail
+import requests
+import json
 # Create your views here.
 
 
@@ -408,24 +411,80 @@ class ListarFacturasEmitidas(UserPassesTestMixin, TemplateView):
         return redirect('dashboard')
 
     def get_context_data(self, **kwargs):
+
         if self.request.user.tipousuario.idtipousuario == 3:
-            cliente = modelos.Cliente.objects.get(
-                usuario=self.request.user.idusuario)
+
+            cliente = modelos.Cliente.objects.get(usuario=self.request.user.idusuario)
+
             facturas = modelos.Factura.objects.all().filter(cliente=cliente.idcliente).order_by('idfactura')
-            facturasid = modelos.Factura.objects.values_list(
-                'idfactura', flat=True).filter(cliente=cliente.idcliente).order_by('idfactura')
-        else:
-            cliente = modelos.Cliente.objects.all().values_list('idcliente', flat=True)
-            facturas = modelos.Factura.objects.all().filter(cliente__in=cliente).order_by('idfactura')
-            facturasid = modelos.Factura.objects.values_list(
-                'idfactura', flat=True).filter(cliente__in=cliente).order_by('idfactura')
+
+            facturasid = modelos.Factura.objects.values_list('idfactura', flat=True).filter(cliente=cliente.idcliente).order_by('idfactura')
+
+            if self.request.GET.get('estado'):
+                get_estado = self.request.GET.get('estado').replace('+',' ').split('?')
+                full_path = self.request.get_full_path()
+                
+                if full_path.find('?page=') == -1:
+                    estado = modelos.Estadofactura.objects.get(descripcion = self.request.GET.get('estado'))
+                    facturas = modelos.Factura.objects.all().filter(cliente=cliente.idcliente, estadofactura = estado).order_by('idfactura')
+                    facturasid = modelos.Factura.objects.values_list('idfactura', flat=True).filter(cliente=cliente.idcliente, estadofactura = estado).order_by('idfactura')
+                else:
+                    estado = modelos.Estadofactura.objects.get(descripcion = get_estado[0])
+                    facturas = modelos.Factura.objects.all().filter(cliente=cliente.idcliente, estadofactura = estado).order_by('idfactura')
+                    facturasid = modelos.Factura.objects.values_list('idfactura', flat=True).filter(cliente=cliente.idcliente, estadofactura = estado).order_by('idfactura')
+        
+        
+        if self.request.user.tipousuario.idtipousuario == 2:    
+
+            facturas = modelos.Factura.objects.all().order_by('idfactura')
+
+            facturasid = modelos.Factura.objects.values_list('idfactura', flat=True).order_by('idfactura')
+
+            if self.request.GET.get('estado'):
+                get_estado = self.request.GET.get('estado').replace('+',' ').split('?')
+                full_path = self.request.get_full_path()
+                
+                if full_path.find('?page=') == -1:
+                    estado = modelos.Estadofactura.objects.get(descripcion = self.request.GET.get('estado'))
+                    facturas = modelos.Factura.objects.all().filter(estadofactura = estado).order_by('idfactura')
+                    facturasid = modelos.Factura.objects.values_list('idfactura', flat=True).filter(estadofactura = estado).order_by('idfactura')
+                else:
+                    estado = modelos.Estadofactura.objects.get(descripcion = get_estado[0])
+                    facturas = modelos.Factura.objects.all().filter(estadofactura = estado).order_by('idfactura')
+                    facturasid = modelos.Factura.objects.values_list('idfactura', flat=True).filter(estadofactura = estado).order_by('idfactura')
 
         detallefactura = modelos.Detallefactura.objects.all().filter(factura__in=facturasid).order_by('iddetalle')
 
-        context = super(ListarFacturasEmitidas,
-                        self).get_context_data(**kwargs)
-        context['facturas'] = facturas
+
+        #PAGINATION
+        paginator = Paginator(facturas, 10) # Muestra 10 por pagina.
+
+        numero_paginas = []
+
+        
+        for i in range(1, paginator.num_pages+1):
+            numero_paginas.append(i)
+
+        page_number = self.request.GET.get('page')
+        
+        try:
+            page_obj = paginator.get_page(page_number)
+        except PageNotAnInteger:
+            page_obj = paginator.get_page(1)
+        except EmptyPage:
+            page_obj = paginator.get_page(paginator.num_pages)
+
+
+
+
+        context = super(ListarFacturasEmitidas,self).get_context_data(**kwargs)
+
+        context['facturas'] = page_obj
         context['detalles'] = detallefactura
+        context['paginas'] = numero_paginas
+        context['estados'] = modelos.Estadofactura.objects.all().order_by('idestado')
+        if self.request.GET.get('estado'):
+            context['estado'] = get_estado[0]
         return context
 
 
@@ -618,6 +677,14 @@ class SolicitarProducto(UserPassesTestMixin, SuccessMessageMixin, CreateView):
         idprod = self.request.POST.getlist('idpro[]')
         arr = []
         cont = 0
+        c = 0
+        for i in cantidad:
+            c+=int(i)
+        
+        if c == 0:
+            messages.error(self.request,'Debe solicitar almenos 1 producto.')
+            return HttpResponseRedirect(reverse('solicitar producto', kwargs={'pk': self.kwargs['pk']}))
+        print(idprod)
         for c in idprod:
             arr.append([c, cantidad[cont]])
             cont = cont+1
@@ -648,6 +715,7 @@ class SolicitarProducto(UserPassesTestMixin, SuccessMessageMixin, CreateView):
                 detallepedido.total = int(pedido[1])*producto.precio
                 detallepedido.pedido = self.object
                 detallepedido.producto = producto
+                detallepedido.estado = modelos.EstadoDetallePedido.objects.get(idestado = 3)
                 detallepedido.save()
         
         dp = modelos.Detallepedido.objects.all().filter(pedido = self.object.idpedido)
@@ -686,14 +754,80 @@ class ListarPedidos(UserPassesTestMixin, SuccessMessageMixin, ListView):
         if self.request.user.tipousuario.idtipousuario == 2:
 
             pedidos = modelos.Pedido.objects.all().order_by('idpedido')
+
+            if self.request.GET.get('estado'):
+                get_estado = self.request.GET.get('estado').replace('+',' ').split('?')
+                full_path = self.request.get_full_path()
+                
+                if full_path.find('?page=') == -1:
+                    estado = modelos.Estadopedido.objects.get(descripcion = self.request.GET.get('estado'))
+                    pedidos = modelos.Pedido.objects.all().filter(estadopedido = estado).order_by('idpedido')
+                else:
+                    estado = modelos.Estadopedido.objects.get(descripcion = get_estado[0])
+                    pedidos = modelos.Pedido.objects.all().filter(estadopedido = estado).order_by('idpedido')
+                    
+        
         if self.request.user.tipousuario.idtipousuario == 4:
             proveedor = modelos.Proveedor.objects.get(
                 usuario=self.request.user.idusuario)
             pedidos = modelos.Pedido.objects.all().filter(proveedor=proveedor.idproveedor).order_by('idpedido')
+            if  self.request.GET.get('estado'):
+                get_estado = self.request.GET.get('estado').replace('+',' ').split('?')
+                full_path = self.request.get_full_path()
+
+                if full_path.find('?page=') == -1:
+
+                    
+                    estado = modelos.Estadopedido.objects.get(descripcion = self.request.GET.get('estado'))
+                    pedidos = modelos.Pedido.objects.all().filter(proveedor=proveedor.idproveedor,estadopedido = estado).order_by('idpedido')
+                    
+
+                else:
+
+                    
+                    estado = modelos.Estadopedido.objects.get(descripcion = get_estado[0])
+                    pedidos = modelos.Pedido.objects.all().filter(proveedor=proveedor.idproveedor, estadopedido = estado).order_by('idpedido')
+                    
+
+
+
+
+        #PAGINATION
+        paginator = Paginator(pedidos, 10) # Muestra 10 por pagina.
+
+        numero_paginas = []
+
+        
+        for i in range(1, paginator.num_pages+1):
+            numero_paginas.append(i)
+
+        
+        page_number = self.request.GET.get('page')
+        
+
+        
+
+
+        
+        
+        try:
+            page_obj = paginator.get_page(page_number)
+        except PageNotAnInteger:
+            page_obj = paginator.get_page(1)
+        except EmptyPage:
+            page_obj = paginator.get_page(paginator.num_pages)
+
+
+        
 
         context = super(ListarPedidos, self).get_context_data(**kwargs)
-        context['pedidos'] = pedidos
+        context['pedidos'] = page_obj
         context['detalles'] = modelos.Detallepedido.objects.all()
+        context['numero_paginas'] = numero_paginas
+        context['estados'] = modelos.Estadopedido.objects.all()
+        if self.request.GET.get('estado'):
+            context['estado'] = get_estado[0]
+            
         return context
 
 
@@ -723,18 +857,61 @@ class AdministrarSolicitud(UserPassesTestMixin, SuccessMessageMixin, UpdateView)
 
             if 'aceptar' in self.request.POST and self.request.user.tipousuario.idtipousuario == 4:
                 estadopedido = modelos.Estadopedido.objects.get(idestado=2)
+
+
             if 'recibir' in self.request.POST and self.request.user.tipousuario.idtipousuario == 2:
+
+                aceptados = self.request.POST.getlist('chkAceptar[]')
+                
+                for i in aceptados:
+                    detalle = modelos.Detallepedido.objects.get(idedetalle = i)
+                    detalle.estado = modelos.EstadoDetallePedido.objects.get(idestado = 1)
+                    detalle.save()
+                
                 estadopedido = modelos.Estadopedido.objects.get(idestado=3)
-                detallepedido = modelos.Detallepedido.objects.all().filter(pedido=pedido.idpedido)
+                rechazados = modelos.Detallepedido.objects.all().filter(pedido=pedido.idpedido, estado = 3)
+                
+                if rechazados:
+                    for j in rechazados:
+                        detalle_re = modelos.Detallepedido.objects.get(idedetalle = j.idedetalle)
+                        detalle_re.estado = modelos.EstadoDetallePedido.objects.get(idestado = 2)
+                        detalle_re.save()
+
+                detallepedido = modelos.Detallepedido.objects.all().filter(pedido=pedido.idpedido, estado = 1)
                 pedido.fechaentrega = date.today()
+
                 for dp in detallepedido:
                     producto = modelos.Producto.objects.get(
                         idproducto=dp.producto.idproducto)
                     producto.stock = producto.stock + dp.cantidad
                     producto.save()
+                    
+                   
+                    recepcion = modelos.Recepcionproducto()
+                    recepcion.codigo = self.codigo_producto(dp.idedetalle, self.request.POST.get('date'+str(dp.idedetalle)))
+                    recepcion.fecharecepcion = date.today()
+                    recepcion.detallepedido = modelos.Detallepedido.objects.get(idedetalle = dp.idedetalle)
+                    recepcion.empleado = modelos.Empleado.objects.get(usuario = self.request.user.idusuario)
+                    recepcion.save()
+
+
             pedido.estadopedido = estadopedido
             pedido.save()
         return super().post(request, *args, **kwargs)
+
+    def codigo_producto(self,iddetalle, fechavencimiento):
+        detalle = modelos.Detallepedido.objects.get(idedetalle = iddetalle)
+        idproveedor = str(detalle.pedido.proveedor.idproveedor).zfill(3)
+       
+        idproducto = str(detalle.producto.idproducto).zfill(3)
+       
+        fechavencimiento_numero = '000000000'
+        if fechavencimiento:
+            fechavencimiento_numero = datetime.strptime(fechavencimiento, '%Y-%m-%y').strftime("%Y%m%d")
+            
+        idtipoproducto = str(detalle.producto.tipoproducto.idtipo).zfill(3)
+        
+        return idproveedor[-3:]+idproducto[-3:]+fechavencimiento_numero+idtipoproducto[-3:]
 
 # ACTUALIZAR ESTADO HABITACIONES
 class ActualizarEstHab(UserPassesTestMixin, SuccessMessageMixin, FormView):
@@ -2326,4 +2503,55 @@ class ModificarPerfil(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
                 prov.save()
 
         return super().post(request, *args, **kwargs)
+
+# FORMULARIO CONTACTO
+class Contacto(TemplateView):
+    template_name = 'contacto/form.html'
+
+    def post(self, request, *args, **kwargs):
+        mensaje = ('Se ha contactado un cliente desde el sitio web con los siguientes datos:\n'+
+        'Nombre: '+request.POST['nombre'] + '\n'+
+        'Apellido Paterno: '+request.POST['apellido_paterno'] + '\n'+
+        'Apellido Materno: '+request.POST['apellido_materno'] + '\n'+
+        'Correo: '+request.POST['email'] + '\n'+
+        'Rut Empresa: '+request.POST['rut'] + '\n'+
+        'Nombre Empresa: '+request.POST['nombre_empresa'] + '\n'+
+        'Rubro: '+request.POST['rubro'] + '\n'+
+        'Direccion: '+request.POST['direccion'] + '\n'+
+        'Telefono: '+request.POST['telefono'] + '\n'+
+        'Mensaje: '+request.POST['mensaje'] + '\n')
+        
+        if request.method =='POST':
+            recaptcha_token = request.POST.get('g-recaptcha-response')
+            re_url = "https://www.google.com/recaptcha/api/siteverify"
+            re_secret_key = '6LeyuaoZAAAAAEoQHh6p2W7UgmAyeO0GbpjmE4oW'
+            re_data = {"secret" : re_secret_key, "response" : recaptcha_token}
+            re_server_response = requests.post(url=re_url, data = re_data)
+            re_json = json.loads(re_server_response.text)
+
+           
+            if re_json['success'] == False:
+                messages.error(request, "Complete el captcha")
+                ctx = {}
+                ctx['nombre'] = request.POST['nombre']
+                ctx['apellido_paterno'] = request.POST['apellido_paterno']
+                ctx['apellido_materno'] = request.POST['apellido_materno']
+                ctx['email'] = request.POST['email']
+                ctx['rut'] = request.POST['rut']
+                ctx['nombre_empresa'] = request.POST['nombre_empresa']
+                ctx['rubro'] = request.POST['rubro']
+                ctx['direccion'] = request.POST['direccion']
+                ctx['telefono'] = request.POST['telefono']
+                ctx['mensaje'] = request.POST['mensaje']
+                return render(request, 'contacto/form.html', ctx)
+
+            send_mail ('Formulario de Contacto',
+            mensaje,
+            settings.EMAIL_HOST_USER,
+            [settings.EMAIL_HOST_USER],
+            fail_silently= False )
+
+        messages.success(request, "Mensaje enviado, la hostal se pondra en contacto con usted! =)")
+        return HttpResponseRedirect('contacto')
+
 

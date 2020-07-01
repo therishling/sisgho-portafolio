@@ -1,4 +1,5 @@
 {% extends 'dashboard/base.html' %}
+{%load menu%}
 <!-- Titulo de la pagina -->
 {%block title%} Facturas {%endblock%}
 
@@ -28,13 +29,37 @@
 {% endif %}
 {% endfor %}
 {% endif %}
-<div class="form-group">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <span class="input-group-text"><i class="fas fa-search"></i></span>
-        </div>
-        <input type="text" class="form-control" placeholder="Buscar" id="buscar" required>
+
+<div class="row">
+    <div class="col-md-8">
+      <div class="form-group">
+          <div class="input-group">
+              <div class="input-group-prepend">
+                  <span class="input-group-text"><i class="fas fa-search"></i></span>
+              </div>
+              <input type="text" class="form-control" placeholder="Buscar" id="buscar" required>
+          </div>
+      </div>
     </div>
+    
+        
+    <div class="col-md-2">
+      <form method="GET">
+      <div class="form-group">
+          
+
+         
+          <select class="form-control" name="estado">
+              {% for estado in estados%}
+            <option>{{estado}}</option>
+            {%endfor%}
+          </select>
+        </div>
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary">Filtrar Facturas</button>
+    </div>
+  </form>
 </div>
 <table class="table">
     <thead class="thead-entel">
@@ -205,7 +230,50 @@
 
 </table>
 
+
+{% if estado %}
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        {% if facturas.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?estado={{estado}}&page={{ facturas.previous_page_number }}" >Anterior</a>
+          </li>
+        {% endif %}
+      
+      {% for n in paginas%}
+      <li class="page-item {% active_pagination n %}"><a class="page-link" href="?estado={{estado}}&page={{n}}">{{ n }}</a></li>
+      {%endfor%}
+      {% if facturas.has_next %}
+        <li class="page-item">
+    
+            <a class="page-link" href="?estado={{estado}}&page={{ facturas.next_page_number }}">Siguiente</a>
+          </li>
+        {% endif %}
+    </ul>
+  </nav>
+  {% else %}
+  <nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        {% if facturas.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ facturas.previous_page_number }}" >Anterior</a>
+          </li>
+        {% endif %}
+      
+      {% for n in paginas%}
+      <li class="page-item {% active_pagination n %}"><a class="page-link" href="?page={{n}}">{{ n }}</a></li>
+      {%endfor%}
+      {% if facturas.has_next %}
+        <li class="page-item">
+    
+            <a class="page-link" href="?page={{ facturas.next_page_number }}">Siguiente</a>
+          </li>
+        {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
 {%endblock%}
+
 
 {%block scripts%}
 

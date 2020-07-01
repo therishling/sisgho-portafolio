@@ -84,4 +84,8 @@ urlpatterns = [
     path('dashboard/password/done', login_required(PasswordChangeDoneView.as_view(
         template_name='dashboard/usuario/cambiarpass_done.html'
     )), name='password_change_done'),
+
+    #FORMULARIO CONTACTO
+    path('contacto',
+         vista.Contacto.as_view(), name='contacto'),
 ]
