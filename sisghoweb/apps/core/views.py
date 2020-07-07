@@ -25,8 +25,9 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.core.mail import send_mail
 import requests
 import json
-# Create your views here.
 
+
+# PRINCIPALES
 
 class Index(TemplateView):
     template_name = 'index.html'
@@ -38,7 +39,6 @@ class Dashboard(TemplateView):
    
 
 # Registrar Huespedes
-
 
 class ReservarHabitacion(UserPassesTestMixin, SuccessMessageMixin, CreateView):
     model = modelos.Huesped
@@ -75,8 +75,25 @@ class ReservarHabitacion(UserPassesTestMixin, SuccessMessageMixin, CreateView):
         context['cliente'] = modelos.Cliente.objects.get(
             usuario=self.request.user.idusuario)
         context['time'] = date.today()
+        print()
         context['hay_disponible'] = hay_disponible
+        
         return context
+
+    def form_valid(self, form, **kwargs):
+        self.object = form.save(commit=False)
+
+        if self.object.fechadesde < date.today():
+            messages.error(self.request,'La "Fecha Desde", no puede ser menor a la fecha actual.')
+            return HttpResponseRedirect(reverse('reservar habitacion'))
+        
+        if self.object.fechahasta < date.today():
+            messages.error(self.request,'La "Fecha Hasta", no puede ser menor a la fecha actual.')
+            return HttpResponseRedirect(reverse('reservar habitacion'))
+
+           
+        self.object = form.save()
+        return super(ReservarHabitacion, self).form_valid(form)
 
 
 class ModificarHuesped(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
@@ -95,6 +112,21 @@ class ModificarHuesped(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
 
     def handle_no_permission(self):
         return redirect('dashboard')
+
+    def form_valid(self, form, **kwargs):
+        self.object = form.save(commit=False)
+
+        if self.object.fechadesde < date.today():
+            messages.error(self.request,'La "Fecha Desde", no puede ser menor a la fecha actual.')
+            return HttpResponseRedirect(reverse('reservar habitacion'))
+        
+        if self.object.fechahasta < date.today():
+            messages.error(self.request,'La "Fecha Hasta", no puede ser menor a la fecha actual.')
+            return HttpResponseRedirect(reverse('reservar habitacion'))
+
+           
+        self.object = form.save()
+        return super(ModificarHuesped, self).form_valid(form)
 
 
 class CancelarReserva(UserPassesTestMixin, SuccessMessageMixin, DeleteView):
@@ -236,6 +268,7 @@ class AsignarHabitacion(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
 
 
 # VISTAS SOLICITUD DE COMPRA
+
 class SolicitudCompra(UserPassesTestMixin, SuccessMessageMixin, CreateView):
     model = modelos.SolicitudCompra
     form_class = formularios.SolicitudCompraForm
@@ -560,8 +593,10 @@ class DetallePago(UserPassesTestMixin, SuccessMessageMixin, TemplateView):
         context['option'] = int(self.kwargs['pk'])
         context['total'] = total
         return context
-# PDF
 
+
+
+# PDF
 
 class FacturaPDF(View):
 
@@ -629,7 +664,9 @@ class FacturaPDF(View):
             return redirect('listar facturas emitidas')
 
 
+
 # PEDIDOS
+
 class ListaProveedor(UserPassesTestMixin, TemplateView):
     template_name = 'dashboard/empleado/solicitarprod.html'
 
@@ -933,7 +970,9 @@ class AdministrarSolicitud(UserPassesTestMixin, SuccessMessageMixin, UpdateView)
         
         return idproveedor[-3:]+idproducto[-3:]+fechavencimiento_numero+idtipoproducto[-3:]
 
+
 # ACTUALIZAR ESTADO HABITACIONES
+
 class ActualizarEstHab(UserPassesTestMixin, SuccessMessageMixin, FormView):
     form_class = formularios.HabitacionForm
     template_name = 'dashboard/empleado/asignarhabi.html'
@@ -954,7 +993,9 @@ class ActualizarEstHab(UserPassesTestMixin, SuccessMessageMixin, FormView):
         form.actualizar_estado()
         return super(ActualizarEstHab, self).form_valid(form)
 
+
 # INFORMES Y ESTADISTICAS
+
 def obtener_datos(request, *args, **kwargs):
     
     #USUARIO CLIENTE
@@ -1150,6 +1191,74 @@ def obtener_datos(request, *args, **kwargs):
         }
         return JsonResponse(data)
 
+    if request.user.tipousuario.idtipousuario == 1:
+        usuarios = len(modelos.Usuario.objects.all())
+        productos = len(modelos.Producto.objects.all())
+        servicios = len(modelos.Serviciocomedor.objects.all())
+        habitaciones = len(modelos.Habitacion.objects.all())
+
+        # GRAFICO GANANCIAS
+        ganancias_labels = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"]
+        ganancias_data = []
+
+        for i in range(1,13):
+            ganancia = 0
+            fact = modelos.Factura.objects.all().filter(fechapago__year = date.today().strftime("%Y"),fechapago__month = i)
+            for j in fact:
+                ganancia += j.total
+            ganancias_data.append(ganancia)
+
+        # SOLICITUDES PRODUCTOS
+        sdp_labels = ["Solicitados", "En Transito", "Recibidos", "Rechazaados"]
+        sdp_data = []
+
+        sdp_solicitados = len(modelos.Pedido.objects.all().filter(estadopedido = 1))
+        sdp_entransito = len(modelos.Pedido.objects.all().filter(estadopedido = 2))
+        sdp_recibidos = len(modelos.Pedido.objects.all().filter(estadopedido = 3))
+        sdp_rechazados = len(modelos.Pedido.objects.all().filter(estadopedido = 4))
+        sdp_total = sdp_solicitados + sdp_entransito + sdp_recibidos + sdp_rechazados
+
+        sdp_data.append(sdp_solicitados)
+        sdp_data.append(sdp_entransito)
+        sdp_data.append(sdp_recibidos)
+        sdp_data.append(sdp_rechazados)
+
+
+        # FACTURAS
+        f_labels = ["Pagadas","En Proceso","No Pagadas"]
+        f_data = []
+
+        f_pagadas = len(modelos.Factura.objects.all().filter(estadofactura = 2))
+        f_enproceso = len(modelos.Factura.objects.all().filter(estadofactura__in = (3,4)))
+        f_nopagada = len(modelos.Factura.objects.all().filter(estadofactura = 1))
+
+        f_data.append(f_pagadas)
+        f_data.append(f_enproceso)
+        f_data.append(f_nopagada)
+
+        f_total = f_pagadas + f_enproceso + f_nopagada
+
+        # JSON    
+        data = {
+            
+                "usuarios" : usuarios,
+                "productos" : productos,
+                "servicios" : servicios,
+                "habitaciones" : habitaciones,
+                "tipousuario" : 1,
+                "ganancias_labels" : ganancias_labels,
+                "ganancias_data" : ganancias_data,
+                "sdp_labels" : sdp_labels,
+                "sdp_data" : sdp_data,
+                "sdp_total" : sdp_total,
+                "f_labels" : f_labels,
+                "f_data" : f_data,
+                "f_total" : f_total
+                
+        }
+        return JsonResponse(data)
+
+
     return HttpResponse("NO DATA")
 
 class Informes(UserPassesTestMixin, TemplateView):
@@ -1168,29 +1277,21 @@ class Informes(UserPassesTestMixin, TemplateView):
         opciones = self.request.POST.getlist('opcion[]')
 
         if opciones:
-            
+            tipousuario = self.request.user.tipousuario.idtipousuario
             wb = Workbook()
             bandera = True
-            if self.request.user.tipousuario.idtipousuario == 2:
-                empleado = modelos.Empleado.objects.get(usuario = self.request.user.idusuario)
+            
+            if tipousuario == 2 or tipousuario == 1:
+                if tipousuario == 2:
+                    empleado = modelos.Empleado.objects.get(usuario = self.request.user.idusuario)
+                
                 rep = True
                 rep_pedidos = True
                 for op in opciones:
                 
                     if int(op) == 1:
 
-                        habitaciones_asignadas = modelos.Huesped.objects.all().filter(empleado = empleado.idempleado, habitacion__isnull = False).order_by('fechadesde')
-                    
-                        if self.request.POST.get('fechadesdeHuespedes'):
-                            habitaciones_asignadas = modelos.Huesped.objects.all().filter(empleado = empleado.idempleado,habitacion__isnull = False,  fechadesde__gte = self.request.POST.get('fechadesdeHuespedes')).order_by('fechadesde')
-
-                        if self.request.POST.get('fechahastaHuespedes'):
-                            habitaciones_asignadas = modelos.Huesped.objects.all().filter(empleado = empleado.idempleado,habitacion__isnull = False, fechahasta__lte = self.request.POST.get('fechahastaHuespedes')).order_by('fechadesde')
-
-                    
-                        if self.request.POST.get('fechadesdeHuespedes') and self.request.POST.get('fechahastaHuespedes'):
-                            habitaciones_asignadas = modelos.Huesped.objects.all().filter(empleado = empleado.idempleado,habitacion__isnull = False, fechadesde__gte = self.request.POST.get('fechadesdeHuespedes'),fechahasta__lte = self.request.POST.get('fechahastaHuespedes')).order_by('fechadesde')
-                    
+                       
                         if bandera:
                             ws = wb.active
                             ws.title = "Informe Habitaciones Asignadas"
@@ -1238,6 +1339,37 @@ class Informes(UserPassesTestMixin, TemplateView):
                         
                         # DATOS
                         cont = 4
+                        if tipousuario == 2:
+
+                            habitaciones_asignadas = modelos.Huesped.objects.all().filter(empleado = empleado.idempleado, habitacion__isnull = False).order_by('fechadesde')
+                        
+                            if self.request.POST.get('fechadesdeHuespedes'):
+                                habitaciones_asignadas = modelos.Huesped.objects.all().filter(empleado = empleado.idempleado,habitacion__isnull = False,  fechadesde__gte = self.request.POST.get('fechadesdeHuespedes')).order_by('fechadesde')
+
+                            if self.request.POST.get('fechahastaHuespedes'):
+                                habitaciones_asignadas = modelos.Huesped.objects.all().filter(empleado = empleado.idempleado,habitacion__isnull = False, fechahasta__lte = self.request.POST.get('fechahastaHuespedes')).order_by('fechadesde')
+
+                        
+                            if self.request.POST.get('fechadesdeHuespedes') and self.request.POST.get('fechahastaHuespedes'):
+                                habitaciones_asignadas = modelos.Huesped.objects.all().filter(empleado = empleado.idempleado,habitacion__isnull = False, fechadesde__gte = self.request.POST.get('fechadesdeHuespedes'),fechahasta__lte = self.request.POST.get('fechahastaHuespedes')).order_by('fechadesde')
+                        
+                        if tipousuario == 1:
+
+                            habitaciones_asignadas = modelos.Huesped.objects.all().filter(habitacion__isnull = False).order_by('fechadesde')
+                        
+                            if self.request.POST.get('fechadesdeHuespedes'):
+                                habitaciones_asignadas = modelos.Huesped.objects.all().filter(habitacion__isnull = False,  fechadesde__gte = self.request.POST.get('fechadesdeHuespedes')).order_by('fechadesde')
+
+                            if self.request.POST.get('fechahastaHuespedes'):
+                                habitaciones_asignadas = modelos.Huesped.objects.all().filter(habitacion__isnull = False, fechahasta__lte = self.request.POST.get('fechahastaHuespedes')).order_by('fechadesde')
+
+                        
+                            if self.request.POST.get('fechadesdeHuespedes') and self.request.POST.get('fechahastaHuespedes'):
+                                habitaciones_asignadas = modelos.Huesped.objects.all().filter(habitacion__isnull = False, fechadesde__gte = self.request.POST.get('fechadesdeHuespedes'),fechahasta__lte = self.request.POST.get('fechahastaHuespedes')).order_by('fechadesde')
+                        
+
+
+
 
                         for ha in habitaciones_asignadas:
                             ws.cell(row = cont, column = 2).value = ha.rut
@@ -1265,22 +1397,7 @@ class Informes(UserPassesTestMixin, TemplateView):
 
                     if int(op) == 2:
 
-                        factura = modelos.Factura.objects.all().values_list('idfactura', flat=True).filter(empleado = empleado.idempleado, estadofactura = 2).order_by('fechapago')
-                    
-
-                        if self.request.POST.get('fechadesdeHuespedes'):
-                            factura = modelos.Factura.objects.all().values_list('idfactura', flat=True).filter(empleado = empleado.idempleado, estadofactura = 2, fechapago__gte = self.request.POST.get('fechadesdeHuespedes')).order_by('fechapago')
-                            
-
-                        if self.request.POST.get('fechahastaHuespedes'):
-                            factura = modelos.Factura.objects.all().values_list('idfactura', flat=True).filter(empleado = empleado.idempleado, estadofactura = 2, fechapago__lte = self.request.POST.get('fechahastaHuespedes')).order_by('fechapago')
-                            
                         
-                        if self.request.POST.get('fechadesdeHuespedes') and self.request.POST.get('fechahastaHuespedes'):
-                            factura = modelos.Factura.objects.all().values_list('idfactura', flat=True).filter(empleado = empleado.idempleado, estadofactura = 2, fechapago__gte = self.request.POST.get('fechadesdeHuespedes'), fechapago__lte = self.request.POST.get('fechahastaHuespedes')).order_by('fechapago')
-                            
-                        compras_realizadas = modelos.Detallefactura.objects.all().filter(factura__in = factura, solicitudcompra__isnull = False).order_by('factura')
-
 
                         if bandera:
                             ws = wb.active
@@ -1335,6 +1452,38 @@ class Informes(UserPassesTestMixin, TemplateView):
                         
                         # DATOS
                         cont = 4
+
+                        if tipousuario == 2:
+                            factura = modelos.Factura.objects.all().values_list('idfactura', flat=True).filter(empleado = empleado.idempleado, estadofactura = 2).order_by('fechapago')
+                        
+                            if self.request.POST.get('fechadesdeHuespedes'):
+                                factura = modelos.Factura.objects.all().values_list('idfactura', flat=True).filter(empleado = empleado.idempleado, estadofactura = 2, fechapago__gte = self.request.POST.get('fechadesdeHuespedes')).order_by('fechapago')
+                                
+
+                            if self.request.POST.get('fechahastaHuespedes'):
+                                factura = modelos.Factura.objects.all().values_list('idfactura', flat=True).filter(empleado = empleado.idempleado, estadofactura = 2, fechapago__lte = self.request.POST.get('fechahastaHuespedes')).order_by('fechapago')
+                                
+                            
+                            if self.request.POST.get('fechadesdeHuespedes') and self.request.POST.get('fechahastaHuespedes'):
+                                factura = modelos.Factura.objects.all().values_list('idfactura', flat=True).filter(empleado = empleado.idempleado, estadofactura = 2, fechapago__gte = self.request.POST.get('fechadesdeHuespedes'), fechapago__lte = self.request.POST.get('fechahastaHuespedes')).order_by('fechapago')
+                                
+                           
+                        if tipousuario == 1:
+                            factura = modelos.Factura.objects.all().values_list('idfactura', flat=True).filter(estadofactura = 2).order_by('fechapago')
+                        
+                            if self.request.POST.get('fechadesdeHuespedes'):
+                                factura = modelos.Factura.objects.all().values_list('idfactura', flat=True).filter(estadofactura = 2, fechapago__gte = self.request.POST.get('fechadesdeHuespedes')).order_by('fechapago')
+                                
+
+                            if self.request.POST.get('fechahastaHuespedes'):
+                                factura = modelos.Factura.objects.all().values_list('idfactura', flat=True).filter(estadofactura = 2, fechapago__lte = self.request.POST.get('fechahastaHuespedes')).order_by('fechapago')
+                                
+                            
+                            if self.request.POST.get('fechadesdeHuespedes') and self.request.POST.get('fechahastaHuespedes'):
+                                factura = modelos.Factura.objects.all().values_list('idfactura', flat=True).filter(estadofactura = 2, fechapago__gte = self.request.POST.get('fechadesdeHuespedes'), fechapago__lte = self.request.POST.get('fechahastaHuespedes')).order_by('fechapago')
+                                
+                        
+                        compras_realizadas = modelos.Detallefactura.objects.all().filter(factura__in = factura, solicitudcompra__isnull = False).order_by('factura')
 
                         for cr in compras_realizadas:
                             ws.cell(row = cont, column = 2).value = cr.huesped.rut
@@ -1424,29 +1573,56 @@ class Informes(UserPassesTestMixin, TemplateView):
                             # DATOS
                             cont = 4
 
-                        facturas_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 2).order_by('fechafactura')
-                        facturas_no_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 1).order_by('fechafactura')
-                        facturas_trans_bancaria = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 3).order_by('fechafactura')
-                        factura_presencial = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 4).order_by('fechafactura')
+                        if tipousuario == 2:
 
-                        if self.request.POST.get('fechadesdeFacturas'):
-                            facturas_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 2, fechafactura__gte = self.request.POST.get('fechadesdeFacturas')).order_by('fechafactura')
-                            facturas_no_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 1, fechafactura__gte = self.request.POST.get('fechadesdeFacturas')).order_by('fechafactura')
-                            facturas_trans_bancaria = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 3, fechafactura__gte = self.request.POST.get('fechadesdeFacturas')).order_by('fechafactura')
-                            factura_presencial = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 4, fechafactura__gte = self.request.POST.get('fechadesdeFacturas')).order_by('fechafactura')
-                        
-                        if self.request.POST.get('fechahastaFacturas'):
-                            facturas_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 2, fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
-                            facturas_no_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 1, fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
-                            facturas_trans_bancaria = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 3, fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
-                            factura_presencial = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 4, fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
-                        
-                        if self.request.POST.get('fechadesdeFacturas') and self.request.POST.get('fechahastaFacturas'):
-                            facturas_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 2, fechafactura__gte = self.request.POST.get('fechadesdeFacturas'),fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
-                            facturas_no_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 1, fechafactura__gte = self.request.POST.get('fechadesdeFacturas'),fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
-                            facturas_trans_bancaria = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 3, fechafactura__gte = self.request.POST.get('fechadesdeFacturas'),fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
-                            factura_presencial = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 4, fechafactura__gte = self.request.POST.get('fechadesdeFacturas'),fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                            facturas_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 2).order_by('fechafactura')
+                            facturas_no_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 1).order_by('fechafactura')
+                            facturas_trans_bancaria = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 3).order_by('fechafactura')
+                            factura_presencial = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 4).order_by('fechafactura')
 
+                            if self.request.POST.get('fechadesdeFacturas'):
+                                facturas_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 2, fechafactura__gte = self.request.POST.get('fechadesdeFacturas')).order_by('fechafactura')
+                                facturas_no_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 1, fechafactura__gte = self.request.POST.get('fechadesdeFacturas')).order_by('fechafactura')
+                                facturas_trans_bancaria = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 3, fechafactura__gte = self.request.POST.get('fechadesdeFacturas')).order_by('fechafactura')
+                                factura_presencial = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 4, fechafactura__gte = self.request.POST.get('fechadesdeFacturas')).order_by('fechafactura')
+                            
+                            if self.request.POST.get('fechahastaFacturas'):
+                                facturas_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 2, fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                                facturas_no_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 1, fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                                facturas_trans_bancaria = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 3, fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                                factura_presencial = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 4, fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                            
+                            if self.request.POST.get('fechadesdeFacturas') and self.request.POST.get('fechahastaFacturas'):
+                                facturas_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 2, fechafactura__gte = self.request.POST.get('fechadesdeFacturas'),fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                                facturas_no_pagadas = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 1, fechafactura__gte = self.request.POST.get('fechadesdeFacturas'),fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                                facturas_trans_bancaria = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 3, fechafactura__gte = self.request.POST.get('fechadesdeFacturas'),fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                                factura_presencial = modelos.Factura.objects.all().filter(empleado = empleado.idempleado, estadofactura = 4, fechafactura__gte = self.request.POST.get('fechadesdeFacturas'),fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                                           
+                        if tipousuario == 1:
+
+                            facturas_pagadas = modelos.Factura.objects.all().filter(estadofactura = 2).order_by('fechafactura')
+                            facturas_no_pagadas = modelos.Factura.objects.all().filter(estadofactura = 1).order_by('fechafactura')
+                            facturas_trans_bancaria = modelos.Factura.objects.all().filter(estadofactura = 3).order_by('fechafactura')
+                            factura_presencial = modelos.Factura.objects.all().filter(estadofactura = 4).order_by('fechafactura')
+
+                            if self.request.POST.get('fechadesdeFacturas'):
+                                facturas_pagadas = modelos.Factura.objects.all().filter(estadofactura = 2, fechafactura__gte = self.request.POST.get('fechadesdeFacturas')).order_by('fechafactura')
+                                facturas_no_pagadas = modelos.Factura.objects.all().filter(estadofactura = 1, fechafactura__gte = self.request.POST.get('fechadesdeFacturas')).order_by('fechafactura')
+                                facturas_trans_bancaria = modelos.Factura.objects.all().filter(estadofactura = 3, fechafactura__gte = self.request.POST.get('fechadesdeFacturas')).order_by('fechafactura')
+                                factura_presencial = modelos.Factura.objects.all().filter(estadofactura = 4, fechafactura__gte = self.request.POST.get('fechadesdeFacturas')).order_by('fechafactura')
+                            
+                            if self.request.POST.get('fechahastaFacturas'):
+                                facturas_pagadas = modelos.Factura.objects.all().filter(estadofactura = 2, fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                                facturas_no_pagadas = modelos.Factura.objects.all().filter(estadofactura = 1, fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                                facturas_trans_bancaria = modelos.Factura.objects.all().filter(estadofactura = 3, fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                                factura_presencial = modelos.Factura.objects.all().filter(estadofactura = 4, fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                            
+                            if self.request.POST.get('fechadesdeFacturas') and self.request.POST.get('fechahastaFacturas'):
+                                facturas_pagadas = modelos.Factura.objects.all().filter(estadofactura = 2, fechafactura__gte = self.request.POST.get('fechadesdeFacturas'),fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                                facturas_no_pagadas = modelos.Factura.objects.all().filter(estadofactura = 1, fechafactura__gte = self.request.POST.get('fechadesdeFacturas'),fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                                facturas_trans_bancaria = modelos.Factura.objects.all().filter(estadofactura = 3, fechafactura__gte = self.request.POST.get('fechadesdeFacturas'),fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                                factura_presencial = modelos.Factura.objects.all().filter(estadofactura = 4, fechafactura__gte = self.request.POST.get('fechadesdeFacturas'),fechafactura__lte = self.request.POST.get('fechahastaFacturas')).order_by('fechafactura')
+                    
 
                         if int(op) == 3:
                             for fp in facturas_pagadas:
@@ -1625,29 +1801,54 @@ class Informes(UserPassesTestMixin, TemplateView):
                             
                             # DATOS
                             cont = 4
-                        
-                        pedidos_nuevos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 1).order_by('fechapedido')
-                        pedidos_en_transito = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 2).order_by('fechapedido')
-                        pedidos_recibidos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 3).order_by('fechapedido')
-                        pedidos_rechazados = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 4).order_by('fechapedido')
 
-                        if self.request.POST.get('fechadesdeSolicitudes'):
-                            pedidos_nuevos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 1, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
-                            pedidos_en_transito = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 2, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
-                            pedidos_recibidos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 3, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
-                            pedidos_rechazados = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 4, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
-                        
-                        if self.request.POST.get('fechahastaSolicitudes'):
-                            pedidos_nuevos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 1, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
-                            pedidos_en_transito = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 2, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
-                            pedidos_recibidos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 3, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
-                            pedidos_rechazados = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 4, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
-                        
-                        if self.request.POST.get('fechadesdeSolicitudes') and self.request.POST.get('fechahastaSolicitudes'):
-                            pedidos_nuevos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 1, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
-                            pedidos_en_transito = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 2, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
-                            pedidos_recibidos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 3, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
-                            pedidos_rechazados = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 4, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                        if tipousuario == 2:                  
+                            pedidos_nuevos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 1).order_by('fechapedido')
+                            pedidos_en_transito = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 2).order_by('fechapedido')
+                            pedidos_recibidos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 3).order_by('fechapedido')
+                            pedidos_rechazados = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 4).order_by('fechapedido')
+
+                            if self.request.POST.get('fechadesdeSolicitudes'):
+                                pedidos_nuevos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 1, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
+                                pedidos_en_transito = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 2, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
+                                pedidos_recibidos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 3, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
+                                pedidos_rechazados = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 4, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
+                            
+                            if self.request.POST.get('fechahastaSolicitudes'):
+                                pedidos_nuevos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 1, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                                pedidos_en_transito = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 2, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                                pedidos_recibidos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 3, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                                pedidos_rechazados = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 4, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                            
+                            if self.request.POST.get('fechadesdeSolicitudes') and self.request.POST.get('fechahastaSolicitudes'):
+                                pedidos_nuevos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 1, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                                pedidos_en_transito = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 2, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                                pedidos_recibidos = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 3, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                                pedidos_rechazados = modelos.Pedido.objects.all().filter(empleado = empleado.idempleado, estadopedido = 4, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+
+                        if tipousuario == 1:                  
+                            pedidos_nuevos = modelos.Pedido.objects.all().filter(estadopedido = 1).order_by('fechapedido')
+                            pedidos_en_transito = modelos.Pedido.objects.all().filter(estadopedido = 2).order_by('fechapedido')
+                            pedidos_recibidos = modelos.Pedido.objects.all().filter(estadopedido = 3).order_by('fechapedido')
+                            pedidos_rechazados = modelos.Pedido.objects.all().filter(estadopedido = 4).order_by('fechapedido')
+
+                            if self.request.POST.get('fechadesdeSolicitudes'):
+                                pedidos_nuevos = modelos.Pedido.objects.all().filter(estadopedido = 1, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
+                                pedidos_en_transito = modelos.Pedido.objects.all().filter(estadopedido = 2, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
+                                pedidos_recibidos = modelos.Pedido.objects.all().filter(estadopedido = 3, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
+                                pedidos_rechazados = modelos.Pedido.objects.all().filter(estadopedido = 4, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('fechapedido')
+                            
+                            if self.request.POST.get('fechahastaSolicitudes'):
+                                pedidos_nuevos = modelos.Pedido.objects.all().filter(estadopedido = 1, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                                pedidos_en_transito = modelos.Pedido.objects.all().filter(estadopedido = 2, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                                pedidos_recibidos = modelos.Pedido.objects.all().filter(estadopedido = 3, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                                pedidos_rechazados = modelos.Pedido.objects.all().filter(estadopedido = 4, fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                            
+                            if self.request.POST.get('fechadesdeSolicitudes') and self.request.POST.get('fechahastaSolicitudes'):
+                                pedidos_nuevos = modelos.Pedido.objects.all().filter(estadopedido = 1, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                                pedidos_en_transito = modelos.Pedido.objects.all().filter(estadopedido = 2, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                                pedidos_recibidos = modelos.Pedido.objects.all().filter(estadopedido = 3, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
+                                pedidos_rechazados = modelos.Pedido.objects.all().filter(estadopedido = 4, fechapedido__gte = self.request.POST.get('fechadesdeSolicitudes'),fechapedido__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('fechapedido')
 
 
                         if int(op) == 7:
@@ -1815,7 +2016,7 @@ class Informes(UserPassesTestMixin, TemplateView):
                         ws.column_dimensions['B'].width = 15
                         ws.column_dimensions['C'].width = 25
                         ws.column_dimensions['D'].width = 22
-                        ws.column_dimensions['E'].width = 22
+                        ws.column_dimensions['E'].width = 40
                         ws.column_dimensions['F'].width = 22
                        
 
@@ -1837,16 +2038,32 @@ class Informes(UserPassesTestMixin, TemplateView):
                         # DATOS
                         cont = 4
 
-                        productos_recibidos = modelos.Recepcionproducto.objects.all().filter(empleado= empleado.idempleado).order_by('id')
+                        if tipousuario == 2:
 
-                        if self.request.POST.get('fechadesdeSolicitudes'):
-                            productos_recibidos = modelos.Recepcionproducto.objects.all().filter(empleado= empleado.idempleado, fecharecepcion__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('id')
+                            productos_recibidos = modelos.Recepcionproducto.objects.all().filter(empleado= empleado.idempleado).order_by('id')
 
-                        if self.request.POST.get('fechahastaSolicitudes'):
-                           productos_recibidos = modelos.Recepcionproducto.objects.all().filter(empleado= empleado.idempleado, fecharecepcion__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('id')
+                            if self.request.POST.get('fechadesdeSolicitudes'):
+                                productos_recibidos = modelos.Recepcionproducto.objects.all().filter(empleado= empleado.idempleado, fecharecepcion__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('id')
 
-                        if self.request.POST.get('fechadesdeSolicitudes') and self.request.POST.get('fechahastaSolicitudes'):
-                            productos_recibidos = modelos.Recepcionproducto.objects.all().filter(empleado= empleado.idempleado,fecharecepcion__gte = self.request.POST.get('fechadesdeSolicitudes'), fecharecepcion__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('id')
+                            if self.request.POST.get('fechahastaSolicitudes'):
+                                productos_recibidos = modelos.Recepcionproducto.objects.all().filter(empleado= empleado.idempleado, fecharecepcion__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('id')
+
+                            if self.request.POST.get('fechadesdeSolicitudes') and self.request.POST.get('fechahastaSolicitudes'):
+                                productos_recibidos = modelos.Recepcionproducto.objects.all().filter(empleado= empleado.idempleado,fecharecepcion__gte = self.request.POST.get('fechadesdeSolicitudes'), fecharecepcion__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('id')
+
+                        if tipousuario == 1:
+
+                            productos_recibidos = modelos.Recepcionproducto.objects.all().order_by('id')
+
+                            if self.request.POST.get('fechadesdeSolicitudes'):
+                                productos_recibidos = modelos.Recepcionproducto.objects.all().filter(fecharecepcion__gte = self.request.POST.get('fechadesdeSolicitudes')).order_by('id')
+
+                            if self.request.POST.get('fechahastaSolicitudes'):
+                                productos_recibidos = modelos.Recepcionproducto.objects.all().filter(fecharecepcion__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('id')
+
+                            if self.request.POST.get('fechadesdeSolicitudes') and self.request.POST.get('fechahastaSolicitudes'):
+                                productos_recibidos = modelos.Recepcionproducto.objects.all().filter(fecharecepcion__gte = self.request.POST.get('fechadesdeSolicitudes'), fecharecepcion__lte = self.request.POST.get('fechahastaSolicitudes')).order_by('id')
+
 
                         for p in productos_recibidos:
                             
@@ -1867,7 +2084,7 @@ class Informes(UserPassesTestMixin, TemplateView):
                             ws.cell(row = cont, column = 6).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
                             cont += 1
 
-            if self.request.user.tipousuario.idtipousuario == 3:
+            if tipousuario == 3:
                 cliente = modelos.Cliente.objects.get(usuario = self.request.user.idusuario)
                 rep_res = True
                 rep_fac = True
@@ -2310,8 +2527,7 @@ class Informes(UserPassesTestMixin, TemplateView):
                                 ws.cell(row = cont, column = 10).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
                                 cont += 1
 
-
-            if self.request.user.tipousuario.idtipousuario == 4:
+            if tipousuario == 4:
 
                 proveedor = modelos.Proveedor.objects.get(usuario = self.request.user.idusuario)
                 rep_sol_prov = True
@@ -2525,9 +2741,6 @@ class Informes(UserPassesTestMixin, TemplateView):
                                     ws.cell(row = cont, column = 10).alignment = Alignment(horizontal = "center", vertical = "center")
                                     ws.cell(row = cont, column = 10).border = Border(left = Side(border_style = "thin"), right = Side(border_style = "thin"), top = Side(border_style = "thin"), bottom = Side(border_style = "thin"))
                                     cont += 1
-
-
-
                                                     
             nombre_archivo = "reporte-"+str(date.today())+".xlsx"
             response = HttpResponse(content_type = "application/ms-excel")
@@ -2536,11 +2749,12 @@ class Informes(UserPassesTestMixin, TemplateView):
             wb.save(response)
             return response
         else:
-            messages.error(request, "Debe seleccionar almenos una opcion.")
+            messages.error(request, "Debe seleccionar al menos una opcion.")
             return redirect('informes')
 
        
 # USUARIO
+
 class ModificarPerfil(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
     model = modelos.Usuario
     form_class = formularios.PerfilForm
@@ -2596,7 +2810,9 @@ class ModificarPerfil(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
 
         return super().post(request, *args, **kwargs)
 
+
 # FORMULARIO CONTACTO
+
 class Contacto(TemplateView):
     template_name = 'contacto/form.html'
 

@@ -50,6 +50,8 @@ urlpatterns = [
     re_path(r'^dashboard/factura-pdf/(?P<pk>\d+)/$',
             login_required(vista.FacturaPDF.as_view()), name='factura pdf'),
 
+    
+
     # PEDIDO PRODUCTOS
     path('dashboard/listar-proveedor',
          login_required(vista.ListaProveedor.as_view()), name='listar proveedor'),

@@ -1,0 +1,29 @@
+{%load menu%}
+<div class="p-margin">
+    <p>
+        <div class="categoria">
+            <a data-toggle="collapse" href="#dashboard" role="button" aria-expanded="false"
+                aria-controls="dashboard">Dashboard</a>
+        </div>
+
+        <div class="collapse {% show 'dashboard' %}" id="dashboard">
+            <a href="{% url 'dashboard' %}" class="list-group-item list-group-item-action {% active 'dashboard' %}"><i
+                    class="fas fa-home"></i><span> Inicio</span></a>
+        </div>
+    </p>
+
+
+
+
+    <p>
+        <div class="categoria">
+            <a data-toggle="collapse" href="#informes" role="button" aria-expanded="false"
+                aria-controls="dashboard">Informes</a>
+        </div>
+
+        <div class="collapse {% show 'informes' %}" id="informes">
+            <a href="{% url 'informes' %}" class="list-group-item list-group-item-action {% active 'informes' %}"><i
+                    class="fas fa-file-excel"></i><span> Informes</span></a>
+        </div>
+    </p>
+</div>

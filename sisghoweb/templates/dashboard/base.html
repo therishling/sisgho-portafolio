@@ -38,12 +38,16 @@
         {%if user.tipousuario.idtipousuario == 3 %}
         {% include 'menu/cliente.html' %}
         {%endif%}
-        {%if user.tipousuario.idtipousuario == 2 or user.tipousuario.idtipousuario == 1%}
+        {%if user.tipousuario.idtipousuario == 2%}
         {% include 'menu/empleado.html' %}
         {%endif%}
 
-        {%if user.tipousuario.idtipousuario == 4 or user.tipousuario.idtipousuario == 1%}
+        {%if user.tipousuario.idtipousuario == 4%}
         {% include 'menu/proveedor.html' %}
+        {%endif%}
+
+        {%if user.tipousuario.idtipousuario == 1%}
+        {% include 'menu/admin.html' %}
         {%endif%}
 
       </div>

@@ -10,10 +10,18 @@
 {% if messages %}
 
 {% for message in messages %}
+
+{% if 'success' in message.tags %}
 <div class="alert alert-success" role="alert">
   {{ message }}
 </div>
+{% endif %}
 
+{% if 'error' in message.tags %}
+<div class="alert alert-danger" role="alert">
+  {{ message }}
+</div>
+{% endif %}
 {% endfor %}
 
 {% endif %}
@@ -162,7 +170,7 @@
                         <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
                       </div>
                       <input type="date" class="form-control" name="fechadesde"
-                        value="{{huesped.fechadesde|date:'Y-m-d'}}" required>
+                        value="{{huesped.fechadesde|date:'Y-m-d'}}" min="{{time|date:'Y-m-d'}}" required>
                     </div>
                   </div>
 
@@ -173,7 +181,7 @@
                         <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
                       </div>
                       <input type="date" class="form-control" name="fechahasta"
-                        value="{{huesped.fechahasta|date:'Y-m-d'}}">
+                        value="{{huesped.fechahasta|date:'Y-m-d'}}" min="{{time|date:'Y-m-d'}}">
                     </div>
                   </div>
 
@@ -323,7 +331,7 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
                       </div>
-                      <input type="date" class="form-control" name="fechadesde" required>
+                      <input type="date" class="form-control" name="fechadesde" min="{{ time|date:'Y-m-d' }}" required>
                     </div>
                   </div>
 
@@ -333,7 +341,7 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text"><i class="fas fa-calendar-day"></i></span>
                       </div>
-                      <input type="date" class="form-control" name="fechahasta">
+                      <input type="date" class="form-control" name="fechahasta" min="{{ time|date:'Y-m-d' }}">
                     </div>
                   </div>
 

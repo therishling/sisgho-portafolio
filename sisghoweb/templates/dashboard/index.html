@@ -182,6 +182,93 @@
 
 {%endif%}
 
+{%if user.tipousuario.idtipousuario == 1%}
+<div class="row">
+    <div class="col-md-6 col-lg-3">
+        <div class="statistic__item statistic__item--green">
+            <h2 class="number" id="user_stat">0</h2>
+            <span class="desc">Usuarios</span>
+            <div class="icon">
+                <i class="far fa-hotel"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="statistic__item statistic__item--orange">
+            <h2 class="number" id="product_stat">0</h2>
+            <span class="desc">Productos</span>
+            <div class="icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="statistic__item statistic__item--blue">
+            <h2 class="number"id="service_stat">0</h2>
+            <span class="desc">Servicios</span>
+            <div class="icon">
+                <i class="fas fa-file-invoice"></i>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 col-lg-3">
+        <div class="statistic__item statistic__item--red">
+            <h2 class="number"id="room_stat">0</h2>
+            <span class="desc">Habitaciones</span>
+            <div class="icon">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card border-primary mb-5">
+            <div class="card-header text-center">Solicitud de Productos</div>
+            <div class="card-body text-center">
+
+                <canvas id="solicitudesproductos">
+
+                </canvas><br>
+               <h4>Total Solicitudes:</h4> <h4 id="total_solicitudes">0</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card border-success mb-5">
+            <div class="card-header text-center">Facturas</div>
+            <div class="card-body text-center">
+                <canvas id="facturas">
+
+                </canvas><br>
+                <h4>Total Facturas:</h4> <h4 class="total_facturas" id="total_facturas">0</h4>
+        </div>
+        
+    </div>
+
+
+</div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card border-dark mb-5">
+            <div class="card-header text-center">Grafico Ganancias</div>
+            <div class="card-body text-center">
+                <canvas id="grafico_facturas" height="100px">
+
+                </canvas>
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{%endif%}
+
 
 
 {%if user.tipousuario.idtipousuario == 4%}

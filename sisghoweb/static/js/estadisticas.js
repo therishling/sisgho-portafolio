@@ -340,6 +340,135 @@ $.ajax({
             });
         }
 
+        if(data.tipousuario == 1){
+            animacion_numero('user_stat',data.usuarios)
+            animacion_numero('product_stat',data.productos)
+            animacion_numero('service_stat',data.servicios)
+            animacion_numero('room_stat',data.habitaciones)
+            
+            var ctx = document.getElementById('grafico_facturas');
+            var grafico_ganacias = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.ganancias_labels,
+                    datasets: [{
+                        label: 'Ganancias',
+                        data: data.ganancias_data,
+                        backgroundColor: [
+                            azul,
+                            azul,
+                            azul,
+                            azul,
+                            azul,
+                            azul,
+                            azul,
+                            azul,
+                            azul,
+                            azul,
+                            azul,
+                            azul
+
+                        ],
+                        borderColor: [
+                            azul
+
+                        ],
+                        borderWidth: 1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+
+                    tooltips: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: true
+                    },
+                    scales: {
+                        xAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Mes'
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Total $'
+                            }
+                        }]
+                    }
+                }
+            });
+
+            ctx = document.getElementById('solicitudesproductos');
+            var estadisticasSolicitudes= new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: data.sdp_labels,
+                    datasets: [{
+                        label: 'Reservas',
+                        data: data.sdp_data
+
+                            ,
+                        backgroundColor: [
+                            verde,
+                            naranjo,
+                            azul,
+                            rojo
+                        ],
+                        borderColor: [
+                            verde,
+                            naranjo,
+                            azul,
+                            rojo
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+            animacion_numero('total_solicitudes',data.sdp_total)
+            ctx = document.getElementById('facturas');
+            var estadisticasSolicitudes= new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: data.f_labels,
+                    datasets: [{
+                        label: 'Facturas',
+                        data: data.f_data
+
+                            ,
+                        backgroundColor: [
+                            verde,
+                            naranjo,
+                            rojo
+                        ],
+                        borderColor: [
+                            verde,
+                            naranjo,
+                            rojo
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+            animacion_numero('total_facturas',data.f_total)
+        
+            
+        }
+
     },
     error: function (error_data) {
         console.log(error_data)
