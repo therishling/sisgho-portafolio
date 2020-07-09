@@ -16,9 +16,11 @@ Para el correcto funcionamiento del sistema web, se debe crear una base de datos
 
 Se debe ademas, configurar el correo electronico en settings.py
 
->EMAIL_USE_TLS = True
->EMAIL_HOST = 'smtp.gmail.com'
->EMAIL_PORT = 25
->EMAIL_HOST_USER = 'TU CORREO AQUI'
->EMAIL_HOST_PASSWORD = 'TU CONTRASEÑA'
->EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+```
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = 'TU CORREO AQUI'
+EMAIL_HOST_PASSWORD = 'TU CONTRASEÑA'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+```
