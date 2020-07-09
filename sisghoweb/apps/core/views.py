@@ -22,9 +22,10 @@ from django.contrib import messages
 from django.conf import settings
 import os
 from django.contrib.auth.forms import PasswordChangeForm
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 import requests
 import json
+from django.template.loader import render_to_string
 
 
 # PRINCIPALES
@@ -267,6 +268,76 @@ class AsignarHabitacion(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
         return redirect('dashboard')
 
 
+
+# PDF
+class FacturaPDF(View):
+
+    def link_callback(self, uri, rel):
+        """
+        Convert HTML URIs to absolute system paths so xhtml2pdf can access those
+        resources
+        """
+        # use short variable names
+        sUrl = settings.STATIC_URL  # Typically /static/
+        sRoot = settings.STATIC_ROOT  # Typically /home/userX/project_static/
+        mUrl = settings.MEDIA_URL  # Typically /static/media/
+        mRoot = settings.MEDIA_ROOT  # Typically /home/userX/project_static/media/
+
+        # convert URIs to absolute system paths
+        if uri.startswith(mUrl):
+            path = os.path.join(mRoot, uri.replace(mUrl, ""))
+        elif uri.startswith(sUrl):
+            path = os.path.join(sRoot, uri.replace(sUrl, ""))
+        else:
+            return uri  # handle absolute uri (ie: http://some.tld/foo.png)
+
+        # make sure that file exists
+        if not os.path.isfile(path):
+            raise Exception(
+                'media URI must start with %s or %s' % (sUrl, mUrl)
+            )
+        return path
+
+    def get(self, request, *args, **kwargs):
+        template = get_template('pdf/factura.html')
+        factura = modelos.Factura.objects.get(idfactura=self.kwargs['pk'])
+        detallefactura = modelos.Detallefactura.objects.all().filter(factura=factura)
+        usuario = self.request.user
+        subtotal = 0
+        for d in detallefactura:
+            subtotal = subtotal + d.total
+        iva = round(subtotal * 0.19)
+
+        if factura.cliente.usuario.idusuario == usuario.idusuario or self.request.user.tipousuario.idtipousuario == 2:
+
+            context = {
+                'factura': factura,
+                'detallefactura': detallefactura,
+                'subtotal': subtotal,
+                'iva': iva,
+                'total': subtotal + iva,
+                'logo' : '{}{}'.format(settings.MEDIA_URL, 'logonofondo.png'),
+            }
+            html = template.render(context)
+            response = HttpResponse(content_type="application/pdf")
+            response['Content-Disposition'] = 'attachment; filename=' + \
+                "factura-numero-" + self.kwargs['pk'] + ".pdf"
+            pisaStatus = pisa.CreatePDF(
+                html, dest=response,
+                link_callback=self.link_callback
+            )
+
+            
+
+            if pisaStatus.err:
+                return HttpResponse('error')
+            return response
+        else:
+            return redirect('listar facturas emitidas')
+
+
+
+
 # VISTAS SOLICITUD DE COMPRA
 
 class SolicitudCompra(UserPassesTestMixin, SuccessMessageMixin, CreateView):
@@ -348,13 +419,36 @@ class EmitirFactura(UserPassesTestMixin, SuccessMessageMixin, CreateView):
     success_message = 'Factura emitida.'
     success_url = reverse_lazy('emitir factura')
 
-    def test_func(self):
+    def test_func(self, **kwargs):
         user = self.request.user
         if user.tipousuario.idtipousuario == 2:
-            return True
+            huespedes = modelos.Huesped.objects.values_list('idhuesped', flat=True).filter(
+                habitacion__isnull=False, cliente=self.kwargs['pk'])
+            facturas = modelos.Detallefactura.objects.all().values_list('huesped', flat=True)
+
+            q = huespedes.difference(facturas)
+            detallereserva = modelos.DetalleReserva.objects.all().filter(huesped__in=q)
+            facturassolicitud = modelos.Detallefactura.objects.all(
+            ).values_list('solicitudcompra', flat=True)
+            solicitudcompraid = modelos.SolicitudCompra.objects.all(
+            ).values_list('idsolicitud').filter(huesped__in=huespedes)
+
+            q2 = solicitudcompraid.difference(facturassolicitud)
+
+            solicitudcompra = modelos.SolicitudCompra.objects.all().filter(idsolicitud__in=q2)
+            if detallereserva:
+                return True
+            
+            if solicitudcompra:
+                return True
+            return False
 
     def handle_no_permission(self):
-        return redirect('dashboard')
+        user = self.request.user
+        if user.tipousuario.idtipousuario != 2:
+            return redirect('dashboard')
+        return redirect('emitir factura')
+        
 
     def get_context_data(self, **kwargs):
         huespedes = modelos.Huesped.objects.values_list('idhuesped', flat=True).filter(
@@ -521,7 +615,7 @@ class ListarFacturasEmitidas(UserPassesTestMixin, TemplateView):
         return context
 
 
-class PagoFactura(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
+class PagoFactura(UserPassesTestMixin, SuccessMessageMixin, UpdateView, FacturaPDF):
 
     model = modelos.Factura
     form_class = formularios.FacturaForm
@@ -549,18 +643,29 @@ class PagoFactura(UserPassesTestMixin, SuccessMessageMixin, UpdateView):
             factura = modelos.Factura.objects.get(idfactura=self.kwargs['pk'])
             factura.estadofactura = estadofactura
             
-            
-            print(factura.fechapago)
             factura.save()
 
         return super().post(request, *args, **kwargs)
 
-    def form_valid(self, form, **kwargs):
+    def form_valid(self,form, **kwargs):
         self.object = form.save(commit=False)
         if self.object.estadofactura.idestado == 2:
 
             self.object.fechapago = date.today()
+            response = FacturaPDF.get(self= self, request = self.request)
+
+            html = render_to_string('pdf/email.html', { 'nombre_cliente': self.object.cliente.usuario.nombre + " " + self.object.cliente.usuario.apellido_paterno })
+            pdf = response.content
+            email = EmailMultiAlternatives(
+                subject ='Factura #'+str(self.object.idfactura),
+                body  = html,
+                to = [self.object.cliente.usuario.correo],
+                )
+            email.content_subtype = "html"
+            email.attach('factura.pdf', pdf, 'application/pdf')
+            email.send()
         self.object = form.save()
+
         return super(PagoFactura, self).form_valid(form)
 
     def get_success_url(self, **kwargs):
@@ -593,75 +698,6 @@ class DetallePago(UserPassesTestMixin, SuccessMessageMixin, TemplateView):
         context['option'] = int(self.kwargs['pk'])
         context['total'] = total
         return context
-
-
-
-# PDF
-
-class FacturaPDF(View):
-
-    def link_callback(self, uri, rel):
-        """
-        Convert HTML URIs to absolute system paths so xhtml2pdf can access those
-        resources
-        """
-        # use short variable names
-        sUrl = settings.STATIC_URL  # Typically /static/
-        sRoot = settings.STATIC_ROOT  # Typically /home/userX/project_static/
-        mUrl = settings.MEDIA_URL  # Typically /static/media/
-        mRoot = settings.MEDIA_ROOT  # Typically /home/userX/project_static/media/
-
-        # convert URIs to absolute system paths
-        if uri.startswith(mUrl):
-            path = os.path.join(mRoot, uri.replace(mUrl, ""))
-        elif uri.startswith(sUrl):
-            path = os.path.join(sRoot, uri.replace(sUrl, ""))
-        else:
-            return uri  # handle absolute uri (ie: http://some.tld/foo.png)
-
-        # make sure that file exists
-        if not os.path.isfile(path):
-            raise Exception(
-                'media URI must start with %s or %s' % (sUrl, mUrl)
-            )
-        return path
-
-    def get(self, request, *args, **kwargs):
-        template = get_template('pdf/factura.html')
-        factura = modelos.Factura.objects.get(idfactura=self.kwargs['pk'])
-        detallefactura = modelos.Detallefactura.objects.all().filter(factura=factura)
-        usuario = self.request.user
-        subtotal = 0
-        for d in detallefactura:
-            subtotal = subtotal + d.total
-        iva = round(subtotal * 0.19)
-
-        if factura.cliente.usuario.idusuario == usuario.idusuario:
-
-            context = {
-                'factura': factura,
-                'detallefactura': detallefactura,
-                'subtotal': subtotal,
-                'iva': iva,
-                'total': subtotal + iva,
-                'logo' : '{}{}'.format(settings.MEDIA_URL, 'logonofondo.png'),
-            }
-            html = template.render(context)
-            response = HttpResponse(content_type="application/pdf")
-            response['Content-Disposition'] = 'attachment; filename=' + \
-                "factura-numero-" + self.kwargs['pk'] + ".pdf"
-            pisaStatus = pisa.CreatePDF(
-                html, dest=response,
-                link_callback=self.link_callback
-            )
-
-            
-
-            if pisaStatus.err:
-                return HttpResponse('error')
-            return response
-        else:
-            return redirect('listar facturas emitidas')
 
 
 
@@ -2817,17 +2853,16 @@ class Contacto(TemplateView):
     template_name = 'contacto/form.html'
 
     def post(self, request, *args, **kwargs):
-        mensaje = ('Se ha contactado un cliente desde el sitio web con los siguientes datos:\n'+
-        'Nombre: '+request.POST['nombre'] + '\n'+
-        'Apellido Paterno: '+request.POST['apellido_paterno'] + '\n'+
-        'Apellido Materno: '+request.POST['apellido_materno'] + '\n'+
-        'Correo: '+request.POST['email'] + '\n'+
-        'Rut Empresa: '+request.POST['rut'] + '\n'+
-        'Nombre Empresa: '+request.POST['nombre_empresa'] + '\n'+
-        'Rubro: '+request.POST['rubro'] + '\n'+
-        'Direccion: '+request.POST['direccion'] + '\n'+
-        'Telefono: '+request.POST['telefono'] + '\n'+
-        'Mensaje: '+request.POST['mensaje'] + '\n')
+        
+
+        nombre = request.POST['nombre'] + " " + request.POST['apellido_paterno'] + " " + request.POST['apellido_materno']
+        correo = request.POST['email']
+        rut_empresa = request.POST['rut']
+        nombre_empresa = request.POST['nombre_empresa']
+        rubro = request.POST['rubro']
+        direccion = request.POST['direccion']
+        telefono = request.POST['telefono']
+        mensaje = request.POST['mensaje']
         
         if request.method =='POST':
             recaptcha_token = request.POST.get('g-recaptcha-response')
@@ -2853,11 +2888,28 @@ class Contacto(TemplateView):
                 ctx['mensaje'] = request.POST['mensaje']
                 return render(request, 'contacto/form.html', ctx)
 
-            send_mail ('Formulario de Contacto',
-            mensaje,
-            settings.EMAIL_HOST_USER,
-            [settings.EMAIL_HOST_USER],
-            fail_silently= False )
+
+            html = render_to_string('contacto/email.html', { 
+                'nombre': nombre,
+                'correo' : correo,
+                'rut_empresa' : rut_empresa,
+                'nombre_empresa' : nombre_empresa,
+                'rubro' : rubro,
+                'direccion' : direccion,
+                'telefono' : telefono,
+                'mensaje' : mensaje
+                 })
+            
+            email = EmailMultiAlternatives(
+                subject ='Formulario de Contacto',
+                body  = html,
+                to = [settings.EMAIL_HOST_USER],
+                )
+            email.content_subtype = "html"
+            
+            email.send()
+
+            
 
         messages.success(request, "Mensaje enviado, la hostal se pondra en contacto con usted! =)")
         return HttpResponseRedirect('contacto')

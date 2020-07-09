@@ -12,18 +12,19 @@
   <title>Doña Clarita - {%block title%} Document {%endblock%}</title>
 
   <!-- Estilos-->
-<link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
+  <link href="{% static 'css/dashboard.css' %}" rel="stylesheet">
 
-
+  <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico' %}" />
   <link rel="stylesheet" href="{% static 'css/bootstrapdash.css' %}">
   <link href="{% static 'css/bootstrap-toggle.min.css' %}" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css">
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/css/bootstrap-multiselect.css">
 
 
 
   <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.7.0/css/all.css"
     integrity="sha384-6jHF7Z3XI3fF4XZixAuSu0gGKrXwoX/w3uFPxC56OtjChio7wtTGJWRW53Nhx6Ev" crossorigin="anonymous">
-    
+
 </head>
 
 <body>
@@ -51,7 +52,7 @@
         {%endif%}
 
       </div>
-      
+
 
 
     </div>
@@ -79,8 +80,8 @@
 
               </a>
               <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                  <a class="dropdown-item" href="{% url 'actualizar perfil' user.idusuario %}">Perfil</a>
-                  <a class="dropdown-item" href="{% url 'actualizar password' user.idusuario %}">Cambiar Contraseña</a>
+                <a class="dropdown-item" href="{% url 'actualizar perfil' user.idusuario %}">Perfil</a>
+                <a class="dropdown-item" href="{% url 'actualizar password' user.idusuario %}">Cambiar Contraseña</a>
                 <a class="dropdown-item" href="{% url 'logout' %}">Salir</a>
               </div>
             </li>
@@ -114,12 +115,13 @@
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
     integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous">
   </script>
-    
-    <script src="{% static 'js/bootstrap-toggle.min.js' %}"></script>
+
+  <script src="{% static 'js/bootstrap-toggle.min.js' %}"></script>
   <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
   <script src="{% static 'js/bootstrap.min.js' %}"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.js"></script>
-  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.15/js/bootstrap-multiselect.js">
+  </script>
+
   <!-- Esconder Menu -->
   <script>
     $("#menu-toggle").click(function (e) {
@@ -128,10 +130,10 @@
     });
   </script>
 
-{%block scripts%}
+  {%block scripts%}
 
 
-{%endblock%}
+  {%endblock%}
 </body>
 
 </html>
