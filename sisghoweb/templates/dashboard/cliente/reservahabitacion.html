@@ -57,7 +57,7 @@
       {%if huesped.cliente.usuario.idusuario == user.idusuario %}
       {%if huesped.fechahasta >= time%}
       <th scope="row">{{huesped.idhuesped}}</th>
-      <td>{{huesped.rut}}</td>
+      <td style="width: 110px ;">{{huesped.rut}}</td>
       <td>{{huesped.nombre}}</td>
       <td>{{huesped.apellidopaterno}}</td>
       <td>{{huesped.apellidomaterno}}</td>
@@ -128,7 +128,7 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text"><i class="fas fa-id-card"></i></span>
                       </div>
-                      <input type="text" class="form-control" name="rut" value="{{huesped.rut}}" placeholder="RUT"
+                      <input type="text" class="form-control rut"  name="rut" value="{{huesped.rut}}" placeholder="RUT"
                         required>
                     </div>
                   </div>
@@ -292,7 +292,7 @@
                       <div class="input-group-prepend">
                         <span class="input-group-text"><i class="fas fa-id-card"></i></span>
                       </div>
-                      <input type="text" class="form-control" name="rut" placeholder="RUT" required>
+                      <input type="text" class="form-control rut"  name="rut" placeholder="RUT" required>
                     </div>
                   </div>
 
@@ -376,7 +376,19 @@
 {%endblock%}
 
 {%block scripts%}
-
-
+<script>
+  $(document).ready(function () {
+  
+      $('.rut').mask('00.000.000-Z', {
+         reverse: true,
+         translation: {
+              'Z': {
+                  pattern: /[0-9-kK]/,
+                  optional: true
+              }
+          }
+      });
+  });
+</script>
 
 {%endblock%}

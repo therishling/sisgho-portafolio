@@ -9,6 +9,18 @@ class HuespedForm(forms.ModelForm):
         model = modelo.Huesped
         fields = ('nombre', 'apellidopaterno', 'apellidomaterno',
                   'rut', 'fechadesde', 'fechahasta', 'cliente')
+    
+   
+
+    def __init__(self, *args, **kwargs):
+        super(HuespedForm, self).__init__(*args, **kwargs)
+        if self.data:
+            # make the QueryDict mutable
+            self.data = self.data.copy()
+            # remove dots from data["cpf"]
+            if "rut" in self.data:
+                self.data["rut"] = self.data["rut"].replace(".", "")
+        # ...
 
 
 class AsHabitacionForm(forms.ModelForm):

@@ -94,6 +94,9 @@ video {
 	font: inherit;
 	vertical-align: baseline;
 }
+html {
+	scroll-behavior: smooth;
+  }
 
 article,
 aside,
@@ -2203,6 +2206,7 @@ label {
 .image.left img {
 	display: block;
 	width: 100%;
+	padding-top: 10px;
 }
 
 .image.fit {

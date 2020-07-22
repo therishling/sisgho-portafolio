@@ -1,8 +1,4 @@
-/*
-	Arcana by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
-*/
+
 
 (function($) {
 
@@ -65,3 +61,16 @@
 				});
 
 })(jQuery);
+
+$(document).ready(function () {
+        
+	$('.rut').mask('00.000.000-Z', {
+	   reverse: true,
+	   translation: {
+			'Z': {
+				pattern: /[0-9-kK]/,
+				optional: true
+			}
+		}
+	});
+});
